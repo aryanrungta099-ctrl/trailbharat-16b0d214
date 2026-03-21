@@ -30,7 +30,7 @@ export interface Trek {
   description: string;
   highlights: string[];
   itinerary: TrekItineraryDay[];
-  budget: TrekBudget;
+  budget?: TrekBudget;
 }
 
 const m = (months: number[]) => months;
