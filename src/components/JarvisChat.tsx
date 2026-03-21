@@ -22,6 +22,12 @@ export default function JarvisChat() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("open-hiker-ai", handler);
+    return () => window.removeEventListener("open-hiker-ai", handler);
+  }, []);
+
+  useEffect(() => {
     if (open && messages.length === 0) {
       const greeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
       setMessages([{ role: "assistant", content: greeting }]);
