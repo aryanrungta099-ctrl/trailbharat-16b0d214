@@ -13,7 +13,7 @@ import Tips from "./pages/Tips.tsx";
 import Experiences from "./pages/Experiences.tsx";
 import Auth from "./pages/Auth.tsx";
 import Sherpas from "./pages/Sherpas.tsx";
-import Guesthouses from "./pages/Guesthouses.tsx";
+import Agencies from "./pages/Agencies.tsx";
 import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
@@ -37,7 +37,7 @@ const App = () => (
             <Route path="/tips" element={<Tips />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route path="/sherpas" element={<Sherpas />} />
-            <Route path="/guesthouses" element={<Guesthouses />} />
+            <Route path="/agencies" element={<Agencies />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route path="/suggest" element={<SuggestTrek />} />
