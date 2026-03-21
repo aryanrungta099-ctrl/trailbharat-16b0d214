@@ -137,7 +137,7 @@ export default function JarvisChat() {
               <p className="text-xs opacity-80">Your trek companion</p>
             </div>
             <div className="ml-auto flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs opacity-70">Online</span>
             </div>
           </div>
