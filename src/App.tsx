@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import JarvisChat from "@/components/JarvisChat";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index.tsx";
 import RoutesPage from "./pages/Routes.tsx";
