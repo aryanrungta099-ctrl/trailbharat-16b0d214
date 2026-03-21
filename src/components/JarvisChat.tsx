@@ -109,20 +109,25 @@ export default function JarvisChat() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — top left, bigger */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed bottom-6 right-6 z-50 rounded-full shadow-lg transition-all duration-300",
-          "w-14 h-14 flex items-center justify-center",
+          "fixed top-20 left-4 z-50 rounded-full shadow-lg transition-all duration-300",
+          "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
             : "bg-primary text-primary-foreground hover:bg-primary/90 animate-bounce hover:animate-none"
         )}
-        aria-label={open ? "Close Jarvis" : "Open Jarvis"}
+        aria-label={open ? "Close HikerAI" : "Open HikerAI"}
       >
-        {open ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
+        {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
       </button>
+      {!open && (
+        <span className="fixed top-[6.25rem] left-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
+          HikerAI
+        </span>
+      )}
 
       {/* Chat panel */}
       {open && (
