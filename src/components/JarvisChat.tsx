@@ -8,9 +8,9 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/jarvis-chat`;
 
 const GREETINGS = [
-  "Hey there, trail warrior! 🏔️ How can I help you today?",
-  "Good to see you! Ready to plan your next adventure? 🎒",
-  "Welcome back, explorer! What can Jarvis do for you today? ⛰️",
+  "Hey there, trail warrior! 🏔️ I'm HikerAI — ask me anything about trekking, altitude, gear, or safety!",
+  "Welcome! I'm HikerAI, your trekking expert. Need help with altitude management or route planning? 🎒",
+  "Hey explorer! HikerAI here — ready to help with trek tips, altitude sickness advice, and more! ⛰️",
 ];
 
 export default function JarvisChat() {
