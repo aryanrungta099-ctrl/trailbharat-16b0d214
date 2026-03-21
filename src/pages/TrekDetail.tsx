@@ -305,7 +305,7 @@ const TrekDetail = () => {
     if (!trek) return [];
     return trek.itinerary.map(day => ({
       name: `Day ${day.day}`,
-      altitude: parseInt(day.elevation || "0"),
+      altitude: parseElev(day.elevation),
       title: day.title,
     }));
   }, [trek]);
