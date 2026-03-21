@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Shield, MessageSquare, ArrowRight } from "lucide-react";
+import { Search, Shield, MessageSquare, Users, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-mountains.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 
