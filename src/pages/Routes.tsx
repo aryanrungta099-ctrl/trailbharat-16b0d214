@@ -247,21 +247,6 @@ const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: bool
                 </div>
               </div>
 
-              {/* Preparations */}
-              <div className="mb-5">
-                <h4 className="font-display text-sm font-semibold mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Preparations</h4>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {extras.preparations.map(prep => (
-                    <div key={prep.category} className="bg-muted/50 rounded-lg p-4 border border-border/50">
-                      <div className="font-medium text-sm mb-2">{prep.category}</div>
-                      <ul className="space-y-1">
-                        {prep.items.map((item, i) => <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5"><Leaf className="h-3 w-3 text-trek-moss shrink-0 mt-0.5" /> {item}</li>)}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Itinerary */}
               <div>
                 <h4 className="font-display text-sm font-semibold mb-3">Day-by-Day Itinerary</h4>
