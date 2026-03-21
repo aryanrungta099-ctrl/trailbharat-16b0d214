@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter } from "lucide-react";
-import { treks, Trek, allDifficulties, allRegions, MONTHS } from "@/data/treks";
+import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet } from "lucide-react";
+import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/data/treks";
+import { generateBudget } from "@/data/budgets";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const difficultyColor: Record<string, string> = {
