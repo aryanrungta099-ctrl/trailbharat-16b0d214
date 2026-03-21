@@ -177,59 +177,118 @@ const FilterSelect = ({ label, value, onChange, options }: { label: string; valu
   </div>
 );
 
-const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: boolean; onToggle: () => void }) => (
-  <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-    <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-          <h3 className="truncate">{trek.name}</h3>
-          <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
-          <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-          <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
-          <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
-          <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
-        </div>
-      </div>
-      <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
-    </button>
-    {isExpanded && (
-      <div className="px-6 pb-6 border-t border-border pt-4 animate-reveal" style={{ animationDuration: "0.4s" }}>
-        <p className="text-sm text-foreground/85 leading-relaxed mb-5">{trek.description}</p>
+const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: boolean; onToggle: () => void }) => {
+  const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
+  const budget = useMemo(() => trek.budget ?? generateBudget(trek.country, trek.durationDays, trek.difficulty, trek.altitudeMeters, trek.name), [trek]);
 
-        <div className="mb-5">
-          <h4 className="font-display text-sm font-semibold mb-2">Highlights</h4>
-          <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1.5">
-            {trek.highlights.map((h) => (
-              <li key={h} className="text-sm text-muted-foreground flex items-start gap-2"><span className="text-trek-moss mt-0.5">•</span> {h}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-display text-sm font-semibold mb-3">Day-by-Day Itinerary</h4>
-          <div className="space-y-3">
-            {trek.itinerary.map((day) => (
-              <div key={day.day} className="flex gap-4 text-sm">
-                <div className="shrink-0 w-16 text-right">
-                  <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-foreground">{day.title}</div>
-                  <p className="text-muted-foreground leading-relaxed mt-0.5">{day.description}</p>
-                  <div className="flex gap-3 mt-1 text-xs text-trek-stone">
-                    {day.distance && <span>📏 {day.distance}</span>}
-                    {day.elevation && <span>⛰️ {day.elevation}</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
+  return (
+    <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+      <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+            <h3 className="truncate">{trek.name}</h3>
+            <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
+            <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
+            <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
+            <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
+            <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
           </div>
         </div>
+        <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
+      </button>
+      {isExpanded && (
+        <div className="px-6 pb-6 border-t border-border pt-4 animate-reveal" style={{ animationDuration: "0.4s" }}>
+          <p className="text-sm text-foreground/85 leading-relaxed mb-5">{trek.description}</p>
+
+          <div className="mb-5">
+            <h4 className="font-display text-sm font-semibold mb-2">Highlights</h4>
+            <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1.5">
+              {trek.highlights.map((h) => (
+                <li key={h} className="text-sm text-muted-foreground flex items-start gap-2"><span className="text-trek-moss mt-0.5">•</span> {h}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Budget Guide */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Wallet className="h-4 w-4 text-primary" />
+              <h4 className="font-display text-sm font-semibold">Budget Guide</h4>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setBudgetTab("low")}
+                className={`px-4 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${budgetTab === "low" ? "bg-trek-moss text-primary-foreground shadow" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+              >
+                💰 Low Budget
+              </button>
+              <button
+                onClick={() => setBudgetTab("high")}
+                className={`px-4 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${budgetTab === "high" ? "bg-trek-sunrise text-primary-foreground shadow" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+              >
+                💎 High Budget
+              </button>
+            </div>
+
+            <BudgetPanel data={budgetTab === "low" ? budget.low : budget.high} type={budgetTab} currency={budget.currency} />
+          </div>
+
+          <div>
+            <h4 className="font-display text-sm font-semibold mb-3">Day-by-Day Itinerary</h4>
+            <div className="space-y-3">
+              {trek.itinerary.map((day) => (
+                <div key={day.day} className="flex gap-4 text-sm">
+                  <div className="shrink-0 w-16 text-right">
+                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground">{day.title}</div>
+                    <p className="text-muted-foreground leading-relaxed mt-0.5">{day.description}</p>
+                    <div className="flex gap-3 mt-1 text-xs text-trek-stone">
+                      {day.distance && <span>📏 {day.distance}</span>}
+                      {day.elevation && <span>⛰️ {day.elevation}</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BudgetPanel = ({ data, type, currency }: { data: TrekBudget["low"]; type: "low" | "high"; currency: string }) => (
+  <div className={`rounded-xl border p-5 ${type === "low" ? "border-trek-moss/30 bg-trek-moss/5" : "border-trek-sunrise/30 bg-trek-sunrise/5"}`}>
+    <div className="flex items-baseline justify-between mb-4">
+      <div>
+        <div className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-1">
+          {type === "low" ? "Estimated Low Budget" : "Estimated High Budget"}
+        </div>
+        <div className="font-display text-2xl font-bold text-foreground">{data.total}</div>
       </div>
-    )}
+      <div className={`text-sm font-medium px-3 py-1 rounded-full ${type === "low" ? "bg-trek-moss/15 text-trek-moss" : "bg-trek-sunrise/15 text-trek-sunrise"}`}>
+        {data.perDay}
+      </div>
+    </div>
+
+    <div className="space-y-2 mb-4">
+      {data.items.map((item) => (
+        <div key={item.category} className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">{item.category}</span>
+          <span className="font-medium text-foreground tabular-nums">{item.amount}</span>
+        </div>
+      ))}
+    </div>
+
+    <div className={`rounded-lg p-3 text-xs leading-relaxed ${type === "low" ? "bg-trek-moss/10 text-trek-moss" : "bg-trek-sunrise/10 text-trek-sunrise"}`}>
+      <span className="font-semibold">💡 Tip: </span>{data.tips}
+    </div>
   </div>
 );
 
