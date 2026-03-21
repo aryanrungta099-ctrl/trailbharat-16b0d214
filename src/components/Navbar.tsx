@@ -81,8 +81,14 @@ const Navbar = () => {
             ))}
             <li className="border-t border-border pt-2 mt-2">
               {user ? (
-                <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full text-left px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
-                  <LogOut className="h-4 w-4" /> Sign out
+                <>
+                  <Link onClick={() => setOpen(false)} to="/profile" className="block px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
+                    <Award className="h-4 w-4" /> My Profile
+                  </Link>
+                  <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full text-left px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
+                    <LogOut className="h-4 w-4" /> Sign out
+                  </button>
+                </>
                 </button>
               ) : (
                 <Link onClick={() => setOpen(false)} to="/auth" className="block px-4 py-3 rounded-md text-sm font-medium trek-gradient text-primary-foreground text-center">
