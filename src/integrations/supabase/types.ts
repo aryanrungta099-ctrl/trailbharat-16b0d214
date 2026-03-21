@@ -74,6 +74,48 @@ export type Database = {
         }
         Relationships: []
       }
+      sherpa_listings: {
+        Row: {
+          contact_number: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          photo_url: string | null
+          price_range_max: number
+          price_range_min: number
+          treks_guided: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_number: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          price_range_max?: number
+          price_range_min?: number
+          treks_guided: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_number?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          price_range_max?: number
+          price_range_min?: number
+          treks_guided?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

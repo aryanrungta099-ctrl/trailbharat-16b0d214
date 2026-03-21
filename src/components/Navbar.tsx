@@ -8,6 +8,7 @@ const navItems = [
   { to: "/routes", label: "Trek Routes" },
   { to: "/tips", label: "Safety Tips" },
   { to: "/experiences", label: "Experiences" },
+  { to: "/sherpas", label: "Sherpas" },
 ];
 
 const Navbar = () => {

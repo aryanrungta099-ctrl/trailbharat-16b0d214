@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Shield, MessageSquare, ArrowRight } from "lucide-react";
+import { Search, Shield, MessageSquare, Users, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-mountains.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -24,6 +24,13 @@ const features = [
   title: "Share Experiences",
   desc: "Read stories from fellow trekkers and share your own trail tales with the community.",
   color: "trek-gradient"
+},
+{
+  to: "/sherpas",
+  icon: Users,
+  title: "Find a Sherpa",
+  desc: "Browse experienced mountain guides, view their profiles, and contact them directly for your trek.",
+  color: "trek-gradient-warm"
 }];
 
 
