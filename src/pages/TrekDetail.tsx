@@ -335,7 +335,14 @@ const TrekDetail = () => {
   ];
 
   return (
-    <main className="pt-24 pb-16">
+    <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
+        <svg viewBox="0 0 1440 900" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+          <path d="M0 900 L0 600 L120 500 L240 550 L360 420 L480 480 L600 350 L720 400 L840 300 L960 380 L1080 280 L1200 350 L1320 250 L1440 320 L1440 900Z" fill="currentColor"/>
+          <path d="M0 900 L0 700 L180 620 L360 680 L540 580 L720 640 L900 520 L1080 600 L1260 500 L1440 560 L1440 900Z" fill="currentColor" opacity="0.5"/>
+        </svg>
+      </div>
+      <div className="relative z-10">
       <div className="container mx-auto px-4">
         {/* Back link */}
         <Link to="/routes" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
