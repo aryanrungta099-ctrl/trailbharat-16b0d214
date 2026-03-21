@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      completed_treks: {
+        Row: {
+          completed_at: string
+          created_at: string
+          id: string
+          notes: string | null
+          trek_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          trek_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          trek_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       experiences: {
         Row: {
           created_at: string
