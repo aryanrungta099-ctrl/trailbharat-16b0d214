@@ -39,8 +39,8 @@ const Index = () =>
     
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
       <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
-        <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl font-mono text-center">
-          Discover India's Most Breathtaking Trails
+        <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
+          ​Amazing Trails     
         </h1>
         <p className="mt-4 text-primary-foreground/85 text-lg md:text-xl max-w-lg animate-reveal animate-reveal-delay-1 font-body">
           Your complete guide to trekking across India — routes, safety tips, and real stories from the trail.
