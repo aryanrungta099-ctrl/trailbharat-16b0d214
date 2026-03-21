@@ -24,10 +24,15 @@ const safetyColor: Record<string, string> = {
   "Extreme Risk": "bg-destructive/15 text-destructive",
 };
 
+function parseElev(s: string | undefined): number {
+  if (!s) return 0;
+  return parseInt(s.replace(/[^0-9]/g, "")) || 0;
+}
+
 function getElevationRate(itinerary: Trek["itinerary"]): { day: number; rate: number; risk: string }[] {
   return itinerary.map((item, i) => {
-    const elev = parseInt(item.elevation || "0");
-    const prevElev = i > 0 ? parseInt(itinerary[i - 1].elevation || "0") : elev;
+    const elev = parseElev(item.elevation);
+    const prevElev = i > 0 ? parseElev(itinerary[i - 1].elevation) : elev;
     const rate = elev - prevElev;
     const risk = rate > 800 ? "Dangerous" : rate > 500 ? "High" : rate > 300 ? "Moderate" : "Safe";
     return { day: item.day, rate, risk };
