@@ -26,21 +26,32 @@ const altitudeRanges = [
   { label: "5,000m+", min: 5000, max: 99999 },
 ];
 
+const CIRCUIT_KEYWORDS = ["circuit", "pass", "three passes"];
+const isAdvancedTrek = (t: Trek) =>
+  t.altitudeMeters >= 5000 || CIRCUIT_KEYWORDS.some((kw) => t.name.toLowerCase().includes(kw));
+
+type Tab = "beginner" | "advanced";
+
 const Routes = () => {
+  const [tab, setTab] = useState<Tab>("beginner");
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState<string>("All");
   const [difficulty, setDifficulty] = useState<string>("All");
   const [region, setRegion] = useState<string>("All");
   const [durationIdx, setDurationIdx] = useState(0);
   const [altitudeIdx, setAltitudeIdx] = useState(0);
-  const [month, setMonth] = useState<number>(0); // 0 = all
+  const [month, setMonth] = useState<number>(0);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  const tabTreks = useMemo(() => {
+    return tab === "beginner" ? treks.filter((t) => !isAdvancedTrek(t)) : treks.filter(isAdvancedTrek);
+  }, [tab]);
 
   const filtered = useMemo(() => {
     const dur = durationRanges[durationIdx];
     const alt = altitudeRanges[altitudeIdx];
-    return treks.filter((t) => {
+    return tabTreks.filter((t) => {
       const q = query.toLowerCase();
       const matchQ = !q || t.name.toLowerCase().includes(q) || t.region.toLowerCase().includes(q) || t.state.toLowerCase().includes(q);
       const matchCountry = country === "All" || t.country === country;
@@ -51,17 +62,41 @@ const Routes = () => {
       const matchMonth = month === 0 || t.bestMonths.includes(month);
       return matchQ && matchCountry && matchDiff && matchRegion && matchDur && matchAlt && matchMonth;
     });
-  }, [query, country, difficulty, region, durationIdx, altitudeIdx, month]);
+  }, [tabTreks, query, country, difficulty, region, durationIdx, altitudeIdx, month]);
 
   const activeFilters = [country !== "All", difficulty !== "All", region !== "All", durationIdx !== 0, altitudeIdx !== 0, month !== 0].filter(Boolean).length;
+
+  const beginnerCount = treks.filter((t) => !isAdvancedTrek(t)).length;
+  const advancedCount = treks.filter(isAdvancedTrek).length;
 
   return (
     <main className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <h1 className="text-balance mb-2">Trek Routes</h1>
-          <p className="text-muted-foreground text-lg mb-8 max-w-xl">
+          <p className="text-muted-foreground text-lg mb-6 max-w-xl">
             {treks.length} treks across India &amp; Nepal. Search, filter, and plan your next adventure.
+          </p>
+        </ScrollReveal>
+
+        {/* Tabs */}
+        <ScrollReveal delay={60}>
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => { setTab("beginner"); setExpanded(null); }}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97] ${tab === "beginner" ? "trek-gradient text-primary-foreground shadow-md" : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+            >
+              🥾 Beginner Routes <span className="opacity-70">({beginnerCount})</span>
+            </button>
+            <button
+              onClick={() => { setTab("advanced"); setExpanded(null); }}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97] ${tab === "advanced" ? "trek-gradient-warm text-primary-foreground shadow-md" : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+            >
+              ⛰️ Advanced Routes <span className="opacity-70">({advancedCount})</span>
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground mb-6 -mt-3">
+            {tab === "beginner" ? "Treks below 5,000m — ideal for first-timers and intermediate trekkers." : "High-altitude circuits and treks above 5,000m — for experienced trekkers."}
           </p>
         </ScrollReveal>
 
