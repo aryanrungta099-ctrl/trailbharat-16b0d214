@@ -186,9 +186,9 @@ const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: bool
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
-        <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-            <h3 className="truncate">{trek.name}</h3>
+            <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
             <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
             <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
             <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
