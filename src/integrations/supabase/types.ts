@@ -71,6 +71,92 @@ export type Database = {
         }
         Relationships: []
       }
+      guesthouse_listings: {
+        Row: {
+          amenities: string[]
+          approved: boolean
+          contact_number: string
+          created_at: string
+          description: string
+          id: string
+          location: string
+          name: string
+          photo_url: string | null
+          price_range_max: number
+          price_range_min: number
+          trek_region: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amenities?: string[]
+          approved?: boolean
+          contact_number: string
+          created_at?: string
+          description?: string
+          id?: string
+          location: string
+          name: string
+          photo_url?: string | null
+          price_range_max?: number
+          price_range_min?: number
+          trek_region: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amenities?: string[]
+          approved?: boolean
+          contact_number?: string
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          name?: string
+          photo_url?: string | null
+          price_range_max?: number
+          price_range_min?: number
+          trek_region?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      guesthouse_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          guesthouse_listing_id: string
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          guesthouse_listing_id: string
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          guesthouse_listing_id?: string
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guesthouse_reviews_guesthouse_listing_id_fkey"
+            columns: ["guesthouse_listing_id"]
+            isOneToOne: false
+            referencedRelation: "guesthouse_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -103,6 +189,7 @@ export type Database = {
       }
       sherpa_listings: {
         Row: {
+          approved: boolean
           contact_number: string
           created_at: string
           description: string
@@ -116,6 +203,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          approved?: boolean
           contact_number: string
           created_at?: string
           description?: string
@@ -129,6 +217,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          approved?: boolean
           contact_number?: string
           created_at?: string
           description?: string
@@ -178,15 +267,39 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -313,6 +426,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
