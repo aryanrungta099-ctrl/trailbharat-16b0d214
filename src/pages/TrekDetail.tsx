@@ -626,6 +626,7 @@ const TrekDetail = () => {
           </aside>
         </div>
       </div>
+      </div>
     </main>
   );
 };
