@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2 } from "lucide-react";
+import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 interface SherpaListing {
@@ -18,7 +18,209 @@ interface SherpaListing {
   created_at: string;
 }
 
+interface SherpaReview {
+  id: string;
+  sherpa_listing_id: string;
+  user_id: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  display_name?: string;
+}
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+function StarRating({ rating, onRate, interactive = false, size = "h-4 w-4" }: {
+  rating: number;
+  onRate?: (r: number) => void;
+  interactive?: boolean;
+  size?: string;
+}) {
+  return (
+    <span className="inline-flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(n => (
+        <Star
+          key={n}
+          className={`${size} transition-colors ${
+            n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"
+          } ${interactive ? "cursor-pointer hover:text-amber-400" : ""}`}
+          onClick={() => interactive && onRate?.(n)}
+        />
+      ))}
+    </span>
+  );
+}
+
+function ReviewSection({ listing, user, onReviewAdded }: {
+  listing: SherpaListing;
+  user: any;
+  onReviewAdded: () => void;
+}) {
+  const [reviews, setReviews] = useState<SherpaReview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [newRating, setNewRating] = useState(0);
+  const [newComment, setNewComment] = useState("");
+
+  const fetchReviews = async () => {
+    const { data } = await supabase
+      .from("sherpa_reviews" as any)
+      .select("*")
+      .eq("sherpa_listing_id", listing.id)
+      .order("created_at", { ascending: false });
+
+    if (data) {
+      // Fetch display names for reviewers
+      const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", userIds);
+
+      const nameMap = new Map((profiles || []).map(p => [p.user_id, p.display_name]));
+      setReviews((data as any[]).map((r: any) => ({
+        ...r,
+        display_name: nameMap.get(r.user_id) || "Trekker",
+      })));
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchReviews(); }, [listing.id]);
+
+  const avgRating = useMemo(() => {
+    if (reviews.length === 0) return 0;
+    return reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+  }, [reviews]);
+
+  const userAlreadyReviewed = user && reviews.some(r => r.user_id === user.id);
+  const isOwnListing = user?.id === listing.user_id;
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) { toast.error("Please log in to leave a review"); return; }
+    if (newRating === 0) { toast.error("Please select a rating"); return; }
+    setSubmitting(true);
+
+    const { error } = await supabase.from("sherpa_reviews" as any).insert({
+      sherpa_listing_id: listing.id,
+      user_id: user.id,
+      rating: newRating,
+      comment: newComment.trim(),
+    } as any);
+
+    if (error) {
+      toast.error(error.message.includes("unique") ? "You've already reviewed this guide" : "Failed to submit review");
+    } else {
+      toast.success("Review submitted!");
+      setNewRating(0);
+      setNewComment("");
+      setShowForm(false);
+      fetchReviews();
+      onReviewAdded();
+    }
+    setSubmitting(false);
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    const { error } = await supabase.from("sherpa_reviews" as any).delete().eq("id", id);
+    if (!error) { toast.success("Review removed"); fetchReviews(); onReviewAdded(); }
+  };
+
+  const visibleReviews = expanded ? reviews : reviews.slice(0, 2);
+
+  return (
+    <div className="border-t border-border pt-4 mt-4">
+      {/* Summary row */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <StarRating rating={Math.round(avgRating)} />
+          <span className="text-xs text-muted-foreground">
+            {avgRating > 0 ? avgRating.toFixed(1) : "No ratings"} · {reviews.length} review{reviews.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        {user && !isOwnListing && !userAlreadyReviewed && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="text-xs font-medium text-primary hover:underline flex items-center gap-1 active:scale-95 transition-transform"
+          >
+            <MessageSquare className="h-3.5 w-3.5" /> Write Review
+          </button>
+        )}
+      </div>
+
+      {/* Review form */}
+      {showForm && (
+        <form onSubmit={handleSubmitReview} className="bg-muted/40 rounded-lg p-4 mb-4 space-y-3">
+          <div>
+            <label className="block text-xs font-medium mb-1.5">Your Rating *</label>
+            <StarRating rating={newRating} onRate={setNewRating} interactive size="h-5 w-5" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5">Comment</label>
+            <textarea
+              rows={3}
+              value={newComment}
+              onChange={e => setNewComment(e.target.value)}
+              placeholder="Share your experience with this guide…"
+              maxLength={500}
+              className="w-full px-3 py-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button type="submit" disabled={submitting}
+              className="px-4 py-1.5 rounded-md trek-gradient text-primary-foreground text-xs font-semibold disabled:opacity-60 active:scale-95 transition-transform">
+              {submitting ? "Submitting…" : "Submit"}
+            </button>
+            <button type="button" onClick={() => setShowForm(false)}
+              className="px-4 py-1.5 rounded-md border border-border text-xs hover:bg-muted transition-colors active:scale-95">
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Reviews list */}
+      {!loading && visibleReviews.length > 0 && (
+        <div className="space-y-3">
+          {visibleReviews.map(r => (
+            <div key={r.id} className="flex gap-3">
+              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                {(r.display_name || "T").charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-medium">{r.display_name}</span>
+                  <StarRating rating={r.rating} size="h-3 w-3" />
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(r.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                </div>
+                {r.comment && <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{r.comment}</p>}
+                {user?.id === r.user_id && (
+                  <button onClick={() => handleDeleteReview(r.id)}
+                    className="text-[10px] text-destructive hover:underline mt-1 active:scale-95 transition-transform">
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          {reviews.length > 2 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-xs text-primary hover:underline flex items-center gap-1 active:scale-95 transition-transform"
+            >
+              {expanded ? <><ChevronUp className="h-3 w-3" /> Show less</> : <><ChevronDown className="h-3 w-3" /> Show all {reviews.length} reviews</>}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const Sherpas = () => {
   const { user } = useAuth();
@@ -116,7 +318,7 @@ const Sherpas = () => {
         <div>
           <h1 className="text-balance">Find a Sherpa Guide</h1>
           <p className="text-muted-foreground mt-2 max-w-lg">
-            Connect with experienced mountain guides for your next trek. Browse listings or create your own.
+            Connect with experienced mountain guides for your next trek. Browse listings, read reviews, or create your own.
           </p>
         </div>
         {user && (
@@ -265,7 +467,7 @@ const Sherpas = () => {
                   )}
 
                   {/* Description */}
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-auto pt-3 border-t border-border">
+                  <p className="text-sm text-muted-foreground leading-relaxed pt-3 border-t border-border">
                     {s.description}
                   </p>
 
@@ -276,6 +478,9 @@ const Sherpas = () => {
                       <Trash2 className="h-3.5 w-3.5" /> Remove listing
                     </button>
                   )}
+
+                  {/* Reviews */}
+                  <ReviewSection listing={s} user={user} onReviewAdded={() => {}} />
                 </div>
               </div>
             </ScrollReveal>

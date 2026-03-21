@@ -116,6 +116,41 @@ export type Database = {
         }
         Relationships: []
       }
+      sherpa_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          sherpa_listing_id: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          sherpa_listing_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          sherpa_listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sherpa_reviews_sherpa_listing_id_fkey"
+            columns: ["sherpa_listing_id"]
+            isOneToOne: false
+            referencedRelation: "sherpa_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
