@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Leaf, Mountain, Phone, Eye, Home, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass } from "lucide-react";
 import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras, TrekExtras } from "@/data/trekExtras";
@@ -80,7 +80,12 @@ const Routes = () => {
   const advancedCount = treks.filter(isAdvancedTrek).length;
 
   return (
-    <main className="pt-24 pb-16">
+    <main className="pt-24 pb-16 relative">
+      {/* Sticky Suggest Trek button */}
+      <Link to="/suggest" className="fixed top-20 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-lg hover:shadow-xl active:scale-[0.97] transition-all">
+        <Compass className="h-4 w-4" /> Suggest Trek
+      </Link>
+
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <h1 className="text-balance mb-2">Trek Routes</h1>
@@ -237,21 +242,6 @@ const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: bool
                       <div className="font-medium text-sm">{vp.name}</div>
                       <p className="text-xs text-muted-foreground mt-1">{vp.description}</p>
                       <span className="text-xs text-primary mt-1 inline-block">🕐 {vp.bestTime}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Preparations */}
-              <div className="mb-5">
-                <h4 className="font-display text-sm font-semibold mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Preparations</h4>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {extras.preparations.map(prep => (
-                    <div key={prep.category} className="bg-muted/50 rounded-lg p-4 border border-border/50">
-                      <div className="font-medium text-sm mb-2">{prep.category}</div>
-                      <ul className="space-y-1">
-                        {prep.items.map((item, i) => <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5"><Leaf className="h-3 w-3 text-trek-moss shrink-0 mt-0.5" /> {item}</li>)}
-                      </ul>
                     </div>
                   ))}
                 </div>

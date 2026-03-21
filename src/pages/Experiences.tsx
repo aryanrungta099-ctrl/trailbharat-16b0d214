@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { Send, User, MapPin, Calendar, LogIn } from "lucide-react";
+import { Send, User, MapPin, Calendar, LogIn, Upload, Image, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 interface Experience {
   id: string;
@@ -11,6 +14,8 @@ interface Experience {
   trek_name: string;
   story: string;
   rating: number;
+  photo_urls: string[];
+  approved: boolean;
   created_at: string;
   display_name?: string;
 }
@@ -22,18 +27,22 @@ const Experiences = () => {
   const [trek, setTrek] = useState("");
   const [story, setStory] = useState("");
   const [rating, setRating] = useState(5);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchExperiences = async () => {
     const { data } = await supabase
       .from("experiences")
       .select("*, profiles(display_name)")
+      .eq("approved", true)
       .order("created_at", { ascending: false });
 
     if (data) {
       setExperiences(
-        data.map((e: any) => ({
+        (data as any[]).map((e: any) => ({
           ...e,
+          photo_urls: e.photo_urls || [],
           display_name: e.profiles?.display_name || "Anonymous Trekker",
         }))
       );
@@ -41,27 +50,54 @@ const Experiences = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchExperiences();
-  }, []);
+  useEffect(() => { fetchExperiences(); }, []);
+
+  const handlePhotoAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (photoFiles.length + files.length > 5) {
+      toast.error("Maximum 5 photos allowed");
+      return;
+    }
+    setPhotoFiles(prev => [...prev, ...files]);
+    setPhotoPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+  };
+
+  const removePhoto = (idx: number) => {
+    setPhotoFiles(prev => prev.filter((_, i) => i !== idx));
+    setPhotoPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !trek.trim() || !story.trim()) return;
     setSubmitting(true);
 
+    // Upload photos
+    const uploadedUrls: string[] = [];
+    for (const file of photoFiles) {
+      const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split(".").pop()}`;
+      const { error } = await supabase.storage.from("experience-photos").upload(path, file);
+      if (!error) {
+        uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/experience-photos/${path}`);
+      }
+    }
+
     const { error } = await supabase.from("experiences").insert({
       user_id: user.id,
       trek_name: trek.trim(),
       story: story.trim(),
       rating,
-    });
+      photo_urls: uploadedUrls,
+      approved: false,
+    } as any);
 
     if (!error) {
-      setTrek("");
-      setStory("");
-      setRating(5);
+      toast.success("Experience submitted! It will appear after admin approval.");
+      setTrek(""); setStory(""); setRating(5);
+      setPhotoFiles([]); setPhotoPreviews([]);
       await fetchExperiences();
+    } else {
+      toast.error("Failed to submit");
     }
     setSubmitting(false);
   };
@@ -76,29 +112,43 @@ const Experiences = () => {
           </p>
         </ScrollReveal>
 
-        {/* Submit form */}
+        {/* Submit form - login required */}
         <ScrollReveal delay={100}>
           {user ? (
             <form onSubmit={handleSubmit} className="bg-card rounded-xl border border-border p-6 md:p-8 shadow-sm mb-12">
               <h3 className="mb-5">Share Your Story</h3>
               <input
-                type="text"
-                placeholder="Trek name & location"
-                value={trek}
-                onChange={(e) => setTrek(e.target.value)}
-                maxLength={100}
-                required
+                type="text" placeholder="Trek name & location" value={trek}
+                onChange={(e) => setTrek(e.target.value)} maxLength={100} required
                 className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition mb-4"
               />
               <textarea
-                placeholder="Tell us about your experience…"
-                value={story}
-                onChange={(e) => setStory(e.target.value)}
-                maxLength={2000}
-                required
-                rows={4}
+                placeholder="Tell us about your experience…" value={story}
+                onChange={(e) => setStory(e.target.value)} maxLength={2000} required rows={4}
                 className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring transition resize-none mb-4"
               />
+
+              {/* Photo uploads */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Photos (up to 5)</label>
+                <div className="flex flex-wrap gap-3">
+                  {photoPreviews.map((url, i) => (
+                    <div key={i} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
+                      <img src={url} alt="" className="h-full w-full object-cover" />
+                      <button type="button" onClick={() => removePhoto(i)} className="absolute top-0.5 right-0.5 p-0.5 rounded-full bg-destructive text-destructive-foreground">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {photoFiles.length < 5 && (
+                    <label className="h-20 w-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+                      <Image className="h-5 w-5 text-muted-foreground" />
+                      <input type="file" accept="image/*" className="hidden" onChange={handlePhotoAdd} />
+                    </label>
+                  )}
+                </div>
+              </div>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">Rating:</span>
@@ -112,6 +162,7 @@ const Experiences = () => {
                   <Send className="h-4 w-4" /> {submitting ? "Sharing…" : "Share"}
                 </button>
               </div>
+              <p className="text-xs text-muted-foreground mt-3">⚠️ Your experience will be reviewed by admin before appearing publicly.</p>
             </form>
           ) : (
             <div className="bg-card rounded-xl border border-border p-8 shadow-sm mb-12 text-center">
@@ -147,7 +198,14 @@ const Experiences = () => {
                     </span>
                     <span className="text-trek-sunrise text-sm">{"★".repeat(exp.rating)}{"☆".repeat(5 - exp.rating)}</span>
                   </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed">{exp.story}</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed mb-3">{exp.story}</p>
+                  {exp.photo_urls && exp.photo_urls.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {exp.photo_urls.map((url, j) => (
+                        <img key={j} src={url} alt={`Experience photo ${j + 1}`} className="h-24 w-32 rounded-lg object-cover border border-border" loading="lazy" />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </ScrollReveal>
             ))}

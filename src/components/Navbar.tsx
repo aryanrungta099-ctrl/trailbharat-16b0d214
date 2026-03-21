@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mountain, Menu, X, LogOut, User, Award, Compass, Shield, Home } from "lucide-react";
+import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 
@@ -10,8 +10,7 @@ const navItems = [
   { to: "/tips", label: "Safety Tips" },
   { to: "/experiences", label: "Experiences" },
   { to: "/sherpas", label: "Sherpas" },
-  { to: "/guesthouses", label: "Guesthouses" },
-  { to: "/suggest", label: "Suggest Trek" },
+  { to: "/agencies", label: "Agencies" },
 ];
 
 const Navbar = () => {

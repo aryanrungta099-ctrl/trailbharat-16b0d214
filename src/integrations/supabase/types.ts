@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      agency_listings: {
+        Row: {
+          approved: boolean
+          contact_number: string
+          created_at: string
+          description: string
+          email: string | null
+          established_year: number | null
+          id: string
+          logo_url: string | null
+          name: string
+          price_range_max: number
+          price_range_min: number
+          team_size: number | null
+          treks_offered: string[]
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          approved?: boolean
+          contact_number: string
+          created_at?: string
+          description?: string
+          email?: string | null
+          established_year?: number | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          price_range_max?: number
+          price_range_min?: number
+          team_size?: number | null
+          treks_offered?: string[]
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          approved?: boolean
+          contact_number?: string
+          created_at?: string
+          description?: string
+          email?: string | null
+          established_year?: number | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          price_range_max?: number
+          price_range_min?: number
+          team_size?: number | null
+          treks_offered?: string[]
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      agency_reviews: {
+        Row: {
+          agency_listing_id: string
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          agency_listing_id: string
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          agency_listing_id?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_reviews_agency_listing_id_fkey"
+            columns: ["agency_listing_id"]
+            isOneToOne: false
+            referencedRelation: "agency_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       completed_treks: {
         Row: {
           completed_at: string
@@ -43,8 +135,10 @@ export type Database = {
       }
       experiences: {
         Row: {
+          approved: boolean
           created_at: string
           id: string
+          photo_urls: string[]
           rating: number
           story: string
           trek_name: string
@@ -52,8 +146,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          approved?: boolean
           created_at?: string
           id?: string
+          photo_urls?: string[]
           rating: number
           story: string
           trek_name: string
@@ -61,8 +157,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          approved?: boolean
           created_at?: string
           id?: string
+          photo_urls?: string[]
           rating?: number
           story?: string
           trek_name?: string
@@ -78,15 +176,18 @@ export type Database = {
           contact_number: string
           created_at: string
           description: string
+          food_options: string[]
           id: string
           location: string
           name: string
           photo_url: string | null
           price_range_max: number
           price_range_min: number
+          room_photo_urls: string[]
           trek_region: string
           updated_at: string
           user_id: string
+          view_photo_urls: string[]
         }
         Insert: {
           amenities?: string[]
@@ -94,15 +195,18 @@ export type Database = {
           contact_number: string
           created_at?: string
           description?: string
+          food_options?: string[]
           id?: string
           location: string
           name: string
           photo_url?: string | null
           price_range_max?: number
           price_range_min?: number
+          room_photo_urls?: string[]
           trek_region: string
           updated_at?: string
           user_id: string
+          view_photo_urls?: string[]
         }
         Update: {
           amenities?: string[]
@@ -110,15 +214,18 @@ export type Database = {
           contact_number?: string
           created_at?: string
           description?: string
+          food_options?: string[]
           id?: string
           location?: string
           name?: string
           photo_url?: string | null
           price_range_max?: number
           price_range_min?: number
+          room_photo_urls?: string[]
           trek_region?: string
           updated_at?: string
           user_id?: string
+          view_photo_urls?: string[]
         }
         Relationships: []
       }
@@ -193,6 +300,7 @@ export type Database = {
           contact_number: string
           created_at: string
           description: string
+          gallery_urls: string[]
           id: string
           name: string
           photo_url: string | null
@@ -207,6 +315,7 @@ export type Database = {
           contact_number: string
           created_at?: string
           description?: string
+          gallery_urls?: string[]
           id?: string
           name: string
           photo_url?: string | null
@@ -221,6 +330,7 @@ export type Database = {
           contact_number?: string
           created_at?: string
           description?: string
+          gallery_urls?: string[]
           id?: string
           name?: string
           photo_url?: string | null
@@ -266,6 +376,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trek_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          trek_id: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          trek_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          trek_id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
