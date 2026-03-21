@@ -8,9 +8,9 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/jarvis-chat`;
 
 const GREETINGS = [
-  "Hey there, trail warrior! 🏔️ How can I help you today?",
-  "Good to see you! Ready to plan your next adventure? 🎒",
-  "Welcome back, explorer! What can Jarvis do for you today? ⛰️",
+  "Hey there, trail warrior! 🏔️ I'm HikerAI — ask me anything about trekking, altitude, gear, or safety!",
+  "Welcome! I'm HikerAI, your trekking expert. Need help with altitude management or route planning? 🎒",
+  "Hey explorer! HikerAI here — ready to help with trek tips, altitude sickness advice, and more! ⛰️",
 ];
 
 export default function JarvisChat() {
@@ -109,32 +109,37 @@ export default function JarvisChat() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — top left, bigger */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed bottom-6 right-6 z-50 rounded-full shadow-lg transition-all duration-300",
-          "w-14 h-14 flex items-center justify-center",
+          "fixed top-20 left-4 z-50 rounded-full shadow-lg transition-all duration-300",
+          "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
             : "bg-primary text-primary-foreground hover:bg-primary/90 animate-bounce hover:animate-none"
         )}
-        aria-label={open ? "Close Jarvis" : "Open Jarvis"}
+        aria-label={open ? "Close HikerAI" : "Open HikerAI"}
       >
-        {open ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
+        {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
       </button>
+      {!open && (
+        <span className="fixed top-[6.25rem] left-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
+          HikerAI
+        </span>
+      )}
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[480px] max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed top-40 left-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-sm leading-tight">Jarvis</p>
-              <p className="text-xs opacity-80">Your trek companion</p>
+              <p className="font-semibold text-sm leading-tight">HikerAI</p>
+              <p className="text-xs opacity-80">Your trekking expert</p>
             </div>
             <div className="ml-auto flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
