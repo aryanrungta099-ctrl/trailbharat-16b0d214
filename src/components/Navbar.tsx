@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mountain, Menu, X, LogOut, User, Award } from "lucide-react";
+import { Mountain, Menu, X, LogOut, User, Award, Compass, Shield, Home } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -9,6 +10,8 @@ const navItems = [
   { to: "/tips", label: "Safety Tips" },
   { to: "/experiences", label: "Experiences" },
   { to: "/sherpas", label: "Sherpas" },
+  { to: "/guesthouses", label: "Guesthouses" },
+  { to: "/suggest", label: "Suggest Trek" },
 ];
 
 const Navbar = () => {
@@ -16,6 +19,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
 
   const handleSignOut = async () => {
     await signOut();
@@ -31,12 +35,12 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 location.pathname === item.to
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -45,12 +49,17 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
-          <div className="w-px h-6 bg-border mx-2" />
+          <div className="w-px h-6 bg-border mx-1.5" />
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Link to="/profile" className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted">
-                <Award className="h-3.5 w-3.5" /> My Profile
+                <Award className="h-3.5 w-3.5" /> Profile
               </Link>
+              {isAdmin && (
+                <Link to="/admin" className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted">
+                  <Shield className="h-3.5 w-3.5" /> Admin
+                </Link>
+              )}
               <button onClick={handleSignOut} className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors active:scale-95" title="Sign out">
                 <LogOut className="h-4 w-4" />
               </button>
@@ -63,14 +72,14 @@ const Navbar = () => {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-md hover:bg-muted active:scale-95 transition" aria-label="Toggle menu">
+        <button onClick={() => setOpen(!open)} className="lg:hidden p-2 rounded-md hover:bg-muted active:scale-95 transition" aria-label="Toggle menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
+        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-md">
           <ul className="flex flex-col p-4 gap-1">
             {navItems.map((item) => (
               <li key={item.to}>
@@ -85,6 +94,11 @@ const Navbar = () => {
                   <Link onClick={() => setOpen(false)} to="/profile" className="block px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
                     <Award className="h-4 w-4" /> My Profile
                   </Link>
+                  {isAdmin && (
+                    <Link onClick={() => setOpen(false)} to="/admin" className="block px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
+                      <Shield className="h-4 w-4" /> Admin Panel
+                    </Link>
+                  )}
                   <button onClick={() => { handleSignOut(); setOpen(false); }} className="w-full text-left px-4 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2">
                     <LogOut className="h-4 w-4" /> Sign out
                   </button>

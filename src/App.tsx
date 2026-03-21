@@ -8,11 +8,16 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Index from "./pages/Index.tsx";
 import RoutesPage from "./pages/Routes.tsx";
+import TrekDetail from "./pages/TrekDetail.tsx";
 import Tips from "./pages/Tips.tsx";
 import Experiences from "./pages/Experiences.tsx";
 import Auth from "./pages/Auth.tsx";
 import Sherpas from "./pages/Sherpas.tsx";
+import Guesthouses from "./pages/Guesthouses.tsx";
 import Profile from "./pages/Profile.tsx";
+import PublicProfile from "./pages/PublicProfile.tsx";
+import SuggestTrek from "./pages/SuggestTrek.tsx";
+import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,10 +33,15 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/routes" element={<RoutesPage />} />
+            <Route path="/trek/:id" element={<TrekDetail />} />
             <Route path="/tips" element={<Tips />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route path="/sherpas" element={<Sherpas />} />
+            <Route path="/guesthouses" element={<Guesthouses />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:userId" element={<PublicProfile />} />
+            <Route path="/suggest" element={<SuggestTrek />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
