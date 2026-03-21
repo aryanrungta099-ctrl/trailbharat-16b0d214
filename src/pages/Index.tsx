@@ -76,6 +76,8 @@ const Index = () => {
                 Having problems with trekking? Consult <span className="font-bold text-primary-foreground underline underline-offset-2">HikerAI</span> →
               </p>
             </div>
+          </div>
+        </section>
 
         {/* Features */}
         <section className="container mx-auto px-4 -mt-16 relative z-20 pb-24">
