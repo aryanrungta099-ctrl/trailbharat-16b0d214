@@ -12,6 +12,7 @@ import Tips from "./pages/Tips.tsx";
 import Experiences from "./pages/Experiences.tsx";
 import Auth from "./pages/Auth.tsx";
 import Sherpas from "./pages/Sherpas.tsx";
+import Profile from "./pages/Profile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/tips" element={<Tips />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route path="/sherpas" element={<Sherpas />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
