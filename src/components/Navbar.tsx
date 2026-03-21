@@ -89,7 +89,6 @@ const Navbar = () => {
                     <LogOut className="h-4 w-4" /> Sign out
                   </button>
                 </>
-                </button>
               ) : (
                 <Link onClick={() => setOpen(false)} to="/auth" className="block px-4 py-3 rounded-md text-sm font-medium trek-gradient text-primary-foreground text-center">
                   Log In / Sign Up
