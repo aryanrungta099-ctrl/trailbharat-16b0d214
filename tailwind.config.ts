@@ -47,6 +47,15 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        trek: {
+          forest: "hsl(var(--trek-forest))",
+          moss: "hsl(var(--trek-moss))",
+          earth: "hsl(var(--trek-earth))",
+          sand: "hsl(var(--trek-sand))",
+          stone: "hsl(var(--trek-stone))",
+          sky: "hsl(var(--trek-sky))",
+          sunrise: "hsl(var(--trek-sunrise))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +66,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        display: ["'Playfair Display'", "Georgia", "serif"],
+        body: ["'Source Sans 3'", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
