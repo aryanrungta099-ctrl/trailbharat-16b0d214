@@ -131,15 +131,15 @@ export default function JarvisChat() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[480px] max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed top-40 left-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3 shrink-0">
-            <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-sm leading-tight">Jarvis</p>
-              <p className="text-xs opacity-80">Your trek companion</p>
+              <p className="font-semibold text-sm leading-tight">HikerAI</p>
+              <p className="text-xs opacity-80">Your trekking expert</p>
             </div>
             <div className="ml-auto flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

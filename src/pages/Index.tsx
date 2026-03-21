@@ -74,6 +74,21 @@ const Index = () => {
           </div>
         </section>
 
+        {/* HikerAI CTA Banner */}
+        <section className="container mx-auto px-4 -mt-24 relative z-20 mb-8">
+          <ScrollReveal>
+            <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 flex items-center gap-4 backdrop-blur-sm">
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <Mountain className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground text-lg">Having problems with trekking?</p>
+                <p className="text-muted-foreground text-sm">Consult <span className="font-bold text-primary">HikerAI</span> — your AI trekking expert for altitude management, gear advice, safety tips, and more. Click the green button on the top left!</p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </section>
+
         {/* Features */}
         <section className="container mx-auto px-4 -mt-16 relative z-20 pb-24">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
