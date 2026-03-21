@@ -6,6 +6,17 @@ export interface TrekItineraryDay {
   elevation?: string;
 }
 
+export interface BudgetItem {
+  category: string;
+  amount: string;
+}
+
+export interface TrekBudget {
+  currency: string;
+  low: { total: string; perDay: string; items: BudgetItem[]; tips: string };
+  high: { total: string; perDay: string; items: BudgetItem[]; tips: string };
+}
+
 export interface Trek {
   id: string;
   name: string;
@@ -19,6 +30,7 @@ export interface Trek {
   description: string;
   highlights: string[];
   itinerary: TrekItineraryDay[];
+  budget?: TrekBudget;
 }
 
 const m = (months: number[]) => months;
