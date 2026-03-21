@@ -109,11 +109,11 @@ export default function JarvisChat() {
 
   return (
     <>
-      {/* Floating button — top left, bigger */}
+      {/* Floating button — top right, bigger */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed top-20 left-4 z-50 rounded-full shadow-lg transition-all duration-300",
+          "fixed top-20 right-4 z-50 rounded-full shadow-lg transition-all duration-300",
           "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
@@ -124,14 +124,14 @@ export default function JarvisChat() {
         {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
       </button>
       {!open && (
-        <span className="fixed top-[6.25rem] left-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
+        <span className="fixed top-[6.25rem] right-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
           HikerAI
         </span>
       )}
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed top-40 left-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
+        <div className="fixed top-40 right-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3 shrink-0">
             <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
