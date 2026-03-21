@@ -10,7 +10,7 @@ interface SherpaListing {
   id: string; user_id: string; name: string; photo_url: string | null;
   treks_guided: string; contact_number: string; price_range_min: number;
   price_range_max: number; description: string; gallery_urls: string[];
-  created_at: string;
+  approved: boolean; created_at: string;
 }
 
 interface SherpaReview {
