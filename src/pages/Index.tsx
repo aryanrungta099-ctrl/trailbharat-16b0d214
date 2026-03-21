@@ -73,7 +73,7 @@ const Index = () => {
                 Explore Routes <ArrowRight className="h-4 w-4" />
               </Link>
               <p className="text-primary-foreground/90 text-sm md:text-base">
-                Having problems with trekking? Consult <span className="font-bold text-primary-foreground underline underline-offset-2">HikerAI</span> →
+                Having problems with trekking? Consult <button onClick={() => window.dispatchEvent(new CustomEvent("open-hiker-ai"))} className="font-bold text-primary-foreground underline underline-offset-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0">HikerAI</button> →
               </p>
             </div>
           </div>
