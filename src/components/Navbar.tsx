@@ -48,7 +48,9 @@ const Navbar = () => {
           <div className="w-px h-6 bg-border mx-2" />
           {user ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground flex items-center gap-1"><User className="h-3.5 w-3.5" />{user.email}</span>
+              <Link to="/profile" className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted">
+                <Award className="h-3.5 w-3.5" /> My Profile
+              </Link>
               <button onClick={handleSignOut} className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors active:scale-95" title="Sign out">
                 <LogOut className="h-4 w-4" />
               </button>
