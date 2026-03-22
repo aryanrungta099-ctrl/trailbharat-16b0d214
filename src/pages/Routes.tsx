@@ -328,6 +328,33 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
                 <p className="text-sm mt-3 leading-relaxed">{extras.weather.safetyNote}</p>
               </div>
 
+              {/* Monthly Calendar */}
+              <div className="rounded-xl border border-border p-5 bg-card">
+                <h4 className="font-display text-sm font-semibold mb-3 flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /> Best Time to Go</h4>
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5">
+                  {extras.monthlyConditions.map(mc => {
+                    const bg = mc.condition === "Excellent" ? "bg-trek-moss/20 border-trek-moss/40 text-trek-moss" :
+                      mc.condition === "Good" ? "bg-trek-sky/15 border-trek-sky/30 text-trek-sky" :
+                      mc.condition === "Fair" ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-700" :
+                      mc.condition === "Poor" ? "bg-trek-sunrise/15 border-trek-sunrise/30 text-trek-sunrise" :
+                      "bg-destructive/15 border-destructive/30 text-destructive";
+                    return (
+                      <div key={mc.month} className={`rounded-lg border p-1.5 text-center ${bg} ${mc.isBest ? "ring-2 ring-trek-moss ring-offset-1" : ""}`}>
+                        <div className="text-[10px] font-bold">{mc.month}</div>
+                        <div className="text-[8px] mt-0.5">{mc.tempRange}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2 text-[9px]">
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-moss/20 border border-trek-moss/40" /> Excellent</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-sky/15 border border-trek-sky/30" /> Good</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-500/15 border border-yellow-500/30" /> Fair</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-sunrise/15 border border-trek-sunrise/30" /> Poor</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-destructive/15 border border-destructive/30" /> Dangerous</span>
+                </div>
+              </div>
+
               {/* Wildlife */}
               <div className="rounded-xl border border-border p-5 bg-muted/30">
                 <h4 className="font-display text-sm font-semibold mb-3 flex items-center gap-2">🐾 Wildlife & Safety</h4>
