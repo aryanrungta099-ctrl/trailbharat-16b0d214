@@ -36,14 +36,62 @@ const LeafDecor = ({ className = "" }: { className?: string }) => (
 );
 
 const Index = () => {
+  const navigate = useNavigate();
   const [guesthouses, setGuesthouses] = useState<any[]>([]);
   const [agencies, setAgencies] = useState<any[]>([]);
+  const [trekReviews, setTrekReviews] = useState<Record<string, { avg: number; count: number }>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("All");
+  const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
+
+  const uniqueStates = useMemo(() => ["All", ...new Set(treks.map(t => t.state))].sort(), []);
+
+  // Top 10 treks by region filter
+  const topTreks = useMemo(() => {
+    let filtered = treks;
+    if (selectedRegion !== "All") filtered = treks.filter(t => t.state === selectedRegion);
+    return filtered
+      .sort((a, b) => {
+        const ra = trekReviews[a.id];
+        const rb = trekReviews[b.id];
+        const sa = ra ? ra.avg * Math.log(ra.count + 1) : 0;
+        const sb = rb ? rb.avg * Math.log(rb.count + 1) : 0;
+        return sb - sa || b.altitudeMeters - a.altitudeMeters;
+      })
+      .slice(0, 10);
+  }, [selectedRegion, trekReviews]);
+
+  // Search logic
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults(null); return; }
+    const q = searchQuery.toLowerCase();
+    const results = treks.filter(t =>
+      t.name.toLowerCase().includes(q) ||
+      t.region.toLowerCase().includes(q) ||
+      t.state.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q)
+    ).slice(0, 12);
+    setSearchResults(results);
+  }, [searchQuery]);
 
   useEffect(() => {
     supabase.from("guesthouse_listings").select("*").eq("approved", true).limit(4)
       .then(({ data }) => { if (data) setGuesthouses(data); });
     supabase.from("agency_listings").select("*").eq("approved", true).limit(4)
       .then(({ data }) => { if (data) setAgencies(data); });
+    // Fetch trek reviews for ranking
+    supabase.from("trek_reviews").select("trek_id, rating").then(({ data }) => {
+      if (!data) return;
+      const map: Record<string, { sum: number; count: number }> = {};
+      data.forEach(r => {
+        if (!map[r.trek_id]) map[r.trek_id] = { sum: 0, count: 0 };
+        map[r.trek_id].sum += r.rating;
+        map[r.trek_id].count += 1;
+      });
+      const result: Record<string, { avg: number; count: number }> = {};
+      Object.entries(map).forEach(([id, v]) => { result[id] = { avg: v.sum / v.count, count: v.count }; });
+      setTrekReviews(result);
+    });
   }, []);
 
   return (
