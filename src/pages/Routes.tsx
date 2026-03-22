@@ -158,10 +158,37 @@ const Routes = () => {
           {filtered.length === 0 && <div className="text-center py-16 text-muted-foreground">No treks match your filters. Try adjusting.</div>}
           {filtered.map((trek, i) => (
             <ScrollReveal key={trek.id} delay={Math.min(i * 40, 300)}>
-              <TrekCard trek={trek} isExpanded={expanded === trek.id} onToggle={() => setExpanded(expanded === trek.id ? null : trek.id)} />
+              <TrekCard trek={trek} isExpanded={expanded === trek.id} onToggle={() => setExpanded(expanded === trek.id ? null : trek.id)} isComparing={compareIds.includes(trek.id)} onCompare={() => toggleCompare(trek.id)} compareDisabled={compareIds.length >= 3 && !compareIds.includes(trek.id)} />
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Compare Bar */}
+        {compareIds.length > 0 && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-xl px-5 py-3 flex items-center gap-4 animate-reveal" style={{ animationDuration: "0.3s" }}>
+            <GitCompareArrows className="h-5 w-5 text-primary shrink-0" />
+            <span className="text-sm font-medium">{compareIds.length}/3 selected</span>
+            <div className="flex gap-2">
+              {compareIds.map(id => {
+                const t = treks.find(x => x.id === id);
+                return t ? (
+                  <span key={id} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center gap-1">
+                    {t.name.slice(0, 20)}{t.name.length > 20 ? "…" : ""}
+                    <button onClick={() => toggleCompare(id)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+                  </span>
+                ) : null;
+              })}
+            </div>
+            <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
+              className="px-4 py-2 rounded-lg trek-gradient text-primary-foreground text-sm font-medium active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed">
+              Compare
+            </button>
+            <button onClick={() => setCompareIds([])} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
+          </div>
+        )}
+
+        {/* Compare Modal */}
+        {showCompare && <CompareModal trekIds={compareIds} onClose={() => setShowCompare(false)} />}
       </div>
     </main>
   );
