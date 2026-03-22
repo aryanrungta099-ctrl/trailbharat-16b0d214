@@ -119,7 +119,7 @@ export default function JarvisChat() {
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed top-20 right-4 z-50 rounded-full shadow-lg transition-all duration-300",
+          "fixed top-36 right-4 z-50 rounded-full shadow-lg transition-all duration-300",
           "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
