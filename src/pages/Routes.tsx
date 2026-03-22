@@ -465,4 +465,97 @@ const BudgetPanel = ({ data, type, currency }: { data: TrekBudget["low"]; type: 
   </div>
 );
 
+const CompareModal = ({ trekIds, onClose }: { trekIds: string[]; onClose: () => void }) => {
+  const compareTreks = trekIds.map(id => treks.find(t => t.id === id)!).filter(Boolean);
+  const budgets = compareTreks.map(t => t.budget ?? generateBudget(t.country, t.durationDays, t.difficulty, t.altitudeMeters, t.name));
+  const extras = compareTreks.map(t => generateTrekExtras(t.name, t.country, t.region, t.state, t.altitudeMeters, t.difficulty, t.durationDays, t.bestMonths, t.highlights, t.itinerary));
+
+  const rows: { label: string; values: string[] }[] = [
+    { label: "Region", values: compareTreks.map(t => `${t.region}, ${t.state}`) },
+    { label: "Country", values: compareTreks.map(t => t.country) },
+    { label: "Difficulty", values: compareTreks.map(t => t.difficulty) },
+    { label: "Duration", values: compareTreks.map(t => `${t.durationDays} days`) },
+    { label: "Max Altitude", values: compareTreks.map(t => `${t.altitudeMeters.toLocaleString()}m`) },
+    { label: "Best Months", values: compareTreks.map(t => t.bestMonths.map(m => MONTHS[m - 1]).join(", ")) },
+    { label: "Current Safety", values: extras.map(e => e.weather.safetyLevel) },
+    { label: "Temperature", values: extras.map(e => e.weather.temperature) },
+    { label: "Low Budget", values: budgets.map(b => b.low.total) },
+    { label: "High Budget", values: budgets.map(b => b.high.total) },
+    { label: "Per Day (Low)", values: budgets.map(b => b.low.perDay) },
+    { label: "Wildlife Danger", values: extras.map(e => e.wildlife.dangerLevel) },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-card rounded-2xl border border-border shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-card border-b border-border p-5 flex items-center justify-between z-10">
+          <h2 className="text-lg font-display font-semibold flex items-center gap-2"><GitCompareArrows className="h-5 w-5 text-primary" /> Trek Comparison</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted active:scale-95 transition"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="p-5">
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium">Stat</th>
+                {compareTreks.map(t => (
+                  <th key={t.id} className="text-left py-2 px-3">
+                    <Link to={`/trek/${t.id}`} className="text-primary hover:underline font-semibold text-sm">{t.name}</Link>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={row.label} className={i % 2 === 0 ? "bg-muted/30" : ""}>
+                  <td className="py-2.5 px-3 text-muted-foreground font-medium text-xs">{row.label}</td>
+                  {row.values.map((v, j) => {
+                    let highlight = "";
+                    if (row.label === "Current Safety") {
+                      highlight = v === "Safe" ? "text-trek-moss font-semibold" : v === "Moderate Risk" ? "text-yellow-600 font-semibold" : "text-destructive font-semibold";
+                    }
+                    if (row.label === "Difficulty") {
+                      highlight = difficultyColor[v] || "";
+                    }
+                    return <td key={j} className={`py-2.5 px-3 ${highlight}`}>{v}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Monthly conditions comparison */}
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold mb-3">Monthly Conditions</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr>
+                    <th className="py-1.5 px-2 text-left text-muted-foreground">Month</th>
+                    {compareTreks.map(t => <th key={t.id} className="py-1.5 px-2 text-left">{t.name.slice(0, 15)}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {MONTHS.map((month, mi) => (
+                    <tr key={month} className={mi % 2 === 0 ? "bg-muted/20" : ""}>
+                      <td className="py-1 px-2 font-medium">{month.slice(0, 3)}</td>
+                      {extras.map((ex, j) => {
+                        const mc = ex.monthlyConditions[mi];
+                        const color = mc.condition === "Excellent" ? "text-trek-moss font-bold" :
+                          mc.condition === "Good" ? "text-trek-sky" :
+                          mc.condition === "Fair" ? "text-yellow-600" :
+                          mc.condition === "Poor" ? "text-trek-sunrise" : "text-destructive";
+                        return <td key={j} className={`py-1 px-2 ${color}`}>{mc.condition}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Routes;
