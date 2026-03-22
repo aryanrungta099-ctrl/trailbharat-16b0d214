@@ -75,9 +75,12 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("guesthouse_reviews" as any).insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any);
+    const { data: inserted, error } = await supabase.from("guesthouse_reviews" as any).insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
-    else { toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews(); }
+    else {
+      moderateContent({ table: "guesthouse_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
+    }
     setSubmitting(false);
   };
 
