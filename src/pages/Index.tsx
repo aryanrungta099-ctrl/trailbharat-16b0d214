@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter } from "lucide-react";
+import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart } from "lucide-react";
 import heroImg from "@/assets/hero-mountains.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
