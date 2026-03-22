@@ -5,6 +5,7 @@ import heroImg from "@/assets/hero-mountains.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
+import JarvisChat from "@/components/JarvisChat";
 
 const features = [
   { to: "/routes", icon: Search, title: "Explore Trek Routes", desc: "Search and discover trekking routes across India & Nepal — Himalayas to Western Ghats.", color: "trek-gradient" },
