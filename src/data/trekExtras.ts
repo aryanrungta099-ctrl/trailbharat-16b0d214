@@ -40,6 +40,15 @@ export interface TrekPreparation {
   items: string[];
 }
 
+export interface MonthlyCondition {
+  month: string;
+  monthNum: number;
+  condition: "Excellent" | "Good" | "Fair" | "Poor" | "Dangerous";
+  tempRange: string;
+  rainfall: string;
+  isBest: boolean;
+}
+
 export interface TrekExtras {
   weather: WeatherInfo;
   wildlife: WildlifeInfo;
@@ -47,6 +56,7 @@ export interface TrekExtras {
   viewpoints: Viewpoint[];
   emergency: EmergencyInfo;
   preparations: TrekPreparation[];
+  monthlyConditions: MonthlyCondition[];
 }
 
 function getCurrentMonth() {
