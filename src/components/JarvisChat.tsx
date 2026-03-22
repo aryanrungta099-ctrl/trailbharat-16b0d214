@@ -130,7 +130,7 @@ export default function JarvisChat() {
         {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
       </button>
       {!open && (
-        <span className="fixed top-[6.25rem] right-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
+        <span className="fixed top-[10.25rem] right-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
           HikerAI
         </span>
       )}
