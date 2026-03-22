@@ -19,6 +19,7 @@ import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
 import Admin from "./pages/Admin.tsx";
+import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
