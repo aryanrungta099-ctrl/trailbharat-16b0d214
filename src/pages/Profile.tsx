@@ -42,9 +42,9 @@ const Profile = () => {
   const [selectedTrek, setSelectedTrek] = useState("");
   const [completedDate, setCompletedDate] = useState(new Date().toISOString().split("T")[0]);
   const [submitting, setSubmitting] = useState(false);
-  const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null; age: number | null; height_cm: number | null; weight_kg: number | null; health_conditions: string | null } | null>(null);
   const [celebrateBadge, setCelebrateBadge] = useState<Badge | null>(null);
-  const prevBadgeCount = useRef<number | null>(null);
+  const seenBadgesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
