@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { User, Award, Mountain, Plus, Trash2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { User, Award, Mountain, Plus, Trash2, Heart, Save } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
@@ -42,9 +42,9 @@ const Profile = () => {
   const [selectedTrek, setSelectedTrek] = useState("");
   const [completedDate, setCompletedDate] = useState(new Date().toISOString().split("T")[0]);
   const [submitting, setSubmitting] = useState(false);
-  const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null; age: number | null; height_cm: number | null; weight_kg: number | null; health_conditions: string | null } | null>(null);
   const [celebrateBadge, setCelebrateBadge] = useState<Badge | null>(null);
-  const prevBadgeCount = useRef<number | null>(null);
+  const seenBadgesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
@@ -52,8 +52,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("display_name, bio, avatar_url").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => { if (data) setProfile(data); });
+    supabase.from("profiles").select("display_name, bio, avatar_url, age, height_cm, weight_kg, health_conditions").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data) setProfile(data as any); });
     fetchCompleted();
   }, [user]);
 
@@ -67,14 +67,32 @@ const Profile = () => {
     return getEarnedBadges(completedTrekIds, treks);
   }, [completedTrekIds]);
 
-  // Detect new badge and celebrate
+  // Load seen badges from localStorage on mount
   useEffect(() => {
-    if (prevBadgeCount.current !== null && earnedBadges.length > prevBadgeCount.current) {
-      const newest = earnedBadges[earnedBadges.length - 1];
-      setCelebrateBadge(newest);
+    if (!user) return;
+    const stored = localStorage.getItem(`seen-badges-${user.id}`);
+    if (stored) {
+      try { seenBadgesRef.current = new Set(JSON.parse(stored)); } catch { /* ignore */ }
     }
-    prevBadgeCount.current = earnedBadges.length;
-  }, [earnedBadges]);
+  }, [user]);
+
+  // Detect truly NEW badge (not seen before) and celebrate
+  useEffect(() => {
+    if (!user || earnedBadges.length === 0) return;
+    const newBadge = earnedBadges.find(b => !seenBadgesRef.current.has(b.id));
+    if (newBadge) {
+      setCelebrateBadge(newBadge);
+      // Mark all current badges as seen
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
+    } else if (seenBadgesRef.current.size === 0) {
+      // First load — mark all existing as seen without celebrating
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
+    }
+  }, [earnedBadges, user]);
 
   const addCompletedTrek = async () => {
     if (!user || !selectedTrek) return;
@@ -151,7 +169,57 @@ const Profile = () => {
             </div>
           </ScrollReveal>
 
-          {/* Badges */}
+          {/* Health Profile */}
+          <ScrollReveal delay={60}>
+            <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-6 mb-8 shadow-sm">
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-destructive" /> Health Profile
+              </h3>
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Age</label>
+                  <input type="number" value={profile?.age ?? ""} min={10} max={100}
+                    onChange={e => setProfile(p => p ? { ...p, age: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="Age" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Height (cm)</label>
+                  <input type="number" value={profile?.height_cm ?? ""} min={100} max={250}
+                    onChange={e => setProfile(p => p ? { ...p, height_cm: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="cm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Weight (kg)</label>
+                  <input type="number" value={profile?.weight_kg ?? ""} min={20} max={250}
+                    onChange={e => setProfile(p => p ? { ...p, weight_kg: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="kg" />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="text-xs text-muted-foreground mb-1 block">Health Conditions</label>
+                <input type="text" value={profile?.health_conditions ?? ""} maxLength={500}
+                  onChange={e => setProfile(p => p ? { ...p, health_conditions: e.target.value || null } : p)}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="e.g., asthma, knee issues (optional)" />
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={async () => {
+                  if (!user || !profile) return;
+                  const { error } = await supabase.from("profiles").update({
+                    age: profile.age, height_cm: profile.height_cm,
+                    weight_kg: profile.weight_kg, health_conditions: profile.health_conditions,
+                  }).eq("user_id", user.id);
+                  if (error) toast.error("Failed to save");
+                  else toast.success("Health profile updated!");
+                }} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg trek-gradient text-primary-foreground text-sm font-medium shadow hover:shadow-md active:scale-[0.97] transition-all">
+                  <Save className="h-3.5 w-3.5" /> Save Health Info
+                </button>
+                <Link to="/recommended" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive hover:bg-destructive/90 text-destructive-foreground text-sm font-medium shadow transition-all active:scale-[0.97]">
+                  <Heart className="h-3.5 w-3.5" /> Get Recommendations
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
+
           <ScrollReveal delay={80}>
             <div className="mb-8">
               <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
