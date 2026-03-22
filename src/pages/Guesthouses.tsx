@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Phone, IndianRupee, Home, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, MapPin, Check } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 interface GuesthouseListing {
   id: string;
