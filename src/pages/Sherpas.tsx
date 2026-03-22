@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Image, Share2 } from "lucide-react";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 interface SherpaListing {
   id: string; user_id: string; name: string; photo_url: string | null;
