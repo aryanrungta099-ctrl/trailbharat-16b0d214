@@ -44,6 +44,7 @@ const App = () => (
             <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route path="/suggest" element={<SuggestTrek />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
