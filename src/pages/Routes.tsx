@@ -223,7 +223,7 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
   ];
 
   return (
-    <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+    <div className={`bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow overflow-hidden ${isComparing ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
       <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
           <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-1.5 flex-wrap">
