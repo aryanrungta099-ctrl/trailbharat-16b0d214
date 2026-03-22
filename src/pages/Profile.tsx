@@ -52,8 +52,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("display_name, bio, avatar_url").eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => { if (data) setProfile(data); });
+    supabase.from("profiles").select("display_name, bio, avatar_url, age, height_cm, weight_kg, health_conditions").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data) setProfile(data as any); });
     fetchCompleted();
   }, [user]);
 
