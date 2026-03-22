@@ -19,6 +19,7 @@ import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
 import Admin from "./pages/Admin.tsx";
+import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route path="/suggest" element={<SuggestTrek />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
