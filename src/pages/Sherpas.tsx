@@ -124,7 +124,7 @@ function ReviewSection({ listing, user }: { listing: SherpaListing; user: any })
 function ShareButton({ name }: { name: string }) {
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({ title: name, text: `Check out ${name} on TrailBharat!`, url: window.location.href }).catch(() => {});
+      navigator.share({ title: name, text: `Check out ${name} on Himalayan Trails!`, url: window.location.href }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied!");

@@ -8,7 +8,7 @@ const Footer = () => (
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Mountain className="h-5 w-5" />
-            <span className="font-display text-lg font-semibold">TrailBharat</span>
+            <span className="font-display text-lg font-semibold">Himalayan Trails</span>
           </div>
           <p className="text-sm opacity-80 max-w-xs">
             Your trusted companion for exploring India's most breathtaking trekking trails.
@@ -30,7 +30,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-60">
-        © 2026 TrailBharat. Trek responsibly.
+        © 2026 Himalayan Trails. Trek responsibly.
       </div>
     </div>
   </footer>

@@ -63,7 +63,7 @@ const Auth = () => {
         <div className="bg-card rounded-xl border border-border p-8 w-full max-w-md shadow-sm">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Mountain className="h-7 w-7 text-primary" />
-            <span className="font-display text-xl font-semibold">TrailBharat</span>
+            <span className="font-display text-xl font-semibold">Himalayan Trails</span>
           </div>
 
           <div className="flex mb-6 bg-muted rounded-lg p-1">

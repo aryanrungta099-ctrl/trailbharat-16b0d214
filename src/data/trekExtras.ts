@@ -40,6 +40,15 @@ export interface TrekPreparation {
   items: string[];
 }
 
+export interface MonthlyCondition {
+  month: string;
+  monthNum: number;
+  condition: "Excellent" | "Good" | "Fair" | "Poor" | "Dangerous";
+  tempRange: string;
+  rainfall: string;
+  isBest: boolean;
+}
+
 export interface TrekExtras {
   weather: WeatherInfo;
   wildlife: WildlifeInfo;
@@ -47,6 +56,7 @@ export interface TrekExtras {
   viewpoints: Viewpoint[];
   emergency: EmergencyInfo;
   preparations: TrekPreparation[];
+  monthlyConditions: MonthlyCondition[];
 }
 
 function getCurrentMonth() {
@@ -333,6 +343,46 @@ function getPreparations(difficulty: string, altitude: number, durationDays: num
   return preps;
 }
 
+function getMonthlyConditions(bestMonths: number[], altitude: number): MonthlyCondition[] {
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return monthNames.map((name, i) => {
+    const m = i + 1;
+    const isBest = bestMonths.includes(m);
+    const isMonsoon = m >= 6 && m <= 9;
+    const isWinter = m === 12 || m <= 2;
+
+    let baseLow = 5, baseHigh = 20;
+    if (altitude > 5000) { baseLow = -15; baseHigh = 5; }
+    else if (altitude > 4000) { baseLow = -5; baseHigh = 10; }
+    else if (altitude > 3000) { baseLow = 0; baseHigh = 15; }
+
+    let tLow = baseLow, tHigh = baseHigh;
+    if (isWinter) { tLow -= 8; tHigh -= 5; }
+    if (m >= 6 && m <= 8) { tLow += 3; tHigh += 3; }
+
+    let condition: MonthlyCondition["condition"];
+    let rainfall: string;
+    if (isBest) {
+      condition = "Excellent";
+      rainfall = "Low";
+    } else if (isMonsoon && !isBest) {
+      condition = altitude > 3000 ? "Dangerous" : "Poor";
+      rainfall = "Heavy";
+    } else if (isWinter && altitude > 4000) {
+      condition = "Dangerous";
+      rainfall = "Snowfall";
+    } else if (isWinter) {
+      condition = altitude > 3000 ? "Poor" : "Fair";
+      rainfall = "Snow";
+    } else {
+      condition = "Good";
+      rainfall = "Moderate";
+    }
+
+    return { month: name, monthNum: m, condition, tempRange: `${tLow}° to ${tHigh}°C`, rainfall, isBest };
+  });
+}
+
 export function generateTrekExtras(
   trekName: string,
   country: "India" | "Nepal",
@@ -352,5 +402,6 @@ export function generateTrekExtras(
     viewpoints: getViewpoints(trekName, region, highlights),
     emergency: getEmergency(country, state, region),
     preparations: getPreparations(difficulty, altitude, durationDays, country),
+    monthlyConditions: getMonthlyConditions(bestMonths, altitude),
   };
 }

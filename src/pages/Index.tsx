@@ -287,7 +287,7 @@ const Index = () => {
         <section className="container mx-auto px-4 pb-24">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <h2 className="text-balance">Why Trek with TrailBharat?</h2>
+              <h2 className="text-balance">Why Trek with Himalayan Trails?</h2>
               <p className="text-muted-foreground mt-3 max-w-lg mx-auto">
                 We curate detailed information on every major trek in India & Nepal so you can plan with confidence.
               </p>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass } from "lucide-react";
+import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass, GitCompareArrows, X } from "lucide-react";
 import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras, TrekExtras } from "@/data/trekExtras";
@@ -54,6 +54,12 @@ const Routes = () => {
   const [month, setMonth] = useState<number>(0);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
+
+  const toggleCompare = (id: string) => {
+    setCompareIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 3 ? [...prev, id] : prev);
+  };
 
   const tabTreks = useMemo(() => {
     return tab === "beginner" ? treks.filter((t) => !isAdvancedTrek(t)) : treks.filter(isAdvancedTrek);
@@ -152,10 +158,37 @@ const Routes = () => {
           {filtered.length === 0 && <div className="text-center py-16 text-muted-foreground">No treks match your filters. Try adjusting.</div>}
           {filtered.map((trek, i) => (
             <ScrollReveal key={trek.id} delay={Math.min(i * 40, 300)}>
-              <TrekCard trek={trek} isExpanded={expanded === trek.id} onToggle={() => setExpanded(expanded === trek.id ? null : trek.id)} />
+              <TrekCard trek={trek} isExpanded={expanded === trek.id} onToggle={() => setExpanded(expanded === trek.id ? null : trek.id)} isComparing={compareIds.includes(trek.id)} onCompare={() => toggleCompare(trek.id)} compareDisabled={compareIds.length >= 3 && !compareIds.includes(trek.id)} />
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Compare Bar */}
+        {compareIds.length > 0 && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-xl px-5 py-3 flex items-center gap-4 animate-reveal" style={{ animationDuration: "0.3s" }}>
+            <GitCompareArrows className="h-5 w-5 text-primary shrink-0" />
+            <span className="text-sm font-medium">{compareIds.length}/3 selected</span>
+            <div className="flex gap-2">
+              {compareIds.map(id => {
+                const t = treks.find(x => x.id === id);
+                return t ? (
+                  <span key={id} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center gap-1">
+                    {t.name.slice(0, 20)}{t.name.length > 20 ? "…" : ""}
+                    <button onClick={() => toggleCompare(id)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+                  </span>
+                ) : null;
+              })}
+            </div>
+            <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
+              className="px-4 py-2 rounded-lg trek-gradient text-primary-foreground text-sm font-medium active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed">
+              Compare
+            </button>
+            <button onClick={() => setCompareIds([])} className="text-xs text-muted-foreground hover:text-foreground">Clear</button>
+          </div>
+        )}
+
+        {/* Compare Modal */}
+        {showCompare && <CompareModal trekIds={compareIds} onClose={() => setShowCompare(false)} />}
       </div>
     </main>
   );
@@ -175,7 +208,7 @@ const FilterSelect = ({ label, value, onChange, options }: { label: string; valu
   </div>
 );
 
-const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: boolean; onToggle: () => void }) => {
+const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareDisabled }: { trek: Trek; isExpanded: boolean; onToggle: () => void; isComparing?: boolean; onCompare?: () => void; compareDisabled?: boolean }) => {
   const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
   const [detailTab, setDetailTab] = useState<DetailTab>("overview");
   const budget = useMemo(() => trek.budget ?? generateBudget(trek.country, trek.durationDays, trek.difficulty, trek.altitudeMeters, trek.name), [trek]);
@@ -190,26 +223,34 @@ const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: bool
   ];
 
   return (
-    <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
+    <div className={`bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow overflow-hidden ${isComparing ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
+      <div className="flex items-center">
+        <button onClick={onToggle} className="flex-1 text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
           <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-            <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
-            <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
-            <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
-            <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
-              {extras.weather.safetyLevel === "Safe" ? "✅" : extras.weather.safetyLevel === "Moderate Risk" ? "⚠️" : "🔴"} {extras.weather.safetyLevel}
-            </span>
+            <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+              <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
+              <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
+              <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
+                {extras.weather.safetyLevel === "Safe" ? "✅" : extras.weather.safetyLevel === "Moderate Risk" ? "⚠️" : "🔴"} {extras.weather.safetyLevel}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
+              <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
+              <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
+              <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
-            <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
-            <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
-            <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
-          </div>
-        </div>
-        <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
-      </button>
+          <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
+        </button>
+        {onCompare && (
+          <button onClick={onCompare} disabled={compareDisabled && !isComparing}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] mr-4 ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
+            <GitCompareArrows className="h-3.5 w-3.5 inline mr-1" />{isComparing ? "Selected" : "Compare"}
+          </button>
+        )}
+      </div>
       
       {isExpanded && (
         <div className="px-6 pb-6 border-t border-border pt-4 animate-reveal" style={{ animationDuration: "0.4s" }}>
@@ -285,6 +326,33 @@ const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: bool
                   <div><span className="text-muted-foreground">Rainfall:</span> <span className="font-medium">{extras.weather.rainfall}</span></div>
                 </div>
                 <p className="text-sm mt-3 leading-relaxed">{extras.weather.safetyNote}</p>
+              </div>
+
+              {/* Monthly Calendar */}
+              <div className="rounded-xl border border-border p-5 bg-card">
+                <h4 className="font-display text-sm font-semibold mb-3 flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" /> Best Time to Go</h4>
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5">
+                  {extras.monthlyConditions.map(mc => {
+                    const bg = mc.condition === "Excellent" ? "bg-trek-moss/20 border-trek-moss/40 text-trek-moss" :
+                      mc.condition === "Good" ? "bg-trek-sky/15 border-trek-sky/30 text-trek-sky" :
+                      mc.condition === "Fair" ? "bg-yellow-500/15 border-yellow-500/30 text-yellow-700" :
+                      mc.condition === "Poor" ? "bg-trek-sunrise/15 border-trek-sunrise/30 text-trek-sunrise" :
+                      "bg-destructive/15 border-destructive/30 text-destructive";
+                    return (
+                      <div key={mc.month} className={`rounded-lg border p-1.5 text-center ${bg} ${mc.isBest ? "ring-2 ring-trek-moss ring-offset-1" : ""}`}>
+                        <div className="text-[10px] font-bold">{mc.month}</div>
+                        <div className="text-[8px] mt-0.5">{mc.tempRange}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2 text-[9px]">
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-moss/20 border border-trek-moss/40" /> Excellent</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-sky/15 border border-trek-sky/30" /> Good</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-500/15 border border-yellow-500/30" /> Fair</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-trek-sunrise/15 border border-trek-sunrise/30" /> Poor</span>
+                  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-destructive/15 border border-destructive/30" /> Dangerous</span>
+                </div>
               </div>
 
               {/* Wildlife */}
@@ -423,5 +491,98 @@ const BudgetPanel = ({ data, type, currency }: { data: TrekBudget["low"]; type: 
     </div>
   </div>
 );
+
+const CompareModal = ({ trekIds, onClose }: { trekIds: string[]; onClose: () => void }) => {
+  const compareTreks = trekIds.map(id => treks.find(t => t.id === id)!).filter(Boolean);
+  const budgets = compareTreks.map(t => t.budget ?? generateBudget(t.country, t.durationDays, t.difficulty, t.altitudeMeters, t.name));
+  const extras = compareTreks.map(t => generateTrekExtras(t.name, t.country, t.region, t.state, t.altitudeMeters, t.difficulty, t.durationDays, t.bestMonths, t.highlights, t.itinerary));
+
+  const rows: { label: string; values: string[] }[] = [
+    { label: "Region", values: compareTreks.map(t => `${t.region}, ${t.state}`) },
+    { label: "Country", values: compareTreks.map(t => t.country) },
+    { label: "Difficulty", values: compareTreks.map(t => t.difficulty) },
+    { label: "Duration", values: compareTreks.map(t => `${t.durationDays} days`) },
+    { label: "Max Altitude", values: compareTreks.map(t => `${t.altitudeMeters.toLocaleString()}m`) },
+    { label: "Best Months", values: compareTreks.map(t => t.bestMonths.map(m => MONTHS[m - 1]).join(", ")) },
+    { label: "Current Safety", values: extras.map(e => e.weather.safetyLevel) },
+    { label: "Temperature", values: extras.map(e => e.weather.temperature) },
+    { label: "Low Budget", values: budgets.map(b => b.low.total) },
+    { label: "High Budget", values: budgets.map(b => b.high.total) },
+    { label: "Per Day (Low)", values: budgets.map(b => b.low.perDay) },
+    { label: "Wildlife Danger", values: extras.map(e => e.wildlife.dangerLevel) },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-card rounded-2xl border border-border shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-card border-b border-border p-5 flex items-center justify-between z-10">
+          <h2 className="text-lg font-display font-semibold flex items-center gap-2"><GitCompareArrows className="h-5 w-5 text-primary" /> Trek Comparison</h2>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-muted active:scale-95 transition"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="p-5">
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th className="text-left py-2 px-3 text-xs uppercase tracking-wider text-muted-foreground font-medium">Stat</th>
+                {compareTreks.map(t => (
+                  <th key={t.id} className="text-left py-2 px-3">
+                    <Link to={`/trek/${t.id}`} className="text-primary hover:underline font-semibold text-sm">{t.name}</Link>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={row.label} className={i % 2 === 0 ? "bg-muted/30" : ""}>
+                  <td className="py-2.5 px-3 text-muted-foreground font-medium text-xs">{row.label}</td>
+                  {row.values.map((v, j) => {
+                    let highlight = "";
+                    if (row.label === "Current Safety") {
+                      highlight = v === "Safe" ? "text-trek-moss font-semibold" : v === "Moderate Risk" ? "text-yellow-600 font-semibold" : "text-destructive font-semibold";
+                    }
+                    if (row.label === "Difficulty") {
+                      highlight = difficultyColor[v] || "";
+                    }
+                    return <td key={j} className={`py-2.5 px-3 ${highlight}`}>{v}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Monthly conditions comparison */}
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold mb-3">Monthly Conditions</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr>
+                    <th className="py-1.5 px-2 text-left text-muted-foreground">Month</th>
+                    {compareTreks.map(t => <th key={t.id} className="py-1.5 px-2 text-left">{t.name.slice(0, 15)}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {MONTHS.map((month, mi) => (
+                    <tr key={month} className={mi % 2 === 0 ? "bg-muted/20" : ""}>
+                      <td className="py-1 px-2 font-medium">{month.slice(0, 3)}</td>
+                      {extras.map((ex, j) => {
+                        const mc = ex.monthlyConditions[mi];
+                        const color = mc.condition === "Excellent" ? "text-trek-moss font-bold" :
+                          mc.condition === "Good" ? "text-trek-sky" :
+                          mc.condition === "Fair" ? "text-yellow-600" :
+                          mc.condition === "Poor" ? "text-trek-sunrise" : "text-destructive";
+                        return <td key={j} className={`py-1 px-2 ${color}`}>{mc.condition}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Routes;
