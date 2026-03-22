@@ -169,7 +169,57 @@ const Profile = () => {
             </div>
           </ScrollReveal>
 
-          {/* Badges */}
+          {/* Health Profile */}
+          <ScrollReveal delay={60}>
+            <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-6 mb-8 shadow-sm">
+              <h3 className="font-display font-semibold mb-4 flex items-center gap-2">
+                <Heart className="h-4 w-4 text-destructive" /> Health Profile
+              </h3>
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Age</label>
+                  <input type="number" value={profile?.age ?? ""} min={10} max={100}
+                    onChange={e => setProfile(p => p ? { ...p, age: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="Age" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Height (cm)</label>
+                  <input type="number" value={profile?.height_cm ?? ""} min={100} max={250}
+                    onChange={e => setProfile(p => p ? { ...p, height_cm: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="cm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Weight (kg)</label>
+                  <input type="number" value={profile?.weight_kg ?? ""} min={20} max={250}
+                    onChange={e => setProfile(p => p ? { ...p, weight_kg: e.target.value ? parseInt(e.target.value) : null } : p)}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="kg" />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="text-xs text-muted-foreground mb-1 block">Health Conditions</label>
+                <input type="text" value={profile?.health_conditions ?? ""} maxLength={500}
+                  onChange={e => setProfile(p => p ? { ...p, health_conditions: e.target.value || null } : p)}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm" placeholder="e.g., asthma, knee issues (optional)" />
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={async () => {
+                  if (!user || !profile) return;
+                  const { error } = await supabase.from("profiles").update({
+                    age: profile.age, height_cm: profile.height_cm,
+                    weight_kg: profile.weight_kg, health_conditions: profile.health_conditions,
+                  }).eq("user_id", user.id);
+                  if (error) toast.error("Failed to save");
+                  else toast.success("Health profile updated!");
+                }} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg trek-gradient text-primary-foreground text-sm font-medium shadow hover:shadow-md active:scale-[0.97] transition-all">
+                  <Save className="h-3.5 w-3.5" /> Save Health Info
+                </button>
+                <Link to="/recommended" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive hover:bg-destructive/90 text-destructive-foreground text-sm font-medium shadow transition-all active:scale-[0.97]">
+                  <Heart className="h-3.5 w-3.5" /> Get Recommendations
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
+
           <ScrollReveal delay={80}>
             <div className="mb-8">
               <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
