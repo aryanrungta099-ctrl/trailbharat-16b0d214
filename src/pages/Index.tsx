@@ -133,20 +133,48 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Trek Search Bar — above the fold */}
-        <section className="container mx-auto px-4 -mt-8 relative z-20 pb-8">
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search treks by name, region, or state..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-xl border border-border bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
-            />
+        {/* Features */}
+        <section className="container mx-auto px-4 -mt-8 relative z-20 pb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((f, i) => (
+              <ScrollReveal key={f.to} delay={i * 100}>
+                <Link to={f.to}
+                  className="group block bg-card rounded-xl shadow-md hover:shadow-xl transition-shadow p-8 border border-border h-full relative overflow-hidden">
+                  <LeafDecor className="top-2 right-2 rotate-45 text-trek-moss" />
+                  <LeafDecor className="bottom-2 left-2 -rotate-12 text-trek-moss" />
+                  <div className={`inline-flex p-3 rounded-lg ${f.color} mb-5`}>
+                    <f.icon className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <h3 className="mb-2 group-hover:text-primary transition-colors">{f.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
+                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    Learn more <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              </ScrollReveal>
+            ))}
           </div>
+        </section>
 
-          {/* Search Results */}
+        {/* Trek Search Bar */}
+        <section className="container mx-auto px-4 pb-16 relative z-20">
+          <ScrollReveal>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold flex items-center justify-center gap-2"><Search className="h-5 w-5 text-primary" /> Search Treks</h2>
+              <p className="text-muted-foreground text-sm mt-1">Find your next adventure by name, region, or state</p>
+            </div>
+            <div className="max-w-2xl mx-auto relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search treks by name, region, or state..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
+              />
+            </div>
+          </ScrollReveal>
+
           {searchResults && (
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-4">{searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found</h3>
@@ -180,29 +208,6 @@ const Index = () => {
               )}
             </div>
           )}
-        </section>
-
-        {/* Features */}
-        <section className="container mx-auto px-4 -mt-16 relative z-20 pb-24">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((f, i) => (
-              <ScrollReveal key={f.to} delay={i * 100}>
-                <Link to={f.to}
-                  className="group block bg-card rounded-xl shadow-md hover:shadow-xl transition-shadow p-8 border border-border h-full relative overflow-hidden">
-                  <LeafDecor className="top-2 right-2 rotate-45 text-trek-moss" />
-                  <LeafDecor className="bottom-2 left-2 -rotate-12 text-trek-moss" />
-                  <div className={`inline-flex p-3 rounded-lg ${f.color} mb-5`}>
-                    <f.icon className="h-5 w-5 text-primary-foreground" />
-                  </div>
-                  <h3 className="mb-2 group-hover:text-primary transition-colors">{f.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
-                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    Learn more <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
         </section>
 
 
