@@ -30,7 +30,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2 group">
           <Mountain className="h-6 w-6 text-primary transition-transform group-hover:scale-110 group-active:scale-95" />
-          <span className="font-display text-lg font-semibold text-foreground">TrailBharat</span>
+          <span className="font-display text-lg font-semibold text-foreground">Himalayan Trails</span>
         </Link>
 
         {/* Desktop */}

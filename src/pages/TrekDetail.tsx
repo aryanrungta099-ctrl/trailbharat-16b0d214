@@ -359,7 +359,7 @@ const TrekDetail = () => {
                   <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
                   <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
                   {extras && <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>{extras.weather.safetyLevel}</span>}
-                  <ShareButton title={trek.name} text={`Check out ${trek.name} trek on TrailBharat!`} />
+                  <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
                 </div>
                 <h1 className="text-3xl md:text-4xl mb-4">{trek.name}</h1>
                 <p className="text-muted-foreground leading-relaxed mb-6">{trek.description}</p>

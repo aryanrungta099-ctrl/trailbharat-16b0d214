@@ -30,7 +30,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-60">
-        © 2026 TrailBharat. Trek responsibly.
+        © 2026 Himalayan Trails. Trek responsibly.
       </div>
     </div>
   </footer>
