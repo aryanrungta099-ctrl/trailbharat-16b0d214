@@ -241,7 +241,13 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
             <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
           </div>
         </div>
-        <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
+        </div>
+        {onCompare && (
+          <button onClick={(e) => { e.stopPropagation(); onCompare(); }} disabled={compareDisabled && !isComparing}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] mr-2 ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
+            <GitCompareArrows className="h-3.5 w-3.5 inline mr-1" />{isComparing ? "Selected" : "Compare"}
+          </button>
+        )}
       </button>
       
       {isExpanded && (
