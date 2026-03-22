@@ -127,6 +127,10 @@ const Index = () => {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-400 hover:bg-amber-500 text-amber-950 font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
                 <Star className="h-4 w-4" /> Top Treks
               </button>
+              <Link to="/recommended"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
+                <Heart className="h-4 w-4" /> Recommended Treks
+              </Link>
               <p className="text-primary-foreground/90 text-sm md:text-base">
                 Having problems with trekking? Consult <button onClick={() => window.dispatchEvent(new CustomEvent("open-hiker-ai"))} className="font-bold text-primary-foreground underline underline-offset-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0">HikerAI</button> →
               </p>
