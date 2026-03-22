@@ -84,7 +84,7 @@ const SuggestTrek = () => {
     }).slice(0, 12);
   }, [step, fitness, budget, days, experience, region, country]);
 
-  const reset = () => { setStep(0); setFitness(""); setBudget(""); setDays(""); setExperience(""); setRegion("All"); setCountry("All"); };
+  const reset = () => { localStorage.removeItem(STORAGE_KEY); setStep(0); setFitness(""); setBudget(""); setDays(""); setExperience(""); setRegion("All"); setCountry("All"); };
 
   const questions = [
     {
