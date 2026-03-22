@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass } from "lucide-react";
+import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass, GitCompareArrows, X } from "lucide-react";
 import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras, TrekExtras } from "@/data/trekExtras";
