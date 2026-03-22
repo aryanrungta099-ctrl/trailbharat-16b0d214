@@ -1,9 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Compass, ArrowRight, MapPin, Clock, TrendingUp, Calendar, RotateCcw } from "lucide-react";
 import { treks, allRegions, MONTHS, Trek } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import ScrollReveal from "@/components/ScrollReveal";
+
+const STORAGE_KEY = "suggest-trek-prefs";
 
 const fitnessLevels = [
   { value: "beginner", label: "Beginner", desc: "I walk/jog occasionally", maxAlt: 3500, maxDiff: ["Easy"] },
@@ -33,14 +35,31 @@ const experienceLevels = [
   { value: "veteran", label: "Veteran", desc: "15+ treks completed" },
 ];
 
+function loadPrefs() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return null;
+}
+
 const SuggestTrek = () => {
-  const [step, setStep] = useState(0);
-  const [fitness, setFitness] = useState("");
-  const [budget, setBudget] = useState("");
-  const [days, setDays] = useState("");
-  const [experience, setExperience] = useState("");
-  const [region, setRegion] = useState("All");
-  const [country, setCountry] = useState("All");
+  const saved = useMemo(() => loadPrefs(), []);
+  const hasSaved = !!saved?.fitness;
+  const [step, setStep] = useState(hasSaved ? 4 : 0);
+  const [fitness, setFitness] = useState(saved?.fitness || "");
+  const [budget, setBudget] = useState(saved?.budget || "");
+  const [days, setDays] = useState(saved?.days || "");
+  const [experience, setExperience] = useState(saved?.experience || "");
+  const [region, setRegion] = useState(saved?.region || "All");
+  const [country, setCountry] = useState(saved?.country || "All");
+
+  // Save preferences whenever the quiz is completed
+  useEffect(() => {
+    if (step >= 4 && fitness && budget && days && experience) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ fitness, budget, days, experience, region, country }));
+    }
+  }, [step, fitness, budget, days, experience, region, country]);
 
   const results = useMemo(() => {
     if (step < 4) return [];
@@ -65,7 +84,7 @@ const SuggestTrek = () => {
     }).slice(0, 12);
   }, [step, fitness, budget, days, experience, region, country]);
 
-  const reset = () => { setStep(0); setFitness(""); setBudget(""); setDays(""); setExperience(""); setRegion("All"); setCountry("All"); };
+  const reset = () => { localStorage.removeItem(STORAGE_KEY); setStep(0); setFitness(""); setBudget(""); setDays(""); setExperience(""); setRegion("All"); setCountry("All"); };
 
   const questions = [
     {
