@@ -162,7 +162,7 @@ const Agencies = () => {
       const { error } = await supabase.storage.from("agency-photos").upload(path, logoFile);
       if (!error) logo_url = `${SUPABASE_URL}/storage/v1/object/public/agency-photos/${path}`;
     }
-    const { error } = await supabase.from("agency_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("agency_listings" as any).insert({
       user_id: user.id, name: form.name, logo_url, description: form.description,
       website: form.website || null, contact_number: form.contact_number,
       email: form.email || null, treks_offered: selectedTreks,
@@ -170,10 +170,16 @@ const Agencies = () => {
       price_range_max: parseInt(form.price_range_max) || 0,
       established_year: parseInt(form.established_year) || null,
       team_size: parseInt(form.team_size) || null,
-    } as any);
+    } as any).select().single();
     if (error) toast.error("Failed to create listing");
     else {
-      toast.success("Agency listing created! Awaiting admin approval.");
+      const textToCheck = `Agency: ${form.name}\nDescription: ${form.description}\nWebsite: ${form.website}`;
+      const modResult = await moderateContent({ table: "agency_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      if (modResult.approved) {
+        toast.success("Agency listing created and auto-approved! ✅");
+      } else {
+        toast.success("Agency listing submitted for review.");
+      }
       setForm({ name: "", description: "", website: "", contact_number: "", email: "", price_range_min: "", price_range_max: "", established_year: "", team_size: "" });
       setLogoFile(null); setLogoPreview(null); setSelectedTreks([]); setShowForm(false); fetchListings();
     }
