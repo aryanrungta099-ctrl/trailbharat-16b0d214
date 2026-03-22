@@ -488,6 +488,7 @@ const Index = () => {
           </div>
         </section>
       </div>
+      <JarvisChat />
     </main>
   );
 };
