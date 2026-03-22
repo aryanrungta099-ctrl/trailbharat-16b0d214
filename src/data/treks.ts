@@ -817,7 +817,8 @@ export const treks: Trek[] = [
 ];
 
 import { additionalTreks } from "./additionalTreks";
-treks.push(...additionalTreks);
+const existingIds = new Set(treks.map(t => t.id));
+treks.push(...additionalTreks.filter(t => !existingIds.has(t.id)));
 
 // Derived data
 export const allDifficulties = [...new Set(treks.map(t => t.difficulty))] as string[];
