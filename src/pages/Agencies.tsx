@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar } from "lucide-react";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
