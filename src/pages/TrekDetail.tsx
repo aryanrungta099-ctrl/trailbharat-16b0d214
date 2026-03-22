@@ -219,9 +219,12 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("trek_reviews" as any).insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() } as any);
+    const { data: inserted, error } = await supabase.from("trek_reviews" as any).insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error("Failed");
-    else { toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews(); }
+    else {
+      moderateContent({ table: "trek_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
+    }
     setSubmitting(false);
   };
 
