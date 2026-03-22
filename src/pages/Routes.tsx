@@ -224,31 +224,33 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
 
   return (
     <div className={`bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow overflow-hidden ${isComparing ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
-      <button onClick={onToggle} className="w-full text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
+      <div className="flex items-center">
+        <button onClick={onToggle} className="flex-1 text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
           <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-            <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
-            <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
-            <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
-            <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
-              {extras.weather.safetyLevel === "Safe" ? "✅" : extras.weather.safetyLevel === "Moderate Risk" ? "⚠️" : "🔴"} {extras.weather.safetyLevel}
-            </span>
+            <div className="flex items-center gap-3 mb-1.5 flex-wrap">
+              <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
+              <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
+              <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
+                {extras.weather.safetyLevel === "Safe" ? "✅" : extras.weather.safetyLevel === "Moderate Risk" ? "⚠️" : "🔴"} {extras.weather.safetyLevel}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
+              <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
+              <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
+              <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{trek.region}, {trek.state}</span>
-            <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{trek.durationDays} days</span>
-            <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
-            <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
-          </div>
-        </div>
-        </div>
+          <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
+        </button>
         {onCompare && (
-          <button onClick={(e) => { e.stopPropagation(); onCompare(); }} disabled={compareDisabled && !isComparing}
-            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] mr-2 ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
+          <button onClick={onCompare} disabled={compareDisabled && !isComparing}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] mr-4 ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
             <GitCompareArrows className="h-3.5 w-3.5 inline mr-1" />{isComparing ? "Selected" : "Compare"}
           </button>
         )}
-      </button>
+      </div>
       
       {isExpanded && (
         <div className="px-6 pb-6 border-t border-border pt-4 animate-reveal" style={{ animationDuration: "0.4s" }}>
