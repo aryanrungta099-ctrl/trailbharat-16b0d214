@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { User, Award, Mountain, Plus, Trash2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { User, Award, Mountain, Plus, Trash2, Heart, Save } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
