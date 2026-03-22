@@ -208,7 +208,7 @@ const FilterSelect = ({ label, value, onChange, options }: { label: string; valu
   </div>
 );
 
-const TrekCard = ({ trek, isExpanded, onToggle }: { trek: Trek; isExpanded: boolean; onToggle: () => void }) => {
+const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareDisabled }: { trek: Trek; isExpanded: boolean; onToggle: () => void; isComparing?: boolean; onCompare?: () => void; compareDisabled?: boolean }) => {
   const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
   const [detailTab, setDetailTab] = useState<DetailTab>("overview");
   const budget = useMemo(() => trek.budget ?? generateBudget(trek.country, trek.durationDays, trek.difficulty, trek.altitudeMeters, trek.name), [trek]);
