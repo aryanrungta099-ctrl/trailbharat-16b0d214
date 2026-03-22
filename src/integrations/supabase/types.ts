@@ -266,31 +266,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age: number | null
           avatar_url: string | null
           bio: string | null
           created_at: string
           display_name: string
+          health_conditions: string | null
+          height_cm: number | null
           id: string
           updated_at: string
           user_id: string
+          weight_kg: number | null
         }
         Insert: {
+          age?: number | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
+          health_conditions?: string | null
+          height_cm?: number | null
           id?: string
           updated_at?: string
           user_id: string
+          weight_kg?: number | null
         }
         Update: {
+          age?: number | null
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
+          health_conditions?: string | null
+          height_cm?: number | null
           id?: string
           updated_at?: string
           user_id?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }
