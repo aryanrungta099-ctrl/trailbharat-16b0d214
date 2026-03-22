@@ -130,8 +130,13 @@ const RecommendedTreks = () => {
                   <ScrollReveal key={trek.id} delay={i * 60}>
                     <Link to={`/trek/${trek.id}`}
                       className="group block bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-all overflow-hidden h-full">
-                      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-primary/10 via-muted to-primary/5 flex items-center justify-center">
-                        <Mountain className="h-16 w-16 text-primary/20" />
+                      <div className="relative h-44 overflow-hidden">
+                        <img
+                          src={`https://images.unsplash.com/photo-${["1585409677983-0f6c41ca9c3b","1486911278844-a81c5267e227","1464822759023-fed622ff2c3b","1506905925346-21bda4d32df4","1454496522488-7a8e488e8606","1483728642387-6c3bdd6c93e5"][i % 6]}?w=600&h=300&fit=crop`}
+                          alt={trek.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
                         <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-red-500 text-white text-xs font-semibold">
                           #{i + 1} Pick
                         </div>

@@ -281,15 +281,22 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
   );
 }
 
-// Trek images from Unsplash
+// Trek images - curated mountain/trek photos
+const TREK_PHOTOS = [
+  "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&h=500&fit=crop",
+];
+
 function getTrekImages(trek: Trek): { url: string; caption: string; source: string }[] {
-  const query = encodeURIComponent(`${trek.name} himalaya trek`);
-  // Use keywords to generate relevant placeholder images
-  const keywords = [trek.name, trek.region, "himalaya", "mountain", "trek"];
+  const hash = trek.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return [
-    { url: `https://source.unsplash.com/800x500/?${encodeURIComponent(trek.region + " himalaya mountains")}`, caption: `${trek.region} landscape`, source: "Unsplash" },
-    { url: `https://source.unsplash.com/800x500/?${encodeURIComponent(trek.name + " trek trail")}`, caption: `${trek.name} trail`, source: "Unsplash" },
-    { url: `https://source.unsplash.com/800x500/?${encodeURIComponent(trek.state + " mountain summit")}`, caption: `${trek.state} mountains`, source: "Unsplash" },
+    { url: TREK_PHOTOS[hash % TREK_PHOTOS.length], caption: `${trek.region} landscape`, source: "Unsplash" },
+    { url: TREK_PHOTOS[(hash + 1) % TREK_PHOTOS.length], caption: `${trek.name} trail`, source: "Unsplash" },
+    { url: TREK_PHOTOS[(hash + 2) % TREK_PHOTOS.length], caption: `${trek.state} mountains`, source: "Unsplash" },
   ];
 }
 
