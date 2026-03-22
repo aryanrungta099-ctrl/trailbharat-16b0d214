@@ -67,14 +67,32 @@ const Profile = () => {
     return getEarnedBadges(completedTrekIds, treks);
   }, [completedTrekIds]);
 
-  // Detect new badge and celebrate
+  // Load seen badges from localStorage on mount
   useEffect(() => {
-    if (prevBadgeCount.current !== null && earnedBadges.length > prevBadgeCount.current) {
-      const newest = earnedBadges[earnedBadges.length - 1];
-      setCelebrateBadge(newest);
+    if (!user) return;
+    const stored = localStorage.getItem(`seen-badges-${user.id}`);
+    if (stored) {
+      try { seenBadgesRef.current = new Set(JSON.parse(stored)); } catch { /* ignore */ }
     }
-    prevBadgeCount.current = earnedBadges.length;
-  }, [earnedBadges]);
+  }, [user]);
+
+  // Detect truly NEW badge (not seen before) and celebrate
+  useEffect(() => {
+    if (!user || earnedBadges.length === 0) return;
+    const newBadge = earnedBadges.find(b => !seenBadgesRef.current.has(b.id));
+    if (newBadge) {
+      setCelebrateBadge(newBadge);
+      // Mark all current badges as seen
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
+    } else if (seenBadgesRef.current.size === 0) {
+      // First load — mark all existing as seen without celebrating
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
+    }
+  }, [earnedBadges, user]);
 
   const addCompletedTrek = async () => {
     if (!user || !selectedTrek) return;
