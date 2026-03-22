@@ -137,7 +137,7 @@ export default function JarvisChat() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed top-40 right-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
+        <div className="fixed top-52 right-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-14rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3 shrink-0">
             <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
