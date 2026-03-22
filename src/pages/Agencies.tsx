@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar } from "lucide-react";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -62,9 +63,12 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("agency_reviews" as any).insert({ agency_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any);
+    const { data: inserted, error } = await supabase.from("agency_reviews" as any).insert({ agency_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error("Failed to submit");
-    else { toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews(); }
+    else {
+      moderateContent({ table: "agency_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
+    }
     setSubmitting(false);
   };
 
@@ -161,7 +165,7 @@ const Agencies = () => {
       const { error } = await supabase.storage.from("agency-photos").upload(path, logoFile);
       if (!error) logo_url = `${SUPABASE_URL}/storage/v1/object/public/agency-photos/${path}`;
     }
-    const { error } = await supabase.from("agency_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("agency_listings" as any).insert({
       user_id: user.id, name: form.name, logo_url, description: form.description,
       website: form.website || null, contact_number: form.contact_number,
       email: form.email || null, treks_offered: selectedTreks,
@@ -169,10 +173,16 @@ const Agencies = () => {
       price_range_max: parseInt(form.price_range_max) || 0,
       established_year: parseInt(form.established_year) || null,
       team_size: parseInt(form.team_size) || null,
-    } as any);
+    } as any).select().single();
     if (error) toast.error("Failed to create listing");
     else {
-      toast.success("Agency listing created! Awaiting admin approval.");
+      const textToCheck = `Agency: ${form.name}\nDescription: ${form.description}\nWebsite: ${form.website}`;
+      const modResult = await moderateContent({ table: "agency_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      if (modResult.approved) {
+        toast.success("Agency listing created and auto-approved! ✅");
+      } else {
+        toast.success("Agency listing submitted for review.");
+      }
       setForm({ name: "", description: "", website: "", contact_number: "", email: "", price_range_min: "", price_range_max: "", established_year: "", team_size: "" });
       setLogoFile(null); setLogoPreview(null); setSelectedTreks([]); setShowForm(false); fetchListings();
     }

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Image, Share2 } from "lucide-react";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 interface SherpaListing {
   id: string; user_id: string; name: string; photo_url: string | null;
@@ -61,9 +62,12 @@ function ReviewSection({ listing, user }: { listing: SherpaListing; user: any })
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("sherpa_reviews" as any).insert({ sherpa_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any);
+    const { data: inserted, error } = await supabase.from("sherpa_reviews" as any).insert({ sherpa_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
-    else { toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews(); }
+    else {
+      moderateContent({ table: "sherpa_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
+    }
     setSubmitting(false);
   };
 
@@ -201,7 +205,7 @@ const Sherpas = () => {
       if (!error) gallery_urls.push(`${SUPABASE_URL}/storage/v1/object/public/sherpa-photos/${path}`);
     }
 
-    const { error } = await supabase.from("sherpa_listings").insert({
+    const { data: inserted, error } = await supabase.from("sherpa_listings").insert({
       user_id: user.id, name: form.name, photo_url,
       treks_guided: selectedTreks.join(", "),
       contact_number: form.contact_number,
@@ -209,11 +213,18 @@ const Sherpas = () => {
       price_range_max: parseInt(form.price_range_max) || 0,
       description: form.description,
       gallery_urls,
-    } as any);
+    } as any).select().single();
 
     if (error) toast.error("Failed to create listing");
     else {
-      toast.success("Listing created! Awaiting approval.");
+      // Auto-moderate
+      const textToCheck = `Name: ${form.name}\nDescription: ${form.description}\nTreks: ${selectedTreks.join(", ")}`;
+      const modResult = await moderateContent({ table: "sherpa_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      if (modResult.approved) {
+        toast.success("Listing created and auto-approved! ✅");
+      } else {
+        toast.success("Listing submitted for review.");
+      }
       setForm({ name: "", contact_number: "", price_range_min: "", price_range_max: "", description: "" });
       setPhotoFile(null); setPhotoPreview(null); setGalleryFiles([]); setGalleryPreviews([]); setSelectedTreks([]); setShowForm(false); fetchListings();
     }

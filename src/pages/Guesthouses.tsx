@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Phone, IndianRupee, Home, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, MapPin, Check } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 interface GuesthouseListing {
   id: string;
@@ -74,9 +75,12 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("guesthouse_reviews" as any).insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any);
+    const { data: inserted, error } = await supabase.from("guesthouse_reviews" as any).insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
-    else { toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews(); }
+    else {
+      moderateContent({ table: "guesthouse_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
+    }
     setSubmitting(false);
   };
 
@@ -163,15 +167,21 @@ const Guesthouses = () => {
       const { error } = await supabase.storage.from("guesthouse-photos").upload(path, photoFile);
       if (!error) photo_url = `${SUPABASE_URL}/storage/v1/object/public/guesthouse-photos/${path}`;
     }
-    const { error } = await supabase.from("guesthouse_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("guesthouse_listings" as any).insert({
       user_id: user.id, name: form.name, photo_url, location: form.location, trek_region: form.trek_region,
       contact_number: form.contact_number, price_range_min: parseInt(form.price_range_min) || 0,
       price_range_max: parseInt(form.price_range_max) || 0, description: form.description,
       amenities: form.amenities.split(",").map(a => a.trim()).filter(Boolean),
-    } as any);
+    } as any).select().single();
     if (error) toast.error("Failed to create listing");
     else {
-      toast.success("Listing created! Awaiting admin approval.");
+      const textToCheck = `Guesthouse: ${form.name}\nLocation: ${form.location}\nRegion: ${form.trek_region}\nDescription: ${form.description}`;
+      const modResult = await moderateContent({ table: "guesthouse_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      if (modResult.approved) {
+        toast.success("Listing created and auto-approved! ✅");
+      } else {
+        toast.success("Listing submitted for review.");
+      }
       setForm({ name: "", location: "", trek_region: "", contact_number: "", price_range_min: "", price_range_max: "", description: "", amenities: "" });
       setPhotoFile(null); setPhotoPreview(null); setShowForm(false); fetchListings();
     }

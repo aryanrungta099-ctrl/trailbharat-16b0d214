@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
+import { moderateContent } from "@/lib/moderation";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -82,17 +83,23 @@ const Experiences = () => {
       }
     }
 
-    const { error } = await supabase.from("experiences").insert({
+    const { data: inserted, error } = await supabase.from("experiences").insert({
       user_id: user.id,
       trek_name: trek.trim(),
       story: story.trim(),
       rating,
       photo_urls: uploadedUrls,
       approved: false,
-    } as any);
+    } as any).select().single();
 
     if (!error) {
-      toast.success("Experience submitted! It will appear after admin approval.");
+      const textToCheck = `Trek: ${trek.trim()}\nStory: ${story.trim()}`;
+      const modResult = await moderateContent({ table: "experiences", recordId: (inserted as any).id, textContent: textToCheck, imageUrls: uploadedUrls });
+      if (modResult.approved) {
+        toast.success("Experience published! ✅");
+      } else {
+        toast.success("Experience submitted for review.");
+      }
       setTrek(""); setStory(""); setRating(5);
       setPhotoFiles([]); setPhotoPreviews([]);
       await fetchExperiences();
