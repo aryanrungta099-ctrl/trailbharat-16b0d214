@@ -462,7 +462,7 @@ const Index = () => {
           </ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { num: "120+", label: "Curated Routes" },
+              { num: "200+", label: "Curated Routes" },
               { num: "2", label: "Countries" },
               { num: "3,600–8,849m", label: "Altitude Range" },
               { num: "All Year", label: "Trekking Seasons" },
