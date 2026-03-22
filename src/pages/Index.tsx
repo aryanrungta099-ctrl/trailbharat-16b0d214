@@ -151,7 +151,125 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Preparations */}
+        {/* Trek Search Bar */}
+        <section className="container mx-auto px-4 pb-12">
+          <ScrollReveal>
+            <div className="max-w-2xl mx-auto relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search treks by name, region, or state..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-xl border border-border bg-card text-foreground shadow-md focus:outline-none focus:ring-2 focus:ring-primary text-base"
+              />
+            </div>
+          </ScrollReveal>
+
+          {/* Search Results */}
+          {searchResults && (
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-4">{searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found</h3>
+              {searchResults.length === 0 ? (
+                <p className="text-muted-foreground text-sm">No treks match your search. Try different keywords.</p>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {searchResults.map(trek => {
+                    const rev = trekReviews[trek.id];
+                    return (
+                      <Link key={trek.id} to={`/trek/${trek.id}`} className="bg-card rounded-xl border border-border p-5 hover:shadow-lg transition-shadow group">
+                        <h4 className="font-display font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{trek.name}</h4>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{trek.state}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{trek.durationDays}d</span>
+                          <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" />{trek.altitudeMeters}m</span>
+                        </div>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${trek.difficulty === "Easy" ? "bg-trek-moss/15 text-trek-moss" : trek.difficulty === "Moderate" ? "bg-trek-sky/15 text-trek-sky" : trek.difficulty === "Difficult" ? "bg-trek-sunrise/15 text-trek-sunrise" : "bg-destructive/15 text-destructive"}`}>{trek.difficulty}</span>
+                        {rev && (
+                          <span className="ml-2 inline-flex items-center gap-1 text-xs">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                            <span className="font-medium tabular-nums">{rev.avg.toFixed(1)}</span>
+                            <span className="text-muted-foreground">({rev.count})</span>
+                          </span>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{trek.description}</p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Top 10 Treks */}
+        <section className="container mx-auto px-4 pb-24">
+          <ScrollReveal>
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+              <div>
+                <h2 className="text-balance flex items-center gap-2">
+                  <Mountain className="h-6 w-6 text-primary" /> Top 10 Treks
+                </h2>
+                <p className="text-muted-foreground mt-2 max-w-md text-sm">
+                  The best rated and most popular treks — filter by state to find treks near you.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <select
+                  value={selectedRegion}
+                  onChange={e => setSelectedRegion(e.target.value)}
+                  className="rounded-lg border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {uniqueStates.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <div className="space-y-3">
+            {topTreks.map((trek, i) => {
+              const rev = trekReviews[trek.id];
+              return (
+                <ScrollReveal key={trek.id} delay={i * 60}>
+                  <Link to={`/trek/${trek.id}`} className="flex items-center gap-4 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow group">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-sm font-bold text-primary tabular-nums">{i + 1}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-display font-semibold text-sm group-hover:text-primary transition-colors truncate">{trek.name}</h4>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
+                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{trek.state}, {trek.country}</span>
+                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{trek.durationDays} days</span>
+                        <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" />{trek.altitudeMeters.toLocaleString()}m</span>
+                        <span className={`font-medium px-2 py-0.5 rounded-full text-[10px] ${trek.difficulty === "Easy" ? "bg-trek-moss/15 text-trek-moss" : trek.difficulty === "Moderate" ? "bg-trek-sky/15 text-trek-sky" : trek.difficulty === "Difficult" ? "bg-trek-sunrise/15 text-trek-sunrise" : "bg-destructive/15 text-destructive"}`}>{trek.difficulty}</span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      {rev ? (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                          <span className="font-semibold text-sm tabular-nums">{rev.avg.toFixed(1)}</span>
+                          <span className="text-xs text-muted-foreground">({rev.count})</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">No reviews yet</span>
+                      )}
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                  </Link>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/routes" className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+              View all {treks.length}+ treks <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+
+
         <section className="container mx-auto px-4 pb-24 relative">
           <LeafDecor className="top-0 left-8 rotate-12 text-trek-moss w-16 h-16" />
           <LeafDecor className="top-4 right-12 -rotate-45 text-trek-moss w-12 h-12" />
