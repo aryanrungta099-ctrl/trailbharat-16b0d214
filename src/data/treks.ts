@@ -816,8 +816,12 @@ export const treks: Trek[] = [
   },
 ];
 
+import { additionalTreks } from "./additionalTreks";
+treks.push(...additionalTreks);
+
 // Derived data
 export const allDifficulties = [...new Set(treks.map(t => t.difficulty))] as string[];
 export const allRegions = [...new Set(treks.map(t => t.region))].sort() as string[];
 export const allStates = [...new Set(treks.map(t => t.state))].sort() as string[];
+export const allCountries = [...new Set(treks.map(t => t.country))].sort() as string[];
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
