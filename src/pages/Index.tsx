@@ -205,59 +205,9 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Trek Search Bar */}
-        <section className="container mx-auto px-4 pb-12">
-          <ScrollReveal>
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search treks by name, region, or state..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-border bg-card text-foreground shadow-md focus:outline-none focus:ring-2 focus:ring-primary text-base"
-              />
-            </div>
-          </ScrollReveal>
-
-          {/* Search Results */}
-          {searchResults && (
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-4">{searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found</h3>
-              {searchResults.length === 0 ? (
-                <p className="text-muted-foreground text-sm">No treks match your search. Try different keywords.</p>
-              ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {searchResults.map(trek => {
-                    const rev = trekReviews[trek.id];
-                    return (
-                      <Link key={trek.id} to={`/trek/${trek.id}`} className="bg-card rounded-xl border border-border p-5 hover:shadow-lg transition-shadow group">
-                        <h4 className="font-display font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{trek.name}</h4>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{trek.state}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{trek.durationDays}d</span>
-                          <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" />{trek.altitudeMeters}m</span>
-                        </div>
-                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${trek.difficulty === "Easy" ? "bg-trek-moss/15 text-trek-moss" : trek.difficulty === "Moderate" ? "bg-trek-sky/15 text-trek-sky" : trek.difficulty === "Difficult" ? "bg-trek-sunrise/15 text-trek-sunrise" : "bg-destructive/15 text-destructive"}`}>{trek.difficulty}</span>
-                        {rev && (
-                          <span className="ml-2 inline-flex items-center gap-1 text-xs">
-                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            <span className="font-medium tabular-nums">{rev.avg.toFixed(1)}</span>
-                            <span className="text-muted-foreground">({rev.count})</span>
-                          </span>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{trek.description}</p>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
 
         {/* Top 10 Treks */}
-        <section className="container mx-auto px-4 pb-24">
+        <section id="top-treks-section" className="container mx-auto px-4 pb-24">
           <ScrollReveal>
             <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
               <div>
