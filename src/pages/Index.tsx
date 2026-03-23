@@ -153,13 +153,15 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
-            <Link to="/start-trekking"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-lg hover:shadow-xl transition-shadow active:scale-[0.97] mb-5 animate-reveal">
-              <Play className="h-4 w-4" /> Start Trekking
-            </Link>
-            <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
-              Amazing Trails
-            </h1>
+            <div className="flex items-center gap-4 animate-reveal mb-4">
+              <h1 className="text-primary-foreground text-balance max-w-2xl text-6xl text-left font-serif">
+                Amazing Trails
+              </h1>
+              <Link to="/start-trekking"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97] shrink-0">
+                <Play className="h-6 w-6" /> Start Trekking
+              </Link>
+            </div>
             <p className="mt-4 text-primary-foreground/85 text-lg md:text-xl max-w-lg animate-reveal animate-reveal-delay-1 font-body">
               Your complete guide to trekking across India & Nepal — routes, safety tips, and real stories from the trail.
             </p>
