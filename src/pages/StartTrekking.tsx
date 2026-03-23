@@ -184,6 +184,15 @@ const StartTrekking = () => {
     setLoading(false);
   };
 
+  const sendMessage = async () => {
+    if (!input.trim() || loading || !selectedTrek) return;
+    const userMsg: Msg = { role: "user", content: input };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setInput("");
+    await sendMessageWithMessages(newMessages);
+  };
+
   if (!selectedTrek) {
     return (
       <main className="min-h-screen bg-background pt-24 pb-16">
