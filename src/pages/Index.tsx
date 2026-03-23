@@ -154,10 +154,10 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
-            <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
-              Amazing Trails
-            </h1>
-            <div className="flex items-center gap-6 mt-4 animate-reveal animate-reveal-delay-1 flex-wrap">
+            <div className="flex items-center gap-6 animate-reveal flex-wrap">
+              <h1 className="text-primary-foreground text-balance max-w-2xl text-6xl text-left font-serif">
+                Amazing Trails
+              </h1>
               <Link to="/start-trekking" className="inline-block hover:opacity-90 transition-opacity active:scale-[0.97]">
                 <div style={{ width: 380, height: 190 }}>
                   <StartTrekkingCard />
