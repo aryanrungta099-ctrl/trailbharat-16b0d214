@@ -1,12 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
-import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart } from "lucide-react";
-import heroImg from "@/assets/hero-mountains.jpg";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
+import heroImg1 from "@/assets/hero-mountains.jpg";
+import heroImg2 from "@/assets/hero-2.jpg";
+import heroImg3 from "@/assets/hero-3.jpg";
+import heroImg4 from "@/assets/hero-4.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 
+const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
+
+const searchSuggestions = [
+  "Top 5 treks near Kolkata",
+  "Best treks in monsoon season",
+  "Easy weekend treks in Western Ghats",
+  "Best winter treks in Himachal Pradesh",
+  "Top treks for beginners in India",
+  "High altitude treks above 5000m",
+  "Best treks in Uttarakhand for families",
+  "Most scenic treks in Sikkim",
+  "Best treks in October November",
+  "Short 2-day treks near Delhi",
+  "Top treks in Ladakh for summer",
+  "Best snow treks in January",
+  "Easiest Himalayan treks for first-timers",
+  "Best treks in Kerala and Karnataka",
+  "Top treks near Mumbai for weekends",
+];
 const features = [
   { to: "/routes", icon: Search, title: "Explore Trek Routes", desc: "Search and discover trekking routes across India & Nepal — Himalayas to Western Ghats.", color: "trek-gradient" },
   { to: "/tips", icon: Shield, title: "Safety & Tips", desc: "Essential guidance on gear, fitness, altitude sickness, and weather to keep your trek safe.", color: "trek-gradient-warm" },
@@ -44,6 +66,22 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Rotate hero image every 10 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % heroImages.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Random suggestions shown
+  const displayedSuggestions = useMemo(() => {
+    const shuffled = [...searchSuggestions].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6);
+  }, []);
 
   const uniqueStates = useMemo(() => ["All", ...new Set(treks.map(t => t.state))].sort(), []);
 
@@ -108,7 +146,11 @@ const Index = () => {
       <div className="relative z-10">
         {/* Hero */}
         <section className="relative h-[85vh] min-h-[540px] flex items-end overflow-hidden">
-          <img src={heroImg} alt="Himalayan mountain landscape at golden hour" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
+          {heroImages.map((img, i) => (
+            <img key={i} src={img} alt={`Himalayan landscape ${i + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === heroIndex ? "opacity-100" : "opacity-0"}`}
+              loading={i === 0 ? "eager" : "lazy"} />
+          ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
@@ -174,9 +216,24 @@ const Index = () => {
                 type="text"
                 placeholder="Search treks by name, region, or state..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(false); }}
+                onFocus={() => { if (!searchQuery) setShowSuggestions(true); }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
               />
+              {showSuggestions && !searchQuery && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
+                  <p className="text-xs text-muted-foreground mb-2 px-2 font-medium">Popular searches</p>
+                  <div className="flex flex-wrap gap-2">
+                    {displayedSuggestions.map(s => (
+                      <button key={s} onClick={() => { setSearchQuery(s); setShowSuggestions(false); }}
+                        className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollReveal>
 
