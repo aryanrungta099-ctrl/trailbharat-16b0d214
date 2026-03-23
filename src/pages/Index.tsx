@@ -155,8 +155,9 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
             <Link to="/start-trekking"
-              className="mb-4 animate-reveal inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
-              <Mountain className="h-4 w-4" /> Start Trekking
+              className="mb-4 animate-reveal inline-flex flex-col items-center justify-center w-[100px] h-[100px] rounded-xl bg-black hover:bg-black/90 text-white shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
+              <Mountain className="h-12 w-12 text-amber-700" />
+              <span className="text-xs font-semibold mt-1">Start Trekking</span>
             </Link>
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails
