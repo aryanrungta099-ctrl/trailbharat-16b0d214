@@ -107,15 +107,12 @@ const StartTrekking = () => {
     setMessages([systemMsg]);
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading || !selectedTrek) return;
-    const userMsg: Msg = { role: "user", content: input };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    setInput("");
+  const sendMessageWithMessages = async (newMessages: Msg[]) => {
+    if (!selectedTrek) return;
     setLoading(true);
 
     let assistantText = "";
+    const updateAssistant = (chunk: string) => {
     const updateAssistant = (chunk: string) => {
       assistantText += chunk;
       setMessages(prev => {
