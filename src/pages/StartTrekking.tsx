@@ -415,3 +415,9 @@ const StartTrekking = () => {
             </div>
           </div>
         )}
+      </div>
+    </main>
+  );
+};
+
+export default StartTrekking;
