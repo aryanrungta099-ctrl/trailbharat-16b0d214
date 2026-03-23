@@ -113,7 +113,6 @@ const StartTrekking = () => {
 
     let assistantText = "";
     const updateAssistant = (chunk: string) => {
-    const updateAssistant = (chunk: string) => {
       assistantText += chunk;
       setMessages(prev => {
         const last = prev[prev.length - 1];
