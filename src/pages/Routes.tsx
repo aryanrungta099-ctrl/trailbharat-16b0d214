@@ -87,6 +87,9 @@ const Routes = () => {
 
   return (
     <main className="pt-24 pb-16 relative">
+      <Link to="/suggest" className="fixed top-20 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-lg hover:shadow-xl active:scale-[0.97] transition-all">
+        <Compass className="h-4 w-4" /> Suggest Trek
+      </Link>
 
       <div className="container mx-auto px-4">
         <ScrollReveal>
