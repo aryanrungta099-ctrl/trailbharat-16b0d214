@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase, Play } from "lucide-react";
+import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 
