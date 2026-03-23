@@ -1,5 +1,5 @@
 const StartTrekkingCard = () => (
-  <svg width="100%" height="100%" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 20 }}>
+  <svg width="400" height="220" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 20 }}>
     {/* Background */}
     <rect width="400" height="220" rx="20" fill="#1a2e1e" />
     {/* Top band for depth */}

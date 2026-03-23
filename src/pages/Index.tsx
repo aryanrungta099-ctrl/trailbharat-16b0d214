@@ -154,10 +154,13 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
-            <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif mb-1">
+            <Link to="/start-trekking" className="mb-6 animate-reveal inline-block hover:opacity-90 transition-opacity active:scale-[0.97]">
+              <StartTrekkingCard />
+            </Link>
+            <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails
             </h1>
-            <p className="text-primary-foreground/85 text-lg md:text-xl max-w-lg animate-reveal animate-reveal-delay-1 font-body">
+            <p className="mt-4 text-primary-foreground/85 text-lg md:text-xl max-w-lg animate-reveal animate-reveal-delay-1 font-body">
               Your complete guide to trekking across India & Nepal — routes, safety tips, and real stories from the trail.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-8 animate-reveal animate-reveal-delay-2">
@@ -173,13 +176,6 @@ const Index = () => {
               <Link to="/recommended"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
                 <Heart className="h-4 w-4" /> Recommended Treks
-              </Link>
-            </div>
-            <div className="flex items-center gap-6 mt-8 animate-reveal animate-reveal-delay-2 flex-wrap">
-              <Link to="/start-trekking" className="inline-block hover:opacity-90 transition-opacity active:scale-[0.97]">
-                <div style={{ width: 570, height: 285 }}>
-                  <StartTrekkingCard />
-                </div>
               </Link>
               <p className="text-primary-foreground/90 text-sm md:text-base">
                 Having problems with trekking? Consult <button onClick={() => window.dispatchEvent(new CustomEvent("open-hiker-ai"))} className="font-bold text-primary-foreground underline underline-offset-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0">HikerAI</button> →
