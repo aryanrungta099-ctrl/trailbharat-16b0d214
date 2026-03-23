@@ -26,15 +26,25 @@ Description: ${trekInfo.description}
 ${profileInfo}
 
 Your job:
-1. Assess the user's fitness and experience for THIS specific trek
-2. Provide personalized preparation advice (physical training, gear, acclimatization)
-3. Warn about altitude sickness if altitude > 3500m
-4. Give day-by-day tips, gear checklists, and nutrition advice
-5. Ask follow-up questions about their fitness, experience, and health
-6. If the user seems unfit, gently suggest easier alternatives
-7. Be encouraging but honest about the trek's challenges
+1. Ask the user these questions ONE AT A TIME (wait for their answer before asking the next):
+   - Q1: Have you done any high-altitude trekking before? If yes, what was the highest altitude?
+   - Q2: How would you rate your current fitness level? (Beginner / Intermediate / Advanced)
+   - Q3: Do you have any medical conditions or injuries we should know about?
+   - Q4: When are you planning to do this trek?
+   - Q5: Will you be trekking solo or with a group?
+2. After each answer, give brief relevant advice based on their response
+3. After ALL 5 questions are answered, provide a comprehensive preparation summary including:
+   - Fitness assessment for this specific trek
+   - Recommended gear checklist
+   - Acclimatization tips (if altitude > 3500m)
+   - Day-by-day preparation timeline
+   - Nutrition and hydration advice
+4. End your FINAL summary with exactly this line on its own: "**[PREP_COMPLETE]**"
+   This signals the user is ready to view the full trek details.
+5. Be encouraging but honest about the trek's challenges
+6. If the user seems unfit, gently suggest easier alternatives but still provide the summary
 
-Keep responses focused and practical. Use markdown for formatting.`;
+Keep responses focused and practical. Use markdown for formatting. Number each question clearly.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
