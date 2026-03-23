@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
-import StartTrekkingCard from "@/components/StartTrekkingCard";
+
 import heroImg1 from "@/assets/hero-mountains.jpg";
 import heroImg2 from "@/assets/hero-2.jpg";
 import heroImg3 from "@/assets/hero-3.jpg";
@@ -154,8 +154,9 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
-            <Link to="/start-trekking" className="mb-4 animate-reveal inline-block hover:opacity-90 transition-opacity active:scale-[0.97] scale-75 origin-left">
-              <StartTrekkingCard />
+            <Link to="/start-trekking"
+              className="mb-4 animate-reveal inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97]">
+              <Mountain className="h-4 w-4" /> Start Trekking
             </Link>
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails

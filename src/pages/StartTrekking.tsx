@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2 } from "lucide-react";
+import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2, Filter, X } from "lucide-react";
 import { treks } from "@/data/treks";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +9,16 @@ import ReactMarkdown from "react-markdown";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+const difficulties = ["Easy", "Moderate", "Difficult", "Very Difficult"] as const;
+const countries = [...new Set(treks.map(t => t.state.includes("Nepal") ? "Nepal" : "India"))].sort();
+const regions = [...new Set(treks.map(t => t.region))].sort();
+const durationRanges = [
+  { label: "1-3 days", min: 1, max: 3 },
+  { label: "4-7 days", min: 4, max: 7 },
+  { label: "8-14 days", min: 8, max: 14 },
+  { label: "15+ days", min: 15, max: 999 },
+];
 
 const StartTrekking = () => {
   const navigate = useNavigate();
@@ -21,7 +31,22 @@ const StartTrekking = () => {
   const [profile, setProfile] = useState<any>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Load user profile
+  // Filters
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterDifficulty, setFilterDifficulty] = useState<string>("");
+  const [filterCountry, setFilterCountry] = useState<string>("");
+  const [filterRegion, setFilterRegion] = useState<string>("");
+  const [filterDuration, setFilterDuration] = useState<string>("");
+
+  const activeFilterCount = [filterDifficulty, filterCountry, filterRegion, filterDuration].filter(Boolean).length;
+
+  const clearFilters = () => {
+    setFilterDifficulty("");
+    setFilterCountry("");
+    setFilterRegion("");
+    setFilterDuration("");
+  };
+
   useEffect(() => {
     if (!user) return;
     supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle()
@@ -32,13 +57,42 @@ const StartTrekking = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const filtered = search.trim()
-    ? treks.filter(t =>
-        t.name.toLowerCase().includes(search.toLowerCase()) ||
-        t.region.toLowerCase().includes(search.toLowerCase()) ||
-        t.state.toLowerCase().includes(search.toLowerCase())
-      ).slice(0, 20)
-    : treks.slice(0, 20);
+  const filtered = useMemo(() => {
+    let result = treks;
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.region.toLowerCase().includes(q) ||
+        t.state.toLowerCase().includes(q)
+      );
+    }
+
+    if (filterDifficulty) {
+      result = result.filter(t => t.difficulty === filterDifficulty);
+    }
+
+    if (filterCountry) {
+      result = result.filter(t => {
+        const isNepal = t.state.includes("Nepal");
+        return filterCountry === "Nepal" ? isNepal : !isNepal;
+      });
+    }
+
+    if (filterRegion) {
+      result = result.filter(t => t.region === filterRegion);
+    }
+
+    if (filterDuration) {
+      const range = durationRanges.find(r => r.label === filterDuration);
+      if (range) {
+        result = result.filter(t => t.durationDays >= range.min && t.durationDays <= range.max);
+      }
+    }
+
+    return result.slice(0, 30);
+  }, [search, filterDifficulty, filterCountry, filterRegion, filterDuration]);
 
   const selectTrek = (trek: typeof treks[0]) => {
     setSelectedTrek(trek);
@@ -139,17 +193,94 @@ const StartTrekking = () => {
           <h1 className="text-3xl font-serif font-bold flex items-center gap-3 mb-2">
             <Mountain className="h-8 w-8 text-primary" /> Start Trekking
           </h1>
-          <p className="text-muted-foreground mb-8">Select a trek to get personalized preparation guidance from our AI assistant.</p>
+          <p className="text-muted-foreground mb-6">Select a trek to get personalized preparation guidance from our AI assistant.</p>
 
+          {/* Search */}
           <input
             type="text"
             placeholder="Search treks by name, region, or state..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border-2 border-primary/30 bg-card text-foreground mb-6 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-3 rounded-xl border-2 border-primary/30 bg-card text-foreground mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
           />
 
+          {/* Filter toggle */}
+          <div className="flex items-center gap-3 mb-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${showFilters ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-foreground hover:border-primary/50"}`}
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <span className="bg-primary-foreground text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            {activeFilterCount > 0 && (
+              <button onClick={clearFilters} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <X className="h-3 w-3" /> Clear all
+              </button>
+            )}
+            <span className="text-sm text-muted-foreground ml-auto">{filtered.length} treks found</span>
+          </div>
+
+          {/* Filter panel */}
+          {showFilters && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 p-4 bg-muted/50 rounded-xl border border-border animate-in fade-in slide-in-from-top-2 duration-200">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Difficulty</label>
+                <select
+                  value={filterDifficulty}
+                  onChange={e => setFilterDifficulty(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All</option>
+                  {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Country</label>
+                <select
+                  value={filterCountry}
+                  onChange={e => setFilterCountry(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All</option>
+                  {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Region</label>
+                <select
+                  value={filterRegion}
+                  onChange={e => setFilterRegion(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All</option>
+                  {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Duration</label>
+                <select
+                  value={filterDuration}
+                  onChange={e => setFilterDuration(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">All</option>
+                  {durationRanges.map(r => <option key={r.label} value={r.label}>{r.label}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* Trek list */}
           <div className="grid gap-3">
+            {filtered.length === 0 && (
+              <p className="text-center text-muted-foreground py-8">No treks match your filters. Try adjusting them.</p>
+            )}
             {filtered.map(trek => (
               <button
                 key={trek.id}
@@ -179,7 +310,6 @@ const StartTrekking = () => {
   return (
     <main className="min-h-screen bg-background pt-20 pb-4 flex flex-col">
       <div className="container mx-auto px-4 max-w-3xl flex flex-col flex-1">
-        {/* Header */}
         <div className="flex items-center gap-3 py-4 border-b border-border mb-4">
           <button onClick={() => { setSelectedTrek(null); setMessages([]); }} className="p-2 rounded-md hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
@@ -191,7 +321,6 @@ const StartTrekking = () => {
           </div>
         </div>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -218,7 +347,6 @@ const StartTrekking = () => {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
         <div className="flex gap-2 pb-4">
           <input
             type="text"
