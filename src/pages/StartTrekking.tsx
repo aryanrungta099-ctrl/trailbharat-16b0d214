@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2, Filter, X } from "lucide-react";
+import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2, Filter, X, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -331,7 +332,7 @@ const StartTrekking = () => {
               }`}>
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <ReactMarkdown>{msg.content.replace(/\*\*\[PREP_COMPLETE\]\*\*/g, "")}</ReactMarkdown>
                   </div>
                 ) : msg.content}
               </div>
@@ -347,19 +348,32 @@ const StartTrekking = () => {
           <div ref={bottomRef} />
         </div>
 
-        <div className="flex gap-2 pb-4">
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && sendMessage()}
-            placeholder="Ask about preparations, fitness, gear..."
-            className="flex-1 px-4 py-3 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-          />
-          <button onClick={sendMessage} disabled={loading || !input.trim()} className="px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
-            <Send className="h-4 w-4" />
-          </button>
-        </div>
+        {/* Show "View Trek Details" when prep is complete */}
+        {messages.some(m => m.role === "assistant" && m.content.includes("[PREP_COMPLETE]")) ? (
+          <div className="flex flex-col items-center gap-3 pb-6 pt-2">
+            <p className="text-sm text-muted-foreground">✅ You're all prepped! View the full trek details below.</p>
+            <Link
+              to={`/trek/${selectedTrek.id}`}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base shadow-lg hover:shadow-xl transition-all active:scale-[0.97] hover:bg-primary/90"
+            >
+              <Mountain className="h-5 w-5" /> View Trek Details <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        ) : (
+          <div className="flex gap-2 pb-4">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && sendMessage()}
+              placeholder="Ask about preparations, fitness, gear..."
+              className="flex-1 px-4 py-3 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+            />
+            <button onClick={sendMessage} disabled={loading || !input.trim()} className="px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );
