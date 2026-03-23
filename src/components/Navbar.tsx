@@ -40,12 +40,15 @@ const Navbar = () => {
             <Link
               key={item.to}
               to={item.to}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                location.pathname === item.to
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+                (item as any).highlight
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : location.pathname === item.to
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
+              {(item as any).icon && <Play className="h-3.5 w-3.5" />}
               {item.label}
             </Link>
           ))}
