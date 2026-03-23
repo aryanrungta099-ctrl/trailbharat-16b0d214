@@ -20,7 +20,7 @@ import PublicProfile from "./pages/PublicProfile.tsx";
 
 import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
-import StartTrekking from "./pages/StartTrekking.tsx";
+import SuggestTrek from "./pages/SuggestTrek.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -46,7 +46,7 @@ const App = () => (
             
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
-            <Route path="/start-trekking" element={<StartTrekking />} />
+            <Route path="/suggest" element={<SuggestTrek />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
