@@ -17,7 +17,7 @@ import Sherpas from "./pages/Sherpas.tsx";
 import Agencies from "./pages/Agencies.tsx";
 import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
-import SuggestTrek from "./pages/SuggestTrek.tsx";
+
 import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import StartTrekking from "./pages/StartTrekking.tsx";
