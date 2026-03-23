@@ -17,7 +17,7 @@ import Sherpas from "./pages/Sherpas.tsx";
 import Agencies from "./pages/Agencies.tsx";
 import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
-import SuggestTrek from "./pages/SuggestTrek.tsx";
+
 import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import StartTrekking from "./pages/StartTrekking.tsx";
@@ -43,7 +43,7 @@ const App = () => (
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<PublicProfile />} />
-            <Route path="/suggest" element={<SuggestTrek />} />
+            
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/start-trekking" element={<StartTrekking />} />
