@@ -332,7 +332,7 @@ const StartTrekking = () => {
               }`}>
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <ReactMarkdown>{msg.content.replace(/\*\*\[PREP_COMPLETE\]\*\*/g, "")}</ReactMarkdown>
                   </div>
                 ) : msg.content}
               </div>
