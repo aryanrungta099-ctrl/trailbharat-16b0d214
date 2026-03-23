@@ -360,23 +360,58 @@ const StartTrekking = () => {
             </Link>
           </div>
         ) : (
-          <div className="flex gap-2 pb-4">
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && sendMessage()}
-              placeholder="Ask about preparations, fitness, gear..."
-              className="flex-1 px-4 py-3 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-            />
-            <button onClick={sendMessage} disabled={loading || !input.trim()} className="px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
-              <Send className="h-4 w-4" />
-            </button>
+          <div className="pb-4 space-y-3">
+            {/* Clickable option buttons */}
+            {!loading && (() => {
+              const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+              if (!lastAssistant) return null;
+              const optionRegex = /(?:^|\n)\s*[A-E]\)\s+(.+)/g;
+              const options: { letter: string; text: string }[] = [];
+              let match;
+              const content = lastAssistant.content;
+              const lineRegex = /(?:^|\n)\s*([A-E])\)\s+(.+)/g;
+              while ((match = lineRegex.exec(content)) !== null) {
+                options.push({ letter: match[1], text: match[2].trim() });
+              }
+              if (options.length === 0) return null;
+              return (
+                <div className="space-y-2">
+                  {options.map(opt => (
+                    <button
+                      key={opt.letter}
+                      onClick={() => {
+                        setInput(`${opt.letter}) ${opt.text}`);
+                        setTimeout(() => {
+                          const userMsg: Msg = { role: "user", content: `${opt.letter}) ${opt.text}` };
+                          const newMessages = [...messages, userMsg];
+                          setMessages(newMessages);
+                          setInput("");
+                          sendMessageWithMessages(newMessages);
+                        }, 50);
+                      }}
+                      className="w-full text-left p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/50 transition-all active:scale-[0.98]"
+                    >
+                      <div className="font-medium text-sm">
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold mr-2">{opt.letter}</span>
+                        {opt.text}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && sendMessage()}
+                placeholder="Type your answer or pick an option above..."
+                className="flex-1 px-4 py-3 rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+              />
+              <button onClick={sendMessage} disabled={loading || !input.trim()} className="px-4 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
-      </div>
-    </main>
-  );
-};
-
-export default StartTrekking;
