@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase, Play } from "lucide-react";
+import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 
@@ -11,7 +11,6 @@ const navItems = [
   { to: "/experiences", label: "Experiences" },
   { to: "/sherpas", label: "Sherpas" },
   { to: "/agencies", label: "Agencies" },
-  { to: "/start-trekking", label: "Start Trekking", icon: Play, highlight: true },
 ];
 
 const Navbar = () => {
@@ -40,15 +39,12 @@ const Navbar = () => {
             <Link
               key={item.to}
               to={item.to}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
-                (item as any).highlight
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : location.pathname === item.to
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                location.pathname === item.to
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              {(item as any).icon && <Play className="h-3.5 w-3.5" />}
               {item.label}
             </Link>
           ))}
