@@ -216,9 +216,24 @@ const Index = () => {
                 type="text"
                 placeholder="Search treks by name, region, or state..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(false); }}
+                onFocus={() => { if (!searchQuery) setShowSuggestions(true); }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
               />
+              {showSuggestions && !searchQuery && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
+                  <p className="text-xs text-muted-foreground mb-2 px-2 font-medium">Popular searches</p>
+                  <div className="flex flex-wrap gap-2">
+                    {displayedSuggestions.map(s => (
+                      <button key={s} onClick={() => { setSearchQuery(s); setShowSuggestions(false); }}
+                        className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollReveal>
 
