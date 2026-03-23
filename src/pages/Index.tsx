@@ -1,12 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
-import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart } from "lucide-react";
-import heroImg from "@/assets/hero-mountains.jpg";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
+import heroImg1 from "@/assets/hero-mountains.jpg";
+import heroImg2 from "@/assets/hero-2.jpg";
+import heroImg3 from "@/assets/hero-3.jpg";
+import heroImg4 from "@/assets/hero-4.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 
+const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
+
+const searchSuggestions = [
+  "Top 5 treks near Kolkata",
+  "Best treks in monsoon season",
+  "Easy weekend treks in Western Ghats",
+  "Best winter treks in Himachal Pradesh",
+  "Top treks for beginners in India",
+  "High altitude treks above 5000m",
+  "Best treks in Uttarakhand for families",
+  "Most scenic treks in Sikkim",
+  "Best treks in October November",
+  "Short 2-day treks near Delhi",
+  "Top treks in Ladakh for summer",
+  "Best snow treks in January",
+  "Easiest Himalayan treks for first-timers",
+  "Best treks in Kerala and Karnataka",
+  "Top treks near Mumbai for weekends",
+];
 const features = [
   { to: "/routes", icon: Search, title: "Explore Trek Routes", desc: "Search and discover trekking routes across India & Nepal — Himalayas to Western Ghats.", color: "trek-gradient" },
   { to: "/tips", icon: Shield, title: "Safety & Tips", desc: "Essential guidance on gear, fitness, altitude sickness, and weather to keep your trek safe.", color: "trek-gradient-warm" },
