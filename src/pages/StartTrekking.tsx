@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2, Filter, X } from "lucide-react";
+import { Mountain, Send, ArrowLeft, MapPin, Clock, TrendingUp, Star, Loader2, Filter, X, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
