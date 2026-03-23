@@ -43,7 +43,7 @@ const App = () => (
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<PublicProfile />} />
-            <Route path="/suggest" element={<SuggestTrek />} />
+            
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/start-trekking" element={<StartTrekking />} />
