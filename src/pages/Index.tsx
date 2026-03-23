@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
+import StartTrekkingCard from "@/components/StartTrekkingCard";
 import heroImg1 from "@/assets/hero-mountains.jpg";
 import heroImg2 from "@/assets/hero-2.jpg";
 import heroImg3 from "@/assets/hero-3.jpg";
