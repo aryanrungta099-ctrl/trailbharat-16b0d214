@@ -158,8 +158,8 @@ const Index = () => {
                 Amazing Trails
               </h1>
               <Link to="/start-trekking"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all active:scale-[0.97] shrink-0">
-                <Play className="h-6 w-6" /> Start Trekking
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all active:scale-[0.97] shrink-0">
+                <Play className="h-10 w-10" /> Start Trekking
               </Link>
             </div>
             <p className="mt-4 text-primary-foreground/85 text-lg md:text-xl max-w-lg animate-reveal animate-reveal-delay-1 font-body">

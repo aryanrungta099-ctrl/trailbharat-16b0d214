@@ -11,7 +11,6 @@ const navItems = [
   { to: "/experiences", label: "Experiences" },
   { to: "/sherpas", label: "Sherpas" },
   { to: "/agencies", label: "Agencies" },
-  { to: "/start-trekking", label: "Start Trekking", icon: Play, highlight: true },
 ];
 
 const Navbar = () => {
