@@ -154,8 +154,8 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
             <Link to="/start-trekking"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-[0.97] mb-6 animate-reveal">
-              <Mountain style={{ width: 120, height: 120 }} className="text-black" /> <span className="text-white">Start Trekking</span>
+              className="inline-flex items-center gap-4 px-10 py-5 rounded-xl bg-white hover:bg-white/90 text-foreground font-bold text-2xl shadow-lg hover:shadow-xl transition-all active:scale-[0.97] mb-6 animate-reveal">
+              <Mountain style={{ width: 120, height: 120 }} className="text-white stroke-foreground" /> <span className="text-foreground">Start Trekking</span>
             </Link>
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails
