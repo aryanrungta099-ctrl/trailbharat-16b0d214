@@ -146,7 +146,11 @@ const Index = () => {
       <div className="relative z-10">
         {/* Hero */}
         <section className="relative h-[85vh] min-h-[540px] flex items-end overflow-hidden">
-          <img src={heroImg} alt="Himalayan mountain landscape at golden hour" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
+          {heroImages.map((img, i) => (
+            <img key={i} src={img} alt={`Himalayan landscape ${i + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === heroIndex ? "opacity-100" : "opacity-0"}`}
+              loading={i === 0 ? "eager" : "lazy"} />
+          ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
