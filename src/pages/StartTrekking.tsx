@@ -102,7 +102,7 @@ const StartTrekking = () => {
       : "";
     const systemMsg: Msg = {
       role: "assistant",
-      content: `Great choice! You've selected **${trek.name}** in ${trek.region}, ${trek.state}.\n\n**Trek Overview:**\n- 🏔️ Altitude: ${trek.altitudeMeters.toLocaleString()}m\n- ⏱️ Duration: ${trek.durationDays} days\n- 💪 Difficulty: ${trek.difficulty}\n- 🌤️ Best months: ${trek.bestMonths.join(", ")}\n\n📝 **Description:** ${trek.description}\n\nI'm your trek preparation assistant. I'll help you get ready for this trek! Let me start by asking a few questions to make sure you're prepared.\n\n**1. Have you done any high-altitude trekking before?**`
+      content: `Great choice! You've selected **${trek.name}**.\n\nI'm your trek preparation assistant. Let me ask you a few questions to make sure you're ready.\n\n**1. Have you done any high-altitude trekking before? If yes, what was the highest altitude?**`
     };
     setMessages([systemMsg]);
   };
