@@ -66,6 +66,22 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Rotate hero image every 10 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % heroImages.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Random suggestions shown
+  const displayedSuggestions = useMemo(() => {
+    const shuffled = [...searchSuggestions].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 6);
+  }, []);
 
   const uniqueStates = useMemo(() => ["All", ...new Set(treks.map(t => t.state))].sort(), []);
 
