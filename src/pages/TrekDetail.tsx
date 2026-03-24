@@ -454,21 +454,60 @@ const TrekDetail = () => {
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="mb-4">Day-by-Day Itinerary</h3>
                     <div className="space-y-4">
-                      {trek.itinerary.map(day => (
-                        <div key={day.day} className="flex gap-4 text-sm">
-                          <div className="shrink-0 w-16 text-right">
-                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium">{day.title}</div>
-                            <p className="text-muted-foreground mt-0.5">{day.description}</p>
-                            <div className="flex gap-3 mt-1 text-xs text-trek-stone">
-                              {day.distance && <span>📏 {day.distance}</span>}
-                              {day.elevation && <span>⛰️ {day.elevation}</span>}
+                      {trek.itinerary.map(day => {
+                        const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
+                        const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
+                        return (
+                          <div key={day.day} className="flex gap-4 text-sm">
+                            <div className="shrink-0 w-16 text-right">
+                              <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">{day.title}</div>
+                              <p className="text-muted-foreground mt-0.5">{day.description}</p>
+                              <div className="flex gap-3 mt-1 text-xs text-trek-stone">
+                                {day.distance && <span>📏 {day.distance}</span>}
+                                {day.elevation && <span>⛰️ {day.elevation}</span>}
+                              </div>
+                              {/* Town/Village Info */}
+                              {day.townName && day.townDescription && (
+                                <div className="mt-3 bg-muted/50 rounded-lg p-3 border border-border/50">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                                    <span className="font-medium text-xs">{day.townName}</span>
+                                    {day.townAltitude && <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{day.townAltitude.toLocaleString()}m</span>}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground leading-relaxed">{day.townDescription}</p>
+                                </div>
+                              )}
+                              {/* Tea Houses for this village */}
+                              {villageTeaHouses.length > 0 && (
+                                <div className="mt-2 space-y-2">
+                                  {villageTeaHouses.map(th => (
+                                    <div key={th.id} className="bg-primary/5 rounded-lg p-3 border border-primary/10">
+                                      <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                          <div className="font-medium text-xs flex items-center gap-1.5"><Home className="h-3 w-3 text-primary" /> {th.name}</div>
+                                          {th.description && <p className="text-[11px] text-muted-foreground mt-0.5">{th.description}</p>}
+                                        </div>
+                                        {th.price_range && <span className="text-[10px] text-primary font-medium whitespace-nowrap">{th.price_range}</span>}
+                                      </div>
+                                      {th.contact_number && (
+                                        <a href={`tel:${th.contact_number}`} className="text-[11px] text-primary hover:underline flex items-center gap-1 mt-1"><Phone className="h-3 w-3" /> {th.contact_number}</a>
+                                      )}
+                                      {th.facilities?.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mt-1.5">
+                                          {th.facilities.map((f: string) => <span key={f} className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground">{f}</span>)}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
