@@ -127,7 +127,7 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
   );
 }
 
-const Agencies = () => {
+const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
   const { user } = useAuth();
   const [listings, setListings] = useState<AgencyListing[]>([]);
   const [loading, setLoading] = useState(true);
