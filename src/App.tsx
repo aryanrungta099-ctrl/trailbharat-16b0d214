@@ -15,9 +15,13 @@ import Experiences from "./pages/Experiences.tsx";
 import Auth from "./pages/Auth.tsx";
 import Sherpas from "./pages/Sherpas.tsx";
 import Agencies from "./pages/Agencies.tsx";
+import SherpasAgencies from "./pages/SherpasAgencies.tsx";
+import SherpaDetail from "./pages/SherpaDetail.tsx";
+import AgencyDetail from "./pages/AgencyDetail.tsx";
+import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import Profile from "./pages/Profile.tsx";
 import PublicProfile from "./pages/PublicProfile.tsx";
-
 import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
@@ -39,11 +43,15 @@ const App = () => (
             <Route path="/trek/:id" element={<TrekDetail />} />
             <Route path="/tips" element={<Tips />} />
             <Route path="/experiences" element={<Experiences />} />
+            <Route path="/guides" element={<SherpasAgencies />} />
             <Route path="/sherpas" element={<Sherpas />} />
+            <Route path="/sherpa/:id" element={<SherpaDetail />} />
             <Route path="/agencies" element={<Agencies />} />
+            <Route path="/agency/:id" element={<AgencyDetail />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<PublicProfile />} />
-            
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/suggest" element={<SuggestTrek />} />
@@ -51,7 +59,6 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
-          
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
