@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar } from "lucide-react";
+import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
@@ -126,7 +127,7 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
   );
 }
 
-const Agencies = () => {
+const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
   const { user } = useAuth();
   const [listings, setListings] = useState<AgencyListing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,13 +195,18 @@ const Agencies = () => {
     toast.success("Listing removed"); fetchListings();
   };
 
+  const Wrapper = embedded ? "div" : "main";
   return (
-    <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-        <div>
-          <h1 className="text-balance">Travel Agencies</h1>
-          <p className="text-muted-foreground mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+    <Wrapper className={embedded ? "" : "pt-24 pb-16 container mx-auto px-4 min-h-screen"}>
+      {!embedded && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-balance">Travel Agencies</h1>
+            <p className="text-muted-foreground mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+          </div>
         </div>
+      )}
+      <div className="flex justify-end mb-6">
         {user && (
           <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
             {showForm ? <><X className="h-4 w-4" /> Cancel</> : <><Plus className="h-4 w-4" /> List Your Agency</>}
@@ -284,6 +290,7 @@ const Agencies = () => {
                     <div className="flex flex-wrap gap-1.5 mb-3">{a.treks_offered.slice(0, 5).map(tid => { const t = treks.find(tr => tr.id === tid); return t ? <span key={tid} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t.name}</span> : null; })}{a.treks_offered.length > 5 && <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">+{a.treks_offered.length - 5} more</span>}</div>
                   )}
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">{a.description}</p>
+                  <Link to={`/agency/${a.id}`} className="mt-3 inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline"><ArrowRight className="h-3 w-3" /> View Details</Link>
                   {!a.approved && <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
                   {user?.id === a.user_id && <button onClick={() => handleDelete(a.id)} className="mt-3 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
                   <AgencyReviewSection listing={a} user={user} />
@@ -293,7 +300,7 @@ const Agencies = () => {
           ))}
         </div>
       )}
-    </main>
+    </Wrapper>
   );
 };
 

@@ -7,10 +7,9 @@ import { useAdmin } from "@/hooks/useAdmin";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/routes", label: "Trek Routes" },
-  { to: "/tips", label: "Safety Tips" },
+  { to: "/guides", label: "Sherpas & Agencies" },
   { to: "/experiences", label: "Experiences" },
-  { to: "/sherpas", label: "Sherpas" },
-  { to: "/agencies", label: "Agencies" },
+  { to: "/blog", label: "Blog" },
 ];
 
 const Navbar = () => {
