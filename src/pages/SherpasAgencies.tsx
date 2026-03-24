@@ -38,18 +38,9 @@ const SherpasAgencies = () => {
         </button>
       </div>
 
-      {tab === "sherpas" ? <SherpasEmbed /> : <AgenciesEmbed />}
+      {tab === "sherpas" ? <Sherpas embedded /> : <Agencies embedded />}
     </main>
   );
 };
-
-// Embedded versions without their own header/title
-function SherpasEmbed() {
-  return <Sherpas embedded />;
-}
-
-function AgenciesEmbed() {
-  return <Agencies embedded />;
-}
 
 export default SherpasAgencies;
