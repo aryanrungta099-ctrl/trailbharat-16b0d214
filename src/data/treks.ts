@@ -117,12 +117,12 @@ export const treks: Trek[] = [
     description: "A UNESCO World Heritage Site bursting with endemic Himalayan flora. Over 600 species of wildflowers carpet the valley during monsoon.",
     highlights: ["UNESCO World Heritage Site", "600+ flower species", "Hemkund Sahib visit", "Rare Brahma Kamal sightings"],
     itinerary: [
-      { day: 1, title: "Haridwar to Govindghat", description: "Drive along the Alaknanda river valley.", distance: "275 km drive", elevation: "1,800m" },
-      { day: 2, title: "Govindghat to Ghangaria", description: "Trek along the Pushpawati river.", distance: "14 km", elevation: "3,050m" },
-      { day: 3, title: "Ghangaria to Valley of Flowers", description: "Full day exploring the valley.", distance: "6 km round trip", elevation: "3,658m" },
-      { day: 4, title: "Ghangaria to Hemkund Sahib", description: "Visit the sacred Sikh shrine at Hemkund Sahib.", distance: "6 km round trip", elevation: "4,329m" },
-      { day: 5, title: "Second Valley visit or rest", description: "Return to the valley for deeper exploration.", distance: "Optional", elevation: "3,050m" },
-      { day: 6, title: "Ghangaria to Govindghat", description: "Descend and drive to Haridwar.", distance: "14 km", elevation: "1,800m" },
+      { day: 1, title: "Haridwar to Govindghat", description: "Drive along the Alaknanda river valley.", distance: "275 km drive", elevation: "1,800m", townName: "Govindghat", townDescription: "A small town at the confluence of the Alaknanda and Lakshman Ganga rivers. It's the starting point for both Valley of Flowers and Hemkund Sahib. Has hotels, restaurants, and a gurudwara.", townAltitude: 1800 },
+      { day: 2, title: "Govindghat to Ghangaria", description: "Trek along the Pushpawati river.", distance: "14 km", elevation: "3,050m", townName: "Ghangaria", townDescription: "A tiny settlement that serves as the base for both Valley of Flowers and Hemkund Sahib. Has GMVN guesthouse, small hotels, and restaurants. Gets very busy in season.", townAltitude: 3050 },
+      { day: 3, title: "Ghangaria to Valley of Flowers", description: "Full day exploring the valley.", distance: "6 km round trip", elevation: "3,658m", townName: "Valley of Flowers", townDescription: "UNESCO World Heritage Site with over 600 species of wildflowers including brahma kamal, blue poppy, and cobra lily. The valley stretches for about 10 km and is closed during winter.", townAltitude: 3658 },
+      { day: 4, title: "Ghangaria to Hemkund Sahib", description: "Visit the sacred Sikh shrine at Hemkund Sahib.", distance: "6 km round trip", elevation: "4,329m", townName: "Hemkund Sahib", townDescription: "A sacred Sikh pilgrimage site at 4,329m with a glacial lake surrounded by seven peaks. The gurudwara serves langar (free meals) to all visitors.", townAltitude: 4329 },
+      { day: 5, title: "Second Valley visit or rest", description: "Return to the valley for deeper exploration.", distance: "Optional", elevation: "3,050m", townName: "Ghangaria", townDescription: "Rest day at Ghangaria or revisit the valley for deeper exploration of flora and fauna.", townAltitude: 3050 },
+      { day: 6, title: "Ghangaria to Govindghat", description: "Descend and drive to Haridwar.", distance: "14 km", elevation: "1,800m", townName: "Govindghat", townDescription: "Return to Govindghat. Visit the gurudwara and have a meal before the drive back to Haridwar.", townAltitude: 1800 },
     ],
   },
   {
