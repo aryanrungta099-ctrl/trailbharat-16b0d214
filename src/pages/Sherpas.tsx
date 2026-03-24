@@ -237,13 +237,18 @@ const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
     toast.success("Listing removed"); fetchListings();
   };
 
+  const Wrapper = embedded ? "div" : "main";
   return (
-    <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-        <div>
-          <h1 className="text-balance">Find a Sherpa Guide</h1>
-          <p className="text-muted-foreground mt-2 max-w-lg">Connect with experienced mountain guides. Browse listings, read reviews, or create your own.</p>
+    <Wrapper className={embedded ? "" : "pt-24 pb-16 container mx-auto px-4 min-h-screen"}>
+      {!embedded && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-balance">Find a Sherpa Guide</h1>
+            <p className="text-muted-foreground mt-2 max-w-lg">Connect with experienced mountain guides. Browse listings, read reviews, or create your own.</p>
+          </div>
         </div>
+      )}
+      <div className="flex justify-end mb-6">
         {user && (
           <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
             {showForm ? <><X className="h-4 w-4" /> Cancel</> : <><Plus className="h-4 w-4" /> Create Listing</>}
