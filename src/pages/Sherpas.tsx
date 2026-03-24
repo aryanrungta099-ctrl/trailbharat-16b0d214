@@ -140,7 +140,7 @@ function ShareButton({ name }: { name: string }) {
   );
 }
 
-const Sherpas = () => {
+const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
   const { user } = useAuth();
   const [listings, setListings] = useState<SherpaListing[]>([]);
   const [loading, setLoading] = useState(true);
