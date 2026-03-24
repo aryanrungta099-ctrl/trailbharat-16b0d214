@@ -431,6 +431,36 @@ export type Database = {
           },
         ]
       }
+      trek_overrides: {
+        Row: {
+          description: string | null
+          highlights: string[] | null
+          id: string
+          itinerary_json: Json | null
+          trek_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          highlights?: string[] | null
+          id?: string
+          itinerary_json?: Json | null
+          trek_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          highlights?: string[] | null
+          id?: string
+          itinerary_json?: Json | null
+          trek_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       trek_reviews: {
         Row: {
           comment: string
@@ -455,6 +485,45 @@ export type Database = {
           rating?: number
           trek_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      trek_tea_houses: {
+        Row: {
+          contact_number: string | null
+          created_at: string
+          description: string | null
+          facilities: string[] | null
+          id: string
+          name: string
+          price_range: string | null
+          trek_id: string
+          updated_at: string
+          village: string
+        }
+        Insert: {
+          contact_number?: string | null
+          created_at?: string
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          name: string
+          price_range?: string | null
+          trek_id: string
+          updated_at?: string
+          village: string
+        }
+        Update: {
+          contact_number?: string | null
+          created_at?: string
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          name?: string
+          price_range?: string | null
+          trek_id?: string
+          updated_at?: string
+          village?: string
         }
         Relationships: []
       }
