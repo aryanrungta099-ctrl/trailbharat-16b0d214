@@ -4,6 +4,9 @@ export interface TrekItineraryDay {
   description: string;
   distance?: string;
   elevation?: string;
+  townName?: string;
+  townDescription?: string;
+  townAltitude?: number;
 }
 
 export interface BudgetItem {
@@ -44,13 +47,14 @@ function genItinerary(days: number, name: string, startElev: number, peakElev: n
       ? Math.round(startElev + (peakElev - startElev) * (d / mid))
       : Math.round(peakElev - (peakElev - startElev) * ((d - mid) / (days - mid)));
     if (d === 1) {
-      result.push({ day: d, title: `Arrive at ${name} base`, description: `Travel to the trailhead and settle in. Briefing and gear check.`, distance: "Drive + 3 km", elevation: `${startElev}m` });
+      result.push({ day: d, title: `Arrive at ${name} base`, description: `Travel to the trailhead and settle in. Briefing and gear check.`, distance: "Drive + 3 km", elevation: `${startElev}m`, townName: `${name} Base`, townDescription: `The starting point and gateway village for the ${name} trek. Local shops for last-minute supplies.`, townAltitude: startElev });
     } else if (d === mid) {
-      result.push({ day: d, title: `Summit / High Point`, description: `Reach the highest point of the trek. Panoramic views of surrounding peaks.`, distance: "6 km", elevation: `${peakElev}m` });
+      result.push({ day: d, title: `Summit / High Point`, description: `Reach the highest point of the trek. Panoramic views of surrounding peaks.`, distance: "6 km", elevation: `${peakElev}m`, townName: `${name} High Camp`, townDescription: `The highest camp on the trek. Exposed terrain with stunning panoramic views.`, townAltitude: peakElev });
     } else if (d === days) {
-      result.push({ day: d, title: `Return to base`, description: `Final descent and departure.`, distance: "8 km + drive", elevation: `${startElev}m` });
+      result.push({ day: d, title: `Return to base`, description: `Final descent and departure.`, distance: "8 km + drive", elevation: `${startElev}m`, townName: `${name} Base`, townDescription: `Return to the base village. Celebrate your trek completion!`, townAltitude: startElev });
     } else {
-      result.push({ day: d, title: `Day ${d} - ${d < mid ? "Ascend" : "Descend"}`, description: `Continue ${d < mid ? "ascending through changing terrain" : "descending through the trail"}. Camp at ${elev}m.`, distance: `${5 + Math.floor(Math.random() * 8)} km`, elevation: `${elev}m` });
+      const campName = d < mid ? `Camp ${d}` : `Camp ${days - d}`;
+      result.push({ day: d, title: `Day ${d} - ${d < mid ? "Ascend" : "Descend"}`, description: `Continue ${d < mid ? "ascending through changing terrain" : "descending through the trail"}. Camp at ${elev}m.`, distance: `${5 + Math.floor(Math.random() * 8)} km`, elevation: `${elev}m`, townName: campName, townDescription: `Campsite at ${elev}m elevation along the ${name} trail.`, townAltitude: elev });
     }
   }
   return result;
@@ -71,10 +75,10 @@ export const treks: Trek[] = [
     description: "One of the best winter treks in India with stunning snow-covered trails, pine forests, and a 360-degree summit view of Himalayan peaks.",
     highlights: ["360° summit panorama", "Snow-covered pine forests", "Juda Ka Talab frozen lake", "Perfect for beginners"],
     itinerary: [
-      { day: 1, title: "Dehradun to Sankri", description: "Drive from Dehradun to Sankri village (1,920m), the base of the trek.", distance: "200 km drive", elevation: "1,920m" },
-      { day: 2, title: "Sankri to Juda Ka Talab", description: "Trek through dense oak and pine forests to the frozen lake.", distance: "4 km", elevation: "2,700m" },
-      { day: 3, title: "Juda Ka Talab to Summit and back", description: "Early morning summit push. 360° views of Swargarohini, Black Peak.", distance: "6 km", elevation: "3,810m summit" },
-      { day: 4, title: "Base Camp to Sankri", description: "Descend through rhododendron forests back to Sankri.", distance: "6 km", elevation: "1,920m" },
+      { day: 1, title: "Dehradun to Sankri", description: "Drive from Dehradun to Sankri village (1,920m), the base of the trek.", distance: "200 km drive", elevation: "1,920m", townName: "Sankri", townDescription: "A charming Himalayan village in Govind Wildlife Sanctuary, Sankri is the last road-head and base for Kedarkantha. It has basic guesthouses, small shops, and a rich Kinnauri culture with wooden architecture.", townAltitude: 1920 },
+      { day: 2, title: "Sankri to Juda Ka Talab", description: "Trek through dense oak and pine forests to the frozen lake.", distance: "4 km", elevation: "2,700m", townName: "Juda Ka Talab", townDescription: "A stunning frozen lake surrounded by tall pine trees. In winter, the lake freezes completely creating a magical landscape. Camping is done in clearings near the lake.", townAltitude: 2700 },
+      { day: 3, title: "Juda Ka Talab to Summit and back", description: "Early morning summit push. 360° views of Swargarohini, Black Peak.", distance: "6 km", elevation: "3,810m summit", townName: "Kedarkantha Summit", townDescription: "The summit offers a breathtaking 360-degree panorama of Swargarohini, Black Peak, Bandarpoonch, and Ranglana peaks. A small Shiva temple sits at the top.", townAltitude: 3810 },
+      { day: 4, title: "Base Camp to Sankri", description: "Descend through rhododendron forests back to Sankri.", distance: "6 km", elevation: "1,920m", townName: "Sankri", townDescription: "Return to Sankri village. Enjoy a warm meal and celebrate your trek completion at one of the local dhabas.", townAltitude: 1920 },
     ],
   },
   {
@@ -90,14 +94,14 @@ export const treks: Trek[] = [
     description: "Known as the Skeleton Lake trek, Roopkund takes you through alpine meadows and past the mysterious glacial lake with human skeletal remains.",
     highlights: ["Mystery of Skeleton Lake", "Ali & Bedni Bugyal meadows", "Views of Trishul & Nanda Ghunti", "Rich mythological history"],
     itinerary: [
-      { day: 1, title: "Haridwar to Lohajung", description: "Long drive through Kumaon hills.", distance: "260 km drive", elevation: "2,350m" },
-      { day: 2, title: "Lohajung to Didna Village", description: "Gentle trek through terraced fields and oak forests.", distance: "8 km", elevation: "2,600m" },
-      { day: 3, title: "Didna to Ali Bugyal", description: "Ascend to the vast alpine meadow — one of Asia's largest.", distance: "11 km", elevation: "3,340m" },
-      { day: 4, title: "Ali Bugyal to Ghora Lotani", description: "Cross Bedni Bugyal. Camp near the tree line.", distance: "5 km", elevation: "3,680m" },
-      { day: 5, title: "Ghora Lotani to Bhagwabasa", description: "Trek above tree line with views of Trishul.", distance: "3 km", elevation: "4,100m" },
-      { day: 6, title: "Bhagwabasa to Roopkund and back", description: "Early morning push to the mysterious skeleton lake.", distance: "3 km", elevation: "4,800m" },
-      { day: 7, title: "Bhagwabasa to Bedni Bugyal", description: "Long descent through meadows.", distance: "10 km", elevation: "3,340m" },
-      { day: 8, title: "Bedni Bugyal to Lohajung", description: "Final descent. Drive to Haridwar.", distance: "16 km", elevation: "2,350m" },
+      { day: 1, title: "Haridwar to Lohajung", description: "Long drive through Kumaon hills.", distance: "260 km drive", elevation: "2,350m", townName: "Lohajung", townDescription: "A small hill town in Chamoli district serving as the base for Roopkund. It has basic lodges, a few restaurants, and stunning views of Nanda Ghunti peak.", townAltitude: 2350 },
+      { day: 2, title: "Lohajung to Didna Village", description: "Gentle trek through terraced fields and oak forests.", distance: "8 km", elevation: "2,600m", townName: "Didna Village", townDescription: "A traditional Garhwali village with terraced farms, stone houses, and warm hospitality. Villagers offer homestays and home-cooked meals.", townAltitude: 2600 },
+      { day: 3, title: "Didna to Ali Bugyal", description: "Ascend to the vast alpine meadow — one of Asia's largest.", distance: "11 km", elevation: "3,340m", townName: "Ali Bugyal", townDescription: "One of the largest and most beautiful high-altitude meadows in Asia. Vast green carpets stretching for miles with views of Trishul and Nanda Ghunti.", townAltitude: 3340 },
+      { day: 4, title: "Ali Bugyal to Ghora Lotani", description: "Cross Bedni Bugyal. Camp near the tree line.", distance: "5 km", elevation: "3,680m", townName: "Ghora Lotani", townDescription: "A camping ground near the tree line between Bedni Bugyal and Bhagwabasa. The last point with some tree cover before the alpine zone.", townAltitude: 3680 },
+      { day: 5, title: "Ghora Lotani to Bhagwabasa", description: "Trek above tree line with views of Trishul.", distance: "3 km", elevation: "4,100m", townName: "Bhagwabasa", townDescription: "A high-altitude campsite above the tree line with rocky terrain. It serves as the base camp for the Roopkund summit push. Very cold and windy.", townAltitude: 4100 },
+      { day: 6, title: "Bhagwabasa to Roopkund and back", description: "Early morning push to the mysterious skeleton lake.", distance: "3 km", elevation: "4,800m", townName: "Roopkund Lake", townDescription: "The mysterious Skeleton Lake at 4,800m, containing hundreds of human skeletal remains dating back to 850 AD. Surrounded by rock-strewn glacial terrain.", townAltitude: 4800 },
+      { day: 7, title: "Bhagwabasa to Bedni Bugyal", description: "Long descent through meadows.", distance: "10 km", elevation: "3,340m", townName: "Bedni Bugyal", townDescription: "Another spectacular alpine meadow with a small temple and lake. Shepherds bring their flocks here during summer months.", townAltitude: 3340 },
+      { day: 8, title: "Bedni Bugyal to Lohajung", description: "Final descent. Drive to Haridwar.", distance: "16 km", elevation: "2,350m", townName: "Lohajung", townDescription: "Return to the base town. Stock up on snacks and celebrate your trek at a local dhaba before the drive back.", townAltitude: 2350 },
     ],
   },
   {
@@ -113,12 +117,12 @@ export const treks: Trek[] = [
     description: "A UNESCO World Heritage Site bursting with endemic Himalayan flora. Over 600 species of wildflowers carpet the valley during monsoon.",
     highlights: ["UNESCO World Heritage Site", "600+ flower species", "Hemkund Sahib visit", "Rare Brahma Kamal sightings"],
     itinerary: [
-      { day: 1, title: "Haridwar to Govindghat", description: "Drive along the Alaknanda river valley.", distance: "275 km drive", elevation: "1,800m" },
-      { day: 2, title: "Govindghat to Ghangaria", description: "Trek along the Pushpawati river.", distance: "14 km", elevation: "3,050m" },
-      { day: 3, title: "Ghangaria to Valley of Flowers", description: "Full day exploring the valley.", distance: "6 km round trip", elevation: "3,658m" },
-      { day: 4, title: "Ghangaria to Hemkund Sahib", description: "Visit the sacred Sikh shrine at Hemkund Sahib.", distance: "6 km round trip", elevation: "4,329m" },
-      { day: 5, title: "Second Valley visit or rest", description: "Return to the valley for deeper exploration.", distance: "Optional", elevation: "3,050m" },
-      { day: 6, title: "Ghangaria to Govindghat", description: "Descend and drive to Haridwar.", distance: "14 km", elevation: "1,800m" },
+      { day: 1, title: "Haridwar to Govindghat", description: "Drive along the Alaknanda river valley.", distance: "275 km drive", elevation: "1,800m", townName: "Govindghat", townDescription: "A small town at the confluence of the Alaknanda and Lakshman Ganga rivers. It's the starting point for both Valley of Flowers and Hemkund Sahib. Has hotels, restaurants, and a gurudwara.", townAltitude: 1800 },
+      { day: 2, title: "Govindghat to Ghangaria", description: "Trek along the Pushpawati river.", distance: "14 km", elevation: "3,050m", townName: "Ghangaria", townDescription: "A tiny settlement that serves as the base for both Valley of Flowers and Hemkund Sahib. Has GMVN guesthouse, small hotels, and restaurants. Gets very busy in season.", townAltitude: 3050 },
+      { day: 3, title: "Ghangaria to Valley of Flowers", description: "Full day exploring the valley.", distance: "6 km round trip", elevation: "3,658m", townName: "Valley of Flowers", townDescription: "UNESCO World Heritage Site with over 600 species of wildflowers including brahma kamal, blue poppy, and cobra lily. The valley stretches for about 10 km and is closed during winter.", townAltitude: 3658 },
+      { day: 4, title: "Ghangaria to Hemkund Sahib", description: "Visit the sacred Sikh shrine at Hemkund Sahib.", distance: "6 km round trip", elevation: "4,329m", townName: "Hemkund Sahib", townDescription: "A sacred Sikh pilgrimage site at 4,329m with a glacial lake surrounded by seven peaks. The gurudwara serves langar (free meals) to all visitors.", townAltitude: 4329 },
+      { day: 5, title: "Second Valley visit or rest", description: "Return to the valley for deeper exploration.", distance: "Optional", elevation: "3,050m", townName: "Ghangaria", townDescription: "Rest day at Ghangaria or revisit the valley for deeper exploration of flora and fauna.", townAltitude: 3050 },
+      { day: 6, title: "Ghangaria to Govindghat", description: "Descend and drive to Haridwar.", distance: "14 km", elevation: "1,800m", townName: "Govindghat", townDescription: "Return to Govindghat. Visit the gurudwara and have a meal before the drive back to Haridwar.", townAltitude: 1800 },
     ],
   },
   {
