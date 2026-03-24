@@ -4,6 +4,9 @@ export interface TrekItineraryDay {
   description: string;
   distance?: string;
   elevation?: string;
+  townName?: string;
+  townDescription?: string;
+  townAltitude?: number;
 }
 
 export interface BudgetItem {
