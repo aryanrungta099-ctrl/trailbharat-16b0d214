@@ -303,10 +303,35 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
 const TrekDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
-  const trek = treks.find(t => t.id === id);
+  const baseTrek = treks.find(t => t.id === id);
   const [completionCount, setCompletionCount] = useState(0);
   const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
   const [activeTab, setActiveTab] = useState<"overview" | "altitude" | "budget" | "safety" | "stays" | "emergency">("overview");
+  const [trekOverride, setTrekOverride] = useState<any>(null);
+  const [teaHouses, setTeaHouses] = useState<any[]>([]);
+
+  // Fetch override data and tea houses
+  useEffect(() => {
+    if (!baseTrek) return;
+    supabase.from("trek_overrides" as any).select("*").eq("trek_id", baseTrek.id).maybeSingle().then(({ data }) => {
+      if (data) setTrekOverride(data);
+    });
+    supabase.from("trek_tea_houses" as any).select("*").eq("trek_id", baseTrek.id).order("village").then(({ data }) => {
+      if (data) setTeaHouses(data as any[]);
+    });
+  }, [baseTrek?.id]);
+
+  // Merge override data with base trek
+  const trek = useMemo(() => {
+    if (!baseTrek) return null;
+    if (!trekOverride) return baseTrek;
+    return {
+      ...baseTrek,
+      description: trekOverride.description || baseTrek.description,
+      highlights: trekOverride.highlights?.length > 0 ? trekOverride.highlights : baseTrek.highlights,
+      itinerary: trekOverride.itinerary_json ? (trekOverride.itinerary_json as any[]) : baseTrek.itinerary,
+    };
+  }, [baseTrek, trekOverride]);
 
   const budget = useMemo(() => trek ? (trek.budget ?? generateBudget(trek.country, trek.durationDays, trek.difficulty, trek.altitudeMeters, trek.name)) : null, [trek]);
   const extras = useMemo(() => trek ? generateTrekExtras(trek.name, trek.country, trek.region, trek.state, trek.altitudeMeters, trek.difficulty, trek.durationDays, trek.bestMonths, trek.highlights, trek.itinerary) : null, [trek]);
