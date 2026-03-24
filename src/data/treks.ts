@@ -75,10 +75,10 @@ export const treks: Trek[] = [
     description: "One of the best winter treks in India with stunning snow-covered trails, pine forests, and a 360-degree summit view of Himalayan peaks.",
     highlights: ["360° summit panorama", "Snow-covered pine forests", "Juda Ka Talab frozen lake", "Perfect for beginners"],
     itinerary: [
-      { day: 1, title: "Dehradun to Sankri", description: "Drive from Dehradun to Sankri village (1,920m), the base of the trek.", distance: "200 km drive", elevation: "1,920m" },
-      { day: 2, title: "Sankri to Juda Ka Talab", description: "Trek through dense oak and pine forests to the frozen lake.", distance: "4 km", elevation: "2,700m" },
-      { day: 3, title: "Juda Ka Talab to Summit and back", description: "Early morning summit push. 360° views of Swargarohini, Black Peak.", distance: "6 km", elevation: "3,810m summit" },
-      { day: 4, title: "Base Camp to Sankri", description: "Descend through rhododendron forests back to Sankri.", distance: "6 km", elevation: "1,920m" },
+      { day: 1, title: "Dehradun to Sankri", description: "Drive from Dehradun to Sankri village (1,920m), the base of the trek.", distance: "200 km drive", elevation: "1,920m", townName: "Sankri", townDescription: "A charming Himalayan village in Govind Wildlife Sanctuary, Sankri is the last road-head and base for Kedarkantha. It has basic guesthouses, small shops, and a rich Kinnauri culture with wooden architecture.", townAltitude: 1920 },
+      { day: 2, title: "Sankri to Juda Ka Talab", description: "Trek through dense oak and pine forests to the frozen lake.", distance: "4 km", elevation: "2,700m", townName: "Juda Ka Talab", townDescription: "A stunning frozen lake surrounded by tall pine trees. In winter, the lake freezes completely creating a magical landscape. Camping is done in clearings near the lake.", townAltitude: 2700 },
+      { day: 3, title: "Juda Ka Talab to Summit and back", description: "Early morning summit push. 360° views of Swargarohini, Black Peak.", distance: "6 km", elevation: "3,810m summit", townName: "Kedarkantha Summit", townDescription: "The summit offers a breathtaking 360-degree panorama of Swargarohini, Black Peak, Bandarpoonch, and Ranglana peaks. A small Shiva temple sits at the top.", townAltitude: 3810 },
+      { day: 4, title: "Base Camp to Sankri", description: "Descend through rhododendron forests back to Sankri.", distance: "6 km", elevation: "1,920m", townName: "Sankri", townDescription: "Return to Sankri village. Enjoy a warm meal and celebrate your trek completion at one of the local dhabas.", townAltitude: 1920 },
     ],
   },
   {
