@@ -47,13 +47,14 @@ function genItinerary(days: number, name: string, startElev: number, peakElev: n
       ? Math.round(startElev + (peakElev - startElev) * (d / mid))
       : Math.round(peakElev - (peakElev - startElev) * ((d - mid) / (days - mid)));
     if (d === 1) {
-      result.push({ day: d, title: `Arrive at ${name} base`, description: `Travel to the trailhead and settle in. Briefing and gear check.`, distance: "Drive + 3 km", elevation: `${startElev}m` });
+      result.push({ day: d, title: `Arrive at ${name} base`, description: `Travel to the trailhead and settle in. Briefing and gear check.`, distance: "Drive + 3 km", elevation: `${startElev}m`, townName: `${name} Base`, townDescription: `The starting point and gateway village for the ${name} trek. Local shops for last-minute supplies.`, townAltitude: startElev });
     } else if (d === mid) {
-      result.push({ day: d, title: `Summit / High Point`, description: `Reach the highest point of the trek. Panoramic views of surrounding peaks.`, distance: "6 km", elevation: `${peakElev}m` });
+      result.push({ day: d, title: `Summit / High Point`, description: `Reach the highest point of the trek. Panoramic views of surrounding peaks.`, distance: "6 km", elevation: `${peakElev}m`, townName: `${name} High Camp`, townDescription: `The highest camp on the trek. Exposed terrain with stunning panoramic views.`, townAltitude: peakElev });
     } else if (d === days) {
-      result.push({ day: d, title: `Return to base`, description: `Final descent and departure.`, distance: "8 km + drive", elevation: `${startElev}m` });
+      result.push({ day: d, title: `Return to base`, description: `Final descent and departure.`, distance: "8 km + drive", elevation: `${startElev}m`, townName: `${name} Base`, townDescription: `Return to the base village. Celebrate your trek completion!`, townAltitude: startElev });
     } else {
-      result.push({ day: d, title: `Day ${d} - ${d < mid ? "Ascend" : "Descend"}`, description: `Continue ${d < mid ? "ascending through changing terrain" : "descending through the trail"}. Camp at ${elev}m.`, distance: `${5 + Math.floor(Math.random() * 8)} km`, elevation: `${elev}m` });
+      const campName = d < mid ? `Camp ${d}` : `Camp ${days - d}`;
+      result.push({ day: d, title: `Day ${d} - ${d < mid ? "Ascend" : "Descend"}`, description: `Continue ${d < mid ? "ascending through changing terrain" : "descending through the trail"}. Camp at ${elev}m.`, distance: `${5 + Math.floor(Math.random() * 8)} km`, elevation: `${elev}m`, townName: campName, townDescription: `Campsite at ${elev}m elevation along the ${name} trail.`, townAltitude: elev });
     }
   }
   return result;
