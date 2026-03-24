@@ -354,7 +354,8 @@ const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
 
                   <p className="text-sm text-muted-foreground leading-relaxed pt-3 border-t border-border">{s.description}</p>
                   {!s.approved && <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
-                  {user?.id === s.user_id && <button onClick={() => handleDelete(s.id)} className="mt-4 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
+                  <Link to={`/sherpa/${s.id}`} className="mt-3 inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline"><ArrowRight className="h-3 w-3" /> View Profile</Link>
+                  {user?.id === s.user_id && <button onClick={() => handleDelete(s.id)} className="mt-2 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
                   <ReviewSection listing={s} user={user} />
                 </div>
               </div>
@@ -362,7 +363,7 @@ const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
           ))}
         </div>
       )}
-    </main>
+    </Wrapper>
   );
 };
 

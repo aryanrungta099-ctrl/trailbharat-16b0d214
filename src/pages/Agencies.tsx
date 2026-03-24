@@ -290,6 +290,7 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
                     <div className="flex flex-wrap gap-1.5 mb-3">{a.treks_offered.slice(0, 5).map(tid => { const t = treks.find(tr => tr.id === tid); return t ? <span key={tid} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t.name}</span> : null; })}{a.treks_offered.length > 5 && <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">+{a.treks_offered.length - 5} more</span>}</div>
                   )}
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">{a.description}</p>
+                  <Link to={`/agency/${a.id}`} className="mt-3 inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline"><ArrowRight className="h-3 w-3" /> View Details</Link>
                   {!a.approved && <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
                   {user?.id === a.user_id && <button onClick={() => handleDelete(a.id)} className="mt-3 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
                   <AgencyReviewSection listing={a} user={user} />
@@ -299,7 +300,7 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
           ))}
         </div>
       )}
-    </main>
+    </Wrapper>
   );
 };
 
