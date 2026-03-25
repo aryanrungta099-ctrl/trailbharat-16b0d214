@@ -70,6 +70,12 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showFirstTrek, setShowFirstTrek] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [trendingTopics, setTrendingTopics] = useState<string[]>([]);
+  const [trendingLoaded, setTrendingLoaded] = useState(false);
+  const aiDebounceRef = useRef<NodeJS.Timeout>();
 
   // Rotate hero image every 10 seconds
   useEffect(() => {
