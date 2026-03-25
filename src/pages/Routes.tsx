@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, MapPin, Clock, TrendingUp, Calendar, ChevronDown, ChevronUp, Filter, Wallet, CloudSun, Mountain, Phone, Eye, Home, AlertTriangle, Compass, GitCompareArrows, X } from "lucide-react";
 import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
@@ -224,10 +224,10 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
   return (
     <div className={`bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow overflow-hidden ${isComparing ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
       <div className="flex items-center">
-        <button onClick={onToggle} className="flex-1 text-left p-6 flex flex-col md:flex-row md:items-center gap-4 active:scale-[0.998] transition-transform">
+        <Link to={`/trek/${trek.id}`} className="flex-1 text-left p-6 flex flex-col md:flex-row md:items-center gap-4 hover:bg-muted/30 transition-colors">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-              <Link to={`/trek/${trek.id}`} className="hover:text-primary transition-colors"><h3 className="truncate">{trek.name}</h3></Link>
+              <h3 className="truncate group-hover:text-primary transition-colors">{trek.name}</h3>
               <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
               <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
               <span className={`shrink-0 text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>
@@ -240,15 +240,23 @@ const TrekCard = ({ trek, isExpanded, onToggle, isComparing, onCompare, compareD
               <span className="inline-flex items-center gap-1"><TrendingUp className="h-3.5 w-3.5" />{trek.altitudeMeters.toLocaleString()}m</span>
               <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{trek.bestMonths.map((m) => MONTHS[m - 1]).join(", ")}</span>
             </div>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{trek.description}</p>
           </div>
-          <div className="shrink-0">{isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}</div>
-        </button>
-        {onCompare && (
-          <button onClick={onCompare} disabled={compareDisabled && !isComparing}
-            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] mr-4 ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
-            <GitCompareArrows className="h-3.5 w-3.5 inline mr-1" />{isComparing ? "Selected" : "Compare"}
+          <div className="shrink-0 flex items-center gap-2">
+            <span className="text-xs text-primary font-medium">View Details →</span>
+          </div>
+        </Link>
+        <div className="flex items-center gap-2 pr-4">
+          <button onClick={onToggle} className="p-2 rounded-lg hover:bg-muted text-muted-foreground active:scale-95 transition" title="Quick preview">
+            {isExpanded ? <ChevronUp className="h-5 w-5 text-primary" /> : <ChevronDown className="h-5 w-5" />}
           </button>
-        )}
+          {onCompare && (
+            <button onClick={onCompare} disabled={compareDisabled && !isComparing}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.97] ${isComparing ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"} disabled:opacity-40 disabled:cursor-not-allowed`}>
+              <GitCompareArrows className="h-3.5 w-3.5 inline mr-1" />{isComparing ? "Selected" : "Compare"}
+            </button>
+          )}
+        </div>
       </div>
       
       {isExpanded && (
