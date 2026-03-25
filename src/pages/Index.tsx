@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play, Loader2, Sparkles } from "lucide-react";
 
 import heroImg1 from "@/assets/hero-mountains.jpg";
 import heroImg2 from "@/assets/hero-2.jpg";
@@ -10,6 +10,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
+import FirstTrekModal from "@/components/FirstTrekModal";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
 
