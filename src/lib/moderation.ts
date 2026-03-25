@@ -14,11 +14,18 @@ export async function moderateContent({
   imageUrls?: string[];
 }): Promise<{ approved: boolean; reason: string }> {
   try {
+    // Get the current user's session token for authenticated calls
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) {
+      return { approved: false, reason: "Not authenticated, queued for manual review" };
+    }
+
     const resp = await fetch(MODERATE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         table,
@@ -29,7 +36,6 @@ export async function moderateContent({
     });
 
     if (!resp.ok) {
-      // On error, content stays for manual review
       return { approved: false, reason: "Queued for manual review" };
     }
 

@@ -15,14 +15,72 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // --- Authentication: verify the caller is logged in ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const callerId = claimsData.claims.sub as string;
+
+    // --- Parse and validate input ---
     const { table, record_id, text_content, image_urls } = await req.json();
 
     if (!table || !record_id || !text_content) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Only allow known tables
+    const approvableTables = ["sherpa_listings", "guesthouse_listings", "agency_listings", "experiences"];
+    const reviewTables = ["trek_reviews", "sherpa_reviews", "guesthouse_reviews", "agency_reviews"];
+    const allowedTables = [...approvableTables, ...reviewTables];
+
+    if (!allowedTables.includes(table)) {
+      return new Response(JSON.stringify({ error: "Invalid table" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Verify the caller owns the record ---
+    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: record, error: recordError } = await serviceClient
+      .from(table)
+      .select("user_id")
+      .eq("id", record_id)
+      .maybeSingle();
+
+    if (recordError || !record) {
+      return new Response(JSON.stringify({ error: "Record not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (record.user_id !== callerId) {
+      return new Response(JSON.stringify({ error: "Forbidden: you do not own this record" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -78,7 +136,6 @@ Respond with ONLY a JSON object: {"approved": true/false, "reason": "brief reaso
         });
       }
       console.error("AI error:", aiResponse.status, await aiResponse.text());
-      // On AI failure, leave for manual review (don't auto-approve)
       return new Response(JSON.stringify({ approved: false, reason: "Queued for manual review", auto: false }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -97,25 +154,19 @@ Respond with ONLY a JSON object: {"approved": true/false, "reason": "brief reaso
       approved = parsed.approved === true;
       reason = parsed.reason || reason;
     } catch {
-      // If parsing fails, check for simple keywords
       approved = rawContent.toLowerCase().includes('"approved": true') || rawContent.toLowerCase().includes('"approved":true');
       reason = "AI response parsed heuristically";
     }
 
-    // Tables that have an "approved" column
-    const approvableTables = ["sherpa_listings", "guesthouse_listings", "agency_listings", "experiences"];
-
     if (approvableTables.includes(table)) {
       if (approved) {
-        await supabase.from(table).update({ approved: true }).eq("id", record_id);
+        await serviceClient.from(table).update({ approved: true }).eq("id", record_id);
       }
-      // If not approved, it stays as approved=false for admin review
     }
 
     // For review tables — if inappropriate, delete the review
-    const reviewTables = ["trek_reviews", "sherpa_reviews", "guesthouse_reviews", "agency_reviews"];
     if (reviewTables.includes(table) && !approved) {
-      await supabase.from(table).delete().eq("id", record_id);
+      await serviceClient.from(table).delete().eq("id", record_id);
     }
 
     return new Response(JSON.stringify({ approved, reason }), {
@@ -124,7 +175,7 @@ Respond with ONLY a JSON object: {"approved": true/false, "reason": "brief reaso
     });
   } catch (e) {
     console.error("Moderation error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

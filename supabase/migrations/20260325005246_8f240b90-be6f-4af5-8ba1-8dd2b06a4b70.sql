@@ -1,0 +1,1 @@
+DROP POLICY "Public can view display fields only" ON public.profiles;

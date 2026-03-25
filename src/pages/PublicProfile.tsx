@@ -15,7 +15,7 @@ const PublicProfile = () => {
   useEffect(() => {
     if (!userId) return;
     Promise.all([
-      supabase.from("profiles").select("display_name, bio, avatar_url").eq("user_id", userId).maybeSingle(),
+      supabase.from("public_profiles").select("display_name, bio, avatar_url").eq("user_id", userId).maybeSingle(),
       supabase.from("completed_treks").select("trek_id").eq("user_id", userId),
     ]).then(([{ data: prof }, { data: ct }]) => {
       if (prof) setProfile(prof);
