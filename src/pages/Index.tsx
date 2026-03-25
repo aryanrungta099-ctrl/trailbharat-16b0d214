@@ -327,6 +327,7 @@ const Index = () => {
             </ScrollReveal>
           )}
 
+          {searchResults && (
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-4">{searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found</h3>
               {searchResults.length === 0 ? (
@@ -639,6 +640,7 @@ const Index = () => {
         </section>
       </div>
       <JarvisChat />
+      <FirstTrekModal open={showFirstTrek} onClose={() => setShowFirstTrek(false)} />
     </main>
   );
 };
