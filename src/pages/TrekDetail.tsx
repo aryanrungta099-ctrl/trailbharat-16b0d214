@@ -289,6 +289,12 @@ const TREK_PHOTOS = [
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop",
   "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&h=500&fit=crop",
   "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1434394354979-a235cd36269d?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop",
 ];
 
 function getTrekImages(trek: Trek): { url: string; caption: string; source: string }[] {
@@ -298,6 +304,12 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
     { url: TREK_PHOTOS[(hash + 1) % TREK_PHOTOS.length], caption: `${trek.name} trail`, source: "Unsplash" },
     { url: TREK_PHOTOS[(hash + 2) % TREK_PHOTOS.length], caption: `${trek.state} mountains`, source: "Unsplash" },
   ];
+}
+
+// Get an itinerary day photo based on trek and day
+function getDayPhoto(trekId: string, day: number): string {
+  const hash = trekId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return TREK_PHOTOS[(hash + day * 3) % TREK_PHOTOS.length];
 }
 
 const TrekDetail = () => {
