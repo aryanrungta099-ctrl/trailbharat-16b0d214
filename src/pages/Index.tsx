@@ -93,6 +93,40 @@ const Index = () => {
 
   const uniqueStates = useMemo(() => ["All", ...new Set(treks.map(t => t.state))].sort(), []);
 
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+  // Load trending topics once
+  useEffect(() => {
+    if (trendingLoaded) return;
+    fetch(`${SUPABASE_URL}/functions/v1/ai-search-suggestions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+      body: JSON.stringify({ type: "trending" }),
+    }).then(r => r.json()).then(data => {
+      if (data.suggestions?.length) setTrendingTopics(data.suggestions);
+      setTrendingLoaded(true);
+    }).catch(() => setTrendingLoaded(true));
+  }, []);
+
+  // AI autocomplete on search input
+  const fetchAiSuggestions = useCallback((q: string) => {
+    if (aiDebounceRef.current) clearTimeout(aiDebounceRef.current);
+    if (q.length < 3) { setAiSuggestions([]); return; }
+    aiDebounceRef.current = setTimeout(async () => {
+      setAiLoading(true);
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-search-suggestions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ query: q, type: "autocomplete" }),
+        });
+        const data = await resp.json();
+        setAiSuggestions(data.suggestions || []);
+      } catch { setAiSuggestions([]); }
+      setAiLoading(false);
+    }, 500);
+  }, []);
+
   // Top 10 treks by region filter
   const topTreks = useMemo(() => {
     let filtered = treks;
