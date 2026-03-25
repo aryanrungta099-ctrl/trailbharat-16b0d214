@@ -266,15 +266,34 @@ const Index = () => {
             </div>
             <div className="max-w-2xl mx-auto relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              {aiLoading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-primary" />}
               <input
                 type="text"
                 placeholder="Search treks by name, region, or state..."
                 value={searchQuery}
-                onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(false); }}
+                onChange={e => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(false);
+                  fetchAiSuggestions(e.target.value);
+                }}
                 onFocus={() => { if (!searchQuery) setShowSuggestions(true); }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
+                onBlur={() => setTimeout(() => { setShowSuggestions(false); setAiSuggestions([]); }, 200)}
+                className="w-full pl-12 pr-10 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
               />
+              {/* AI Autocomplete suggestions */}
+              {aiSuggestions.length > 0 && searchQuery.length >= 3 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
+                  <p className="text-xs text-muted-foreground mb-2 px-2 font-medium flex items-center gap-1"><Sparkles className="h-3 w-3" /> AI Suggestions</p>
+                  <div className="space-y-1">
+                    {aiSuggestions.map(s => (
+                      <button key={s} onClick={() => { setSearchQuery(s); setAiSuggestions([]); }}
+                        className="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground">
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {showSuggestions && !searchQuery && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
                   <p className="text-xs text-muted-foreground mb-2 px-2 font-medium">Popular searches</p>
