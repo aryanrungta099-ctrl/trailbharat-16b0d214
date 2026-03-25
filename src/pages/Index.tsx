@@ -195,6 +195,18 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
+            {/* First Trek? Icon */}
+            <button
+              onClick={() => setShowFirstTrek(true)}
+              className="mb-6 flex flex-col items-center gap-2 group animate-reveal cursor-pointer bg-transparent border-none p-0"
+              aria-label="First Trek? Get personalized advice"
+            >
+              <div className="w-[90px] h-[90px] rounded-2xl bg-amber-900 flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all group-hover:scale-105 border-2 border-amber-700/50">
+                <Mountain className="h-10 w-10 text-amber-100" />
+              </div>
+              <span className="text-amber-100 font-serif font-bold text-lg tracking-wide group-hover:text-white transition-colors">First Trek?</span>
+            </button>
+
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails
             </h1>
