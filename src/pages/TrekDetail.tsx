@@ -470,16 +470,27 @@ const TrekDetail = () => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
                         return (
-                          <div key={day.day} className="flex gap-4 text-sm">
-                            <div className="shrink-0 w-16 text-right">
-                              <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
+                          <div key={day.day} className="border border-border rounded-xl overflow-hidden">
+                            {/* Day photo */}
+                            <div className="relative aspect-[3/1] bg-muted overflow-hidden">
+                              <img
+                                src={getDayPhoto(trek.id, day.day)}
+                                alt={`Day ${day.day}: ${day.title}`}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                              <div className="absolute bottom-3 left-4 right-4">
+                                <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs">Day {day.day}</span>
+                                <h4 className="text-white font-semibold text-sm mt-1">{day.title}</h4>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <div className="font-medium">{day.title}</div>
-                              <p className="text-muted-foreground mt-0.5">{day.description}</p>
-                              <div className="flex gap-3 mt-1 text-xs text-trek-stone">
-                                {day.distance && <span>📏 {day.distance}</span>}
-                                {day.elevation && <span>⛰️ {day.elevation}</span>}
+                            <div className="p-4">
+                              <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
+                              <div className="flex flex-wrap gap-3 mt-2 text-xs">
+                                {day.distance && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">📏 {day.distance}</span>}
+                                {day.elevation && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">⛰️ {day.elevation}</span>}
+                                {day.townAltitude && <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full">📍 {day.townAltitude.toLocaleString()}m</span>}
                               </div>
                               {/* Town/Village Info */}
                               {day.townName && day.townDescription && (
