@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { Search, Shield, MessageSquare, Users, ArrowRight, Leaf, Mountain, Droplets, Footprints, Compass, Home, Briefcase, ShoppingBag, MapPin, Phone, ExternalLink, Star, ChevronRight, Clock, TrendingUp, Filter, Heart, Play, Loader2, Sparkles } from "lucide-react";
 
 import heroImg1 from "@/assets/hero-mountains.jpg";
 import heroImg2 from "@/assets/hero-2.jpg";
@@ -10,6 +10,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
+import FirstTrekModal from "@/components/FirstTrekModal";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
 
@@ -69,6 +70,12 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showFirstTrek, setShowFirstTrek] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [trendingTopics, setTrendingTopics] = useState<string[]>([]);
+  const [trendingLoaded, setTrendingLoaded] = useState(false);
+  const aiDebounceRef = useRef<NodeJS.Timeout>();
 
   // Rotate hero image every 10 seconds
   useEffect(() => {
@@ -85,6 +92,40 @@ const Index = () => {
   }, []);
 
   const uniqueStates = useMemo(() => ["All", ...new Set(treks.map(t => t.state))].sort(), []);
+
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+  // Load trending topics once
+  useEffect(() => {
+    if (trendingLoaded) return;
+    fetch(`${SUPABASE_URL}/functions/v1/ai-search-suggestions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+      body: JSON.stringify({ type: "trending" }),
+    }).then(r => r.json()).then(data => {
+      if (data.suggestions?.length) setTrendingTopics(data.suggestions);
+      setTrendingLoaded(true);
+    }).catch(() => setTrendingLoaded(true));
+  }, []);
+
+  // AI autocomplete on search input
+  const fetchAiSuggestions = useCallback((q: string) => {
+    if (aiDebounceRef.current) clearTimeout(aiDebounceRef.current);
+    if (q.length < 3) { setAiSuggestions([]); return; }
+    aiDebounceRef.current = setTimeout(async () => {
+      setAiLoading(true);
+      try {
+        const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-search-suggestions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+          body: JSON.stringify({ query: q, type: "autocomplete" }),
+        });
+        const data = await resp.json();
+        setAiSuggestions(data.suggestions || []);
+      } catch { setAiSuggestions([]); }
+      setAiLoading(false);
+    }, 500);
+  }, []);
 
   // Top 10 treks by region filter
   const topTreks = useMemo(() => {
@@ -154,6 +195,18 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent" />
           <div className="relative z-10 container mx-auto px-4 pb-16 md:pb-24">
+            {/* First Trek? Icon */}
+            <button
+              onClick={() => setShowFirstTrek(true)}
+              className="mb-6 flex flex-col items-center gap-2 group animate-reveal cursor-pointer bg-transparent border-none p-0"
+              aria-label="First Trek? Get personalized advice"
+            >
+              <div className="w-[90px] h-[90px] rounded-2xl bg-amber-900 flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all group-hover:scale-105 border-2 border-amber-700/50">
+                <Mountain className="h-10 w-10 text-amber-100" />
+              </div>
+              <span className="text-amber-100 font-serif font-bold text-lg tracking-wide group-hover:text-white transition-colors">First Trek?</span>
+            </button>
+
             <h1 className="text-primary-foreground text-balance animate-reveal max-w-2xl text-6xl text-left font-serif">
               Amazing Trails
             </h1>
@@ -213,15 +266,34 @@ const Index = () => {
             </div>
             <div className="max-w-2xl mx-auto relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              {aiLoading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-primary" />}
               <input
                 type="text"
                 placeholder="Search treks by name, region, or state..."
                 value={searchQuery}
-                onChange={e => { setSearchQuery(e.target.value); setShowSuggestions(false); }}
+                onChange={e => {
+                  setSearchQuery(e.target.value);
+                  setShowSuggestions(false);
+                  fetchAiSuggestions(e.target.value);
+                }}
                 onFocus={() => { if (!searchQuery) setShowSuggestions(true); }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
+                onBlur={() => setTimeout(() => { setShowSuggestions(false); setAiSuggestions([]); }, 200)}
+                className="w-full pl-12 pr-10 py-4 rounded-xl border-2 border-primary/30 bg-card text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
               />
+              {/* AI Autocomplete suggestions */}
+              {aiSuggestions.length > 0 && searchQuery.length >= 3 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
+                  <p className="text-xs text-muted-foreground mb-2 px-2 font-medium flex items-center gap-1"><Sparkles className="h-3 w-3" /> AI Suggestions</p>
+                  <div className="space-y-1">
+                    {aiSuggestions.map(s => (
+                      <button key={s} onClick={() => { setSearchQuery(s); setAiSuggestions([]); }}
+                        className="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-muted transition-colors text-foreground">
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               {showSuggestions && !searchQuery && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-30 p-3">
                   <p className="text-xs text-muted-foreground mb-2 px-2 font-medium">Popular searches</p>
@@ -237,6 +309,23 @@ const Index = () => {
               )}
             </div>
           </ScrollReveal>
+
+          {/* AI Trending Topics */}
+          {trendingTopics.length > 0 && !searchResults && (
+            <ScrollReveal delay={100}>
+              <div className="max-w-2xl mx-auto mt-4">
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1"><Sparkles className="h-3 w-3 text-primary" /> Trending right now</p>
+                <div className="flex flex-wrap gap-2">
+                  {trendingTopics.map(t => (
+                    <button key={t} onClick={() => setSearchQuery(t)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/15 transition-colors">
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
 
           {searchResults && (
             <div className="mt-8">
@@ -551,6 +640,7 @@ const Index = () => {
         </section>
       </div>
       <JarvisChat />
+      <FirstTrekModal open={showFirstTrek} onClose={() => setShowFirstTrek(false)} />
     </main>
   );
 };

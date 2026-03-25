@@ -289,6 +289,12 @@ const TREK_PHOTOS = [
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop",
   "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&h=500&fit=crop",
   "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1434394354979-a235cd36269d?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&h=500&fit=crop",
+  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop",
 ];
 
 function getTrekImages(trek: Trek): { url: string; caption: string; source: string }[] {
@@ -298,6 +304,12 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
     { url: TREK_PHOTOS[(hash + 1) % TREK_PHOTOS.length], caption: `${trek.name} trail`, source: "Unsplash" },
     { url: TREK_PHOTOS[(hash + 2) % TREK_PHOTOS.length], caption: `${trek.state} mountains`, source: "Unsplash" },
   ];
+}
+
+// Get an itinerary day photo based on trek and day
+function getDayPhoto(trekId: string, day: number): string {
+  const hash = trekId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return TREK_PHOTOS[(hash + day * 3) % TREK_PHOTOS.length];
 }
 
 const TrekDetail = () => {
@@ -458,16 +470,27 @@ const TrekDetail = () => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
                         return (
-                          <div key={day.day} className="flex gap-4 text-sm">
-                            <div className="shrink-0 w-16 text-right">
-                              <span className="inline-flex items-center justify-center px-2 py-0.5 rounded bg-primary/10 text-primary font-medium text-xs">Day {day.day}</span>
+                          <div key={day.day} className="border border-border rounded-xl overflow-hidden">
+                            {/* Day photo */}
+                            <div className="relative aspect-[3/1] bg-muted overflow-hidden">
+                              <img
+                                src={getDayPhoto(trek.id, day.day)}
+                                alt={`Day ${day.day}: ${day.title}`}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                              <div className="absolute bottom-3 left-4 right-4">
+                                <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs">Day {day.day}</span>
+                                <h4 className="text-white font-semibold text-sm mt-1">{day.title}</h4>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <div className="font-medium">{day.title}</div>
-                              <p className="text-muted-foreground mt-0.5">{day.description}</p>
-                              <div className="flex gap-3 mt-1 text-xs text-trek-stone">
-                                {day.distance && <span>📏 {day.distance}</span>}
-                                {day.elevation && <span>⛰️ {day.elevation}</span>}
+                            <div className="p-4">
+                              <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
+                              <div className="flex flex-wrap gap-3 mt-2 text-xs">
+                                {day.distance && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">📏 {day.distance}</span>}
+                                {day.elevation && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">⛰️ {day.elevation}</span>}
+                                {day.townAltitude && <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full">📍 {day.townAltitude.toLocaleString()}m</span>}
                               </div>
                               {/* Town/Village Info */}
                               {day.townName && day.townDescription && (
