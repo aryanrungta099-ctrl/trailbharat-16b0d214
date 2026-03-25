@@ -310,7 +310,23 @@ const Index = () => {
             </div>
           </ScrollReveal>
 
-          {searchResults && (
+          {/* AI Trending Topics */}
+          {trendingTopics.length > 0 && !searchResults && (
+            <ScrollReveal delay={100}>
+              <div className="max-w-2xl mx-auto mt-4">
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1"><Sparkles className="h-3 w-3 text-primary" /> Trending right now</p>
+                <div className="flex flex-wrap gap-2">
+                  {trendingTopics.map(t => (
+                    <button key={t} onClick={() => setSearchQuery(t)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary hover:bg-primary/15 transition-colors">
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
+
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-4">{searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found</h3>
               {searchResults.length === 0 ? (
