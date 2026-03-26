@@ -588,10 +588,18 @@ const Index = () => {
             </div>
           ) : (
             <ScrollReveal>
-              <div className="bg-card rounded-xl border border-border p-12 text-center">
-                <Briefcase className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground text-sm">No agencies listed yet.</p>
-                <Link to="/agencies" className="text-xs text-primary hover:underline mt-2 inline-block">List your agency →</Link>
+              <div className="bg-primary text-primary-foreground rounded-2xl p-10 md:p-14 text-center">
+                <Briefcase className="h-10 w-10 mx-auto mb-4 opacity-80" />
+                <h3 className="text-xl md:text-2xl font-display mb-2">Are you a trekking agency?</h3>
+                <p className="opacity-80 max-w-md mx-auto mb-6">
+                  Get listed on Himalayan Trails and reach thousands of trekkers planning their next adventure.
+                </p>
+                <Link to="/agencies" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary-foreground text-primary font-semibold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]">
+                  Apply for free listing <ArrowRight className="h-4 w-4" />
+                </Link>
+                <p className="mt-4 text-xs opacity-60">
+                  <Link to="/agencies" className="underline underline-offset-2">Already listed? Manage your profile →</Link>
+                </p>
               </div>
             </ScrollReveal>
           )}
