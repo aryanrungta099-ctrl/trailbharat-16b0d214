@@ -788,7 +788,7 @@ const TrekDetail = () => {
           </div>
 
           {/* Right sidebar - services */}
-          <aside className="lg:w-80 shrink-0">
+          <aside className="lg:w-96 shrink-0">
             <div className="lg:sticky lg:top-20">
               <TrekServicePanel trek={trek} />
             </div>
