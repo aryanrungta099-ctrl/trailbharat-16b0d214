@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { ArrowLeft, MapPin, Clock, TrendingUp, Calendar, Shield, Users, Wallet, CloudSun, Home, Phone, Eye, AlertTriangle, Mountain, Share2, Star, MessageSquare, ChevronDown, ChevronUp, Briefcase, ExternalLink } from "lucide-react";
+import SEOHead, { trekSchema, breadcrumbSchema } from "@/components/SEOHead";
 import { treks, MONTHS, Trek } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras } from "@/data/trekExtras";
@@ -108,7 +109,39 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
   const visibleGuesthouses = showAllGuesthouses ? guesthouses : guesthouses.slice(0, 3);
   const visibleAgencies = showAllAgencies ? agencies : agencies.slice(0, 3);
 
-  if (sherpas.length === 0 && guesthouses.length === 0 && agencies.length === 0) return null;
+  if (sherpas.length === 0 && guesthouses.length === 0 && agencies.length === 0) {
+    return (
+      <div className="space-y-4">
+        {/* Decorative mountain illustration when no services */}
+        <div className="bg-card rounded-xl border border-border p-6 text-center">
+          <div className="mb-4">
+            <svg viewBox="0 0 300 200" className="w-full max-w-[260px] mx-auto opacity-15" fill="currentColor">
+              <path d="M0 200 L50 100 L100 140 L150 60 L200 120 L250 80 L300 200Z" />
+              <path d="M0 200 L80 130 L130 160 L180 90 L230 130 L300 200Z" opacity="0.5" />
+            </svg>
+          </div>
+          <h4 className="font-display text-sm font-semibold mb-2">Trek Services</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-3">No guides or guesthouses listed for this trek yet. Be the first to add one!</p>
+          <div className="space-y-2">
+            <Link to="/guides" className="block text-xs text-primary hover:underline">Find a Sherpa →</Link>
+            <Link to="/guesthouses" className="block text-xs text-primary hover:underline">List a Guesthouse →</Link>
+          </div>
+        </div>
+        {/* Quick facts sidebar */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h4 className="font-display text-sm font-semibold mb-3 flex items-center gap-2"><Mountain className="h-4 w-4 text-primary" /> Quick Facts</h4>
+          <div className="space-y-2.5 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">Region</span><span className="font-medium">{trek.region}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">State</span><span className="font-medium">{trek.state}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Country</span><span className="font-medium">{trek.country}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Duration</span><span className="font-medium">{trek.durationDays} days</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Max Altitude</span><span className="font-medium">{trek.altitudeMeters.toLocaleString()}m</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Difficulty</span><span className="font-medium">{trek.difficulty}</span></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -384,6 +417,15 @@ const TrekDetail = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
+      <SEOHead
+        title={trek.name}
+        description={`${trek.name} trek in ${trek.region}, ${trek.state} — ${trek.durationDays} days, ${trek.altitudeMeters.toLocaleString()}m altitude. ${trek.description.slice(0, 100)}`}
+        path={`/trek/${trek.id}`}
+        jsonLd={[
+          trekSchema(trek),
+          breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Trek Routes", url: "/routes" }, { name: trek.name, url: `/trek/${trek.id}` }]),
+        ]}
+      />
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
         <svg viewBox="0 0 1440 900" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
           <path d="M0 900 L0 600 L120 500 L240 550 L360 420 L480 480 L600 350 L720 400 L840 300 L960 380 L1080 280 L1200 350 L1320 250 L1440 320 L1440 900Z" fill="currentColor"/>
@@ -399,7 +441,7 @@ const TrekDetail = () => {
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
-          <div className="flex-1 min-w-0 max-w-4xl">
+          <div className="flex-1 min-w-0">
             {/* Header */}
             <ScrollReveal>
               <div className="bg-card rounded-2xl border border-border p-8 mb-6 shadow-sm">
@@ -746,7 +788,7 @@ const TrekDetail = () => {
           </div>
 
           {/* Right sidebar - services */}
-          <aside className="lg:w-80 shrink-0">
+          <aside className="lg:w-96 shrink-0">
             <div className="lg:sticky lg:top-20">
               <TrekServicePanel trek={trek} />
             </div>

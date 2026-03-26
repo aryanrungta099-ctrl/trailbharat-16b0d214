@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Tag, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 interface BlogPost {
   id: string;
@@ -35,6 +36,12 @@ const Blog = () => {
 
   return (
     <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
+      <SEOHead
+        title="Blog"
+        description="Trekking guides, safety tips, gear reviews, and stories from the Himalayas. Expert advice for your next adventure."
+        path="/blog"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Blog", url: "/blog" }])}
+      />
       <div className="max-w-4xl mx-auto">
         <h1 className="text-balance mb-2">Blog</h1>
         <p className="text-muted-foreground mb-8 max-w-lg">

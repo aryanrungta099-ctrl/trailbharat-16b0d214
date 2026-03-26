@@ -5,6 +5,7 @@ import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras, TrekExtras } from "@/data/trekExtras";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -87,6 +88,12 @@ const Routes = () => {
 
   return (
     <main className="pt-24 pb-16 relative">
+      <SEOHead
+        title="Trek Routes"
+        description={`Explore ${treks.length}+ trekking routes across India & Nepal. Filter by difficulty, altitude, duration, and season.`}
+        path="/routes"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Trek Routes", url: "/routes" }])}
+      />
       <Link to="/suggest" className="fixed top-20 right-4 z-40 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-lg hover:shadow-xl active:scale-[0.97] transition-all">
         <Compass className="h-4 w-4" /> Suggest Trek
       </Link>
