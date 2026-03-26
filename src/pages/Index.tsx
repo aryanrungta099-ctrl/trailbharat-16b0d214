@@ -241,8 +241,30 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Social Proof Bar */}
+        <section className="bg-primary text-primary-foreground py-5 relative z-20 -mt-8">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+              {[
+                { num: "181+", label: "Verified Routes" },
+                { num: "50,000+", label: "Trekkers Helped" },
+                { num: "3,600–8,849m", label: "Altitude Range" },
+                { num: "All Year", label: "Trekking Seasons" },
+              ].map((stat, i) => (
+                <div key={stat.label} className="text-center flex items-center gap-4">
+                  <div>
+                    <div className="font-display text-xl md:text-2xl font-bold italic">{stat.num}</div>
+                    <div className="text-xs uppercase tracking-widest opacity-80 font-body">{stat.label}</div>
+                  </div>
+                  {i < 3 && <div className="hidden md:block w-px h-10 bg-primary-foreground/20" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Features */}
-        <section className="container mx-auto px-4 -mt-8 relative z-20 pb-12">
+        <section className="container mx-auto px-4 mt-12 relative z-20 pb-12">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) => (
               <ScrollReveal key={f.to} delay={i * 100}>
