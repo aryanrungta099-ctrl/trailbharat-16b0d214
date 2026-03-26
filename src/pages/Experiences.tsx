@@ -112,6 +112,12 @@ const Experiences = () => {
 
   return (
     <main className="pt-24 pb-16">
+      <SEOHead
+        title="Experiences"
+        description="Read real stories from fellow trekkers and share your own Himalayan trail tales with the community."
+        path="/experiences"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Experiences", url: "/experiences" }])}
+      />
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <h1 className="text-balance mb-2">Trekker Experiences</h1>
