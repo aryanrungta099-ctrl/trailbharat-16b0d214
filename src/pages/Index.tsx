@@ -648,7 +648,63 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Stats */}
+        {/* HikerAI Feature Section */}
+        <section className="container mx-auto px-4 pb-24">
+          <ScrollReveal>
+            <div className="bg-muted/50 rounded-2xl border border-border p-8 md:p-12 overflow-hidden relative" style={{ backgroundImage: "radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
+              <div className="flex flex-col lg:flex-row gap-10 items-center relative z-10">
+                <div className="flex-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-primary/10 text-primary mb-4">
+                    <Sparkles className="h-3 w-3" /> AI-Powered
+                  </span>
+                  <h2 className="text-balance mb-3">Plan smarter with HikerAI</h2>
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    Our AI assistant knows every trail, permit requirement, and weather window across India & Nepal.
+                  </p>
+                  <div className="space-y-3 mb-6">
+                    {[
+                      { icon: Compass, text: "Route suggestions based on fitness & season" },
+                      { icon: Shield, text: "Real-time weather and trail condition alerts" },
+                      { icon: ShoppingBag, text: "Personalised gear checklist for your specific trek" },
+                    ].map(item => (
+                      <div key={item.text} className="flex items-center gap-3 text-sm">
+                        <item.icon className="h-4 w-4 text-primary shrink-0" />
+                        <span>{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent("open-hiker-ai"))}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-lg hover:shadow-xl transition-shadow active:scale-[0.97]"
+                  >
+                    Try HikerAI Free <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="flex-1 max-w-md">
+                  <div className="bg-card rounded-xl border border-border shadow-lg p-5 space-y-3">
+                    <div className="flex justify-end">
+                      <div className="bg-muted rounded-lg px-4 py-2.5 text-sm max-w-[85%]">
+                        I want to do my first trek in October, moderate fitness
+                      </div>
+                    </div>
+                    <div className="flex justify-start">
+                      <div className="bg-primary/10 text-primary rounded-lg px-4 py-2.5 text-sm max-w-[85%]">
+                        Perfect timing! I'd recommend <strong>Hampta Pass</strong> in Himachal Pradesh — 5 days, stunning snow crossings, ideal for October. Want me to build your gear checklist?
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <div className="bg-muted rounded-lg px-4 py-2.5 text-sm">
+                        Yes please!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </section>
+
+        {/* Why Trek with Us */}
         <section className="container mx-auto px-4 pb-24">
           <ScrollReveal>
             <div className="text-center mb-12">
@@ -658,7 +714,7 @@ const Index = () => {
               </p>
             </div>
           </ScrollReveal>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             {[
               { num: "200+", label: "Curated Routes" },
               { num: "50,000+", label: "Trekkers Helped" },
@@ -668,12 +724,26 @@ const Index = () => {
               <ScrollReveal key={stat.label} delay={i * 80}>
                 <div className="text-center p-6 bg-card rounded-xl border border-border relative overflow-hidden">
                   <LeafDecor className="top-1 right-1 rotate-45 text-trek-moss" />
-                  <div className="font-display text-2xl md:text-3xl font-bold text-primary">{stat.num}</div>
+                  <div className="font-display text-2xl md:text-3xl font-bold italic text-primary">{stat.num}</div>
                   <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
                 </div>
               </ScrollReveal>
             ))}
           </div>
+          <ScrollReveal delay={200}>
+            <div className="max-w-xl mx-auto space-y-3">
+              {[
+                "Verified route data updated seasonally",
+                "Real reviews from the trekking community",
+                "Free to use — no booking fees ever",
+              ].map(text => (
+                <div key={text} className="flex items-center gap-3 text-sm">
+                  <span className="text-primary font-bold">✓</span>
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </section>
       </div>
       <JarvisChat />
