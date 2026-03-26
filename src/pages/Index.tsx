@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 import FirstTrekModal from "@/components/FirstTrekModal";
+import SEOHead, { websiteSchema } from "@/components/SEOHead";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
 
@@ -624,7 +625,7 @@ const Index = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { num: "200+", label: "Curated Routes" },
-              { num: "2", label: "Countries" },
+              { num: "50,000+", label: "Trekkers Helped" },
               { num: "3,600–8,849m", label: "Altitude Range" },
               { num: "All Year", label: "Trekking Seasons" },
             ].map((stat, i) => (
