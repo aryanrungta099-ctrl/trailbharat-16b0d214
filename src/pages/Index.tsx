@@ -445,12 +445,6 @@ const Index = () => {
                       ) : (
                         <Link to={`/trek/${trek.id}`} className="text-xs text-primary hover:underline">Be the first to review →</Link>
                       )}
-                          <span className="font-semibold text-sm tabular-nums">{rev.avg.toFixed(1)}</span>
-                          <span className="text-xs text-muted-foreground">({rev.count})</span>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">No reviews yet</span>
-                      )}
                     </div>
                     <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                   </Link>
