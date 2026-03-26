@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { ArrowLeft, MapPin, Clock, TrendingUp, Calendar, Shield, Users, Wallet, CloudSun, Home, Phone, Eye, AlertTriangle, Mountain, Share2, Star, MessageSquare, ChevronDown, ChevronUp, Briefcase, ExternalLink } from "lucide-react";
+import SEOHead, { trekSchema, breadcrumbSchema } from "@/components/SEOHead";
 import { treks, MONTHS, Trek } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras } from "@/data/trekExtras";

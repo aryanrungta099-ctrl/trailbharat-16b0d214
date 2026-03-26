@@ -178,6 +178,12 @@ const Index = () => {
 
   return (
     <main className="bg-gradient-to-b from-background via-muted/20 to-background relative overflow-hidden">
+      <SEOHead
+        title="Himalayan Trails"
+        description="Your complete guide to trekking across India & Nepal — 200+ routes, safety tips, gear guides, and real stories from the trail."
+        path="/"
+        jsonLd={websiteSchema}
+      />
       {/* Subtle mountain background */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.025] z-0">
         <svg viewBox="0 0 1440 900" className="w-full h-full" preserveAspectRatio="xMidYMid slice">

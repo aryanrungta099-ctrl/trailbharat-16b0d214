@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Tag, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 interface BlogPost {
   id: string;

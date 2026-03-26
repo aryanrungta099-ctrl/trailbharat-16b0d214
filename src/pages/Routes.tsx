@@ -5,6 +5,7 @@ import { treks, Trek, allDifficulties, allRegions, MONTHS, TrekBudget } from "@/
 import { generateBudget } from "@/data/budgets";
 import { generateTrekExtras, TrekExtras } from "@/data/trekExtras";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",

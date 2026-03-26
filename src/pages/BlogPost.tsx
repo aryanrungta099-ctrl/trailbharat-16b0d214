@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { articleSchema, breadcrumbSchema } from "@/components/SEOHead";
 
 interface BlogPostData {
   id: string;
