@@ -53,18 +53,20 @@ const BlogPost = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen">
-      {/* SEO: JSON-LD */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.excerpt,
-        image: post.cover_image_url,
-        datePublished: post.created_at,
-        dateModified: post.updated_at,
-        url: window.location.href,
-        publisher: { "@type": "Organization", name: "Himalayan Trails" },
-      }) }} />
+      <SEOHead
+        title={post.title}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        image={post.cover_image_url || undefined}
+        type="article"
+        publishedTime={post.created_at}
+        modifiedTime={post.updated_at}
+        tags={post.tags}
+        jsonLd={[
+          articleSchema({ title: post.title, excerpt: post.excerpt, coverImage: post.cover_image_url, createdAt: post.created_at, updatedAt: post.updated_at, slug: post.slug }),
+          breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Blog", url: "/blog" }, { name: post.title, url: `/blog/${post.slug}` }]),
+        ]}
+      />
 
       <div className="container mx-auto px-4 max-w-3xl">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
