@@ -385,6 +385,15 @@ const TrekDetail = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
+      <SEOHead
+        title={trek.name}
+        description={`${trek.name} trek in ${trek.region}, ${trek.state} — ${trek.durationDays} days, ${trek.altitudeMeters.toLocaleString()}m altitude. ${trek.description.slice(0, 100)}`}
+        path={`/trek/${trek.id}`}
+        jsonLd={[
+          trekSchema(trek),
+          breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Trek Routes", url: "/routes" }, { name: trek.name, url: `/trek/${trek.id}` }]),
+        ]}
+      />
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0">
         <svg viewBox="0 0 1440 900" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
           <path d="M0 900 L0 600 L120 500 L240 550 L360 420 L480 480 L600 350 L720 400 L840 300 L960 380 L1080 280 L1200 350 L1320 250 L1440 320 L1440 900Z" fill="currentColor"/>
@@ -400,7 +409,7 @@ const TrekDetail = () => {
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
-          <div className="flex-1 min-w-0 max-w-4xl">
+          <div className="flex-1 min-w-0">
             {/* Header */}
             <ScrollReveal>
               <div className="bg-card rounded-2xl border border-border p-8 mb-6 shadow-sm">

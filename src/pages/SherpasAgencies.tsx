@@ -2,12 +2,19 @@ import { useState } from "react";
 import { Mountain, Briefcase } from "lucide-react";
 import Sherpas from "@/pages/Sherpas";
 import Agencies from "@/pages/Agencies";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const SherpasAgencies = () => {
   const [tab, setTab] = useState<"sherpas" | "agencies">("sherpas");
 
   return (
     <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
+      <SEOHead
+        title="Sherpas & Agencies"
+        description="Find experienced mountain guides and professional trekking agencies across India & Nepal for your next Himalayan trek."
+        path="/guides"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Sherpas & Agencies", url: "/guides" }])}
+      />
       <div className="mb-8">
         <h1 className="text-balance">Find a Sherpa or Agency</h1>
         <p className="text-muted-foreground mt-2 max-w-lg">
