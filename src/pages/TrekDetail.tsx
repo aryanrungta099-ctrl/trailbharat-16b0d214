@@ -109,7 +109,39 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
   const visibleGuesthouses = showAllGuesthouses ? guesthouses : guesthouses.slice(0, 3);
   const visibleAgencies = showAllAgencies ? agencies : agencies.slice(0, 3);
 
-  if (sherpas.length === 0 && guesthouses.length === 0 && agencies.length === 0) return null;
+  if (sherpas.length === 0 && guesthouses.length === 0 && agencies.length === 0) {
+    return (
+      <div className="space-y-4">
+        {/* Decorative mountain illustration when no services */}
+        <div className="bg-card rounded-xl border border-border p-6 text-center">
+          <div className="mb-4">
+            <svg viewBox="0 0 300 200" className="w-full max-w-[260px] mx-auto opacity-15" fill="currentColor">
+              <path d="M0 200 L50 100 L100 140 L150 60 L200 120 L250 80 L300 200Z" />
+              <path d="M0 200 L80 130 L130 160 L180 90 L230 130 L300 200Z" opacity="0.5" />
+            </svg>
+          </div>
+          <h4 className="font-display text-sm font-semibold mb-2">Trek Services</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-3">No guides or guesthouses listed for this trek yet. Be the first to add one!</p>
+          <div className="space-y-2">
+            <Link to="/guides" className="block text-xs text-primary hover:underline">Find a Sherpa →</Link>
+            <Link to="/guesthouses" className="block text-xs text-primary hover:underline">List a Guesthouse →</Link>
+          </div>
+        </div>
+        {/* Quick facts sidebar */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <h4 className="font-display text-sm font-semibold mb-3 flex items-center gap-2"><Mountain className="h-4 w-4 text-primary" /> Quick Facts</h4>
+          <div className="space-y-2.5 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">Region</span><span className="font-medium">{trek.region}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">State</span><span className="font-medium">{trek.state}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Country</span><span className="font-medium">{trek.country}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Duration</span><span className="font-medium">{trek.durationDays} days</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Max Altitude</span><span className="font-medium">{trek.altitudeMeters.toLocaleString()}m</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Difficulty</span><span className="font-medium">{trek.difficulty}</span></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
