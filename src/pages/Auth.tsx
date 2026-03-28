@@ -60,6 +60,7 @@ const Auth = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen flex items-center justify-center">
+      <SEOHead title="Sign In" description="Sign in or create an account on Himalayan Trails." path="/auth" noIndex />
       <ScrollReveal>
         <div className="bg-card rounded-xl border border-border p-8 w-full max-w-md shadow-sm">
           <div className="flex items-center justify-center gap-2 mb-6">

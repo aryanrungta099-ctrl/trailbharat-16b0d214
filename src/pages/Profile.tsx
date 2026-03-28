@@ -125,6 +125,7 @@ const Profile = () => {
   return (
     <>
       {celebrateBadge && <BadgeCelebration badge={celebrateBadge} onDone={() => setCelebrateBadge(null)} />}
+      <SEOHead title="My Profile" description="View your trekking profile, badges, and completed treks." path="/profile" noIndex />
 
       <main className="pt-24 pb-16 min-h-screen relative overflow-hidden">
         {/* Mountain-themed background */}

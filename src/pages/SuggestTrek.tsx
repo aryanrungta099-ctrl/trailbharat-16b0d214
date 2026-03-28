@@ -116,6 +116,12 @@ const SuggestTrek = () => {
 
   return (
     <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen max-w-2xl">
+      <SEOHead
+        title="Suggest Me a Trek"
+        description="Answer 4 quick questions about your fitness, budget, and schedule to find the perfect Himalayan trek."
+        path="/suggest"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Suggest Trek", url: "/suggest" }])}
+      />
       <ScrollReveal>
         <div className="text-center mb-10">
           <Compass className="h-10 w-10 text-primary mx-auto mb-4" />
