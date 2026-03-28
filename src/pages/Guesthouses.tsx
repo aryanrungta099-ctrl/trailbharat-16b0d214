@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Home, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, MapPin, Check } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 interface GuesthouseListing {
   id: string;
@@ -195,6 +196,12 @@ const Guesthouses = () => {
 
   return (
     <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
+      <SEOHead
+        title="Guesthouses"
+        description="Find comfortable guesthouses along popular trek routes in India & Nepal. Verified stays with amenities, prices, and reviews."
+        path="/guesthouses"
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Guesthouses", url: "/guesthouses" }])}
+      />
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
         <div>
           <h1 className="text-balance">Guesthouse Directory</h1>

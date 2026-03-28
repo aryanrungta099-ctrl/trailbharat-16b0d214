@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { moderateContent } from "@/lib/moderation";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 function StarRating({ rating, onRate, interactive = false, size = "h-4 w-4" }: { rating: number; onRate?: (r: number) => void; interactive?: boolean; size?: string }) {
   return (
@@ -81,6 +82,12 @@ const SherpaDetail = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen">
+      <SEOHead
+        title={sherpa.name}
+        description={`${sherpa.name} — experienced mountain guide. ${sherpa.description.slice(0, 120)}`}
+        path={`/sherpa/${id}`}
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Guides", url: "/guides" }, { name: sherpa.name, url: `/sherpa/${id}` }])}
+      />
       <div className="container mx-auto px-4 max-w-4xl">
         <Link to="/guides" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4" /> Back to Sherpas & Agencies

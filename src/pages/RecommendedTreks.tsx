@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const RecommendedTreks = () => {
   const { user, loading: authLoading } = useAuth();
@@ -68,6 +69,13 @@ const RecommendedTreks = () => {
 
   return (
     <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
+      <SEOHead
+        title="Recommended Treks"
+        description="Get personalised trek recommendations based on your fitness level, health profile, and trekking experience."
+        path="/recommended"
+        noIndex
+        jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Recommended Treks", url: "/recommended" }])}
+      />
       <div className="container mx-auto px-4 max-w-6xl">
         <ScrollReveal>
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">

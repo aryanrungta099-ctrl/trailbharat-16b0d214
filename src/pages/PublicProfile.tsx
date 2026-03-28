@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
 import { getEarnedBadges } from "@/data/badges";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead from "@/components/SEOHead";
 
 const PublicProfile = () => {
   const { userId } = useParams();
@@ -30,8 +31,15 @@ const PublicProfile = () => {
   if (loading) return <main className="pt-24 pb-16 min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Loading…</p></main>;
   if (!profile) return <main className="pt-24 pb-16 min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Profile not found</p></main>;
 
+  const displayName = profile.display_name || "Trekker";
+
   return (
     <main className="pt-24 pb-16 min-h-screen relative overflow-hidden">
+      <SEOHead
+        title={`${displayName}'s Profile`}
+        description={`View ${displayName}'s trekking badges and completed treks on Himalayan Trails.`}
+        path={`/profile/${userId}`}
+      />
       {/* Mountain background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-trek-forest/5 via-background to-trek-earth/5" />
