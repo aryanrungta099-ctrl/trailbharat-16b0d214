@@ -7,6 +7,7 @@ import { treks } from "@/data/treks";
 import { getEarnedBadges, Badge } from "@/data/badges";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
+import SEOHead from "@/components/SEOHead";
 
 /* ── Badge Celebration Overlay ── */
 const BadgeCelebration = ({ badge, onDone }: { badge: Badge; onDone: () => void }) => {

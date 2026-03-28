@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const RecommendedTreks = () => {
   const { user, loading: authLoading } = useAuth();

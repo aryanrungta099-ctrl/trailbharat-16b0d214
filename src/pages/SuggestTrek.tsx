@@ -4,6 +4,7 @@ import { Compass, ArrowRight, MapPin, Clock, TrendingUp, Calendar, RotateCcw } f
 import { treks, allRegions, MONTHS, Trek } from "@/data/treks";
 import { generateBudget } from "@/data/budgets";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const STORAGE_KEY = "suggest-trek-prefs";
 

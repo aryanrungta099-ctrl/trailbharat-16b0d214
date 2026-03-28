@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
 import { Mountain } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead from "@/components/SEOHead";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");

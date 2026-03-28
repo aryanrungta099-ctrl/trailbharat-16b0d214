@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Phone, IndianRupee, Home, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, MapPin, Check } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 interface GuesthouseListing {
   id: string;

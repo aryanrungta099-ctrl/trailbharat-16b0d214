@@ -5,3 +5,4 @@ Disallow: /auth
 Disallow: /profile
 
 Sitemap: https://himalayantrails.aryanrungta.com/sitemap.xml
+Sitemap: https://otzzgoelrtpdwkhvkntk.supabase.co/functions/v1/generate-sitemap

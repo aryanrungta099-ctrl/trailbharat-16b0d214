@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
 import { getEarnedBadges } from "@/data/badges";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead from "@/components/SEOHead";
 
 const PublicProfile = () => {
   const { userId } = useParams();
