@@ -17,6 +17,8 @@ const difficultyColor: Record<string, string> = {
   Moderate: "bg-trek-sky/15 text-trek-sky",
   Difficult: "bg-trek-sunrise/15 text-trek-sunrise",
   Challenging: "bg-destructive/15 text-destructive",
+  Expert: "bg-purple-500/15 text-purple-700",
+  Local: "bg-amber-500/15 text-amber-700",
 };
 
 const safetyColor: Record<string, string> = {
