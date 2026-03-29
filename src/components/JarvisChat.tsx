@@ -115,7 +115,7 @@ export default function JarvisChat() {
 
   return (
     <>
-      {/* Floating button — top right, bigger */}
+      {/* Floating button — mountain icon with AI symbol */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
@@ -123,14 +123,29 @@ export default function JarvisChat() {
           "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
-            : "bg-primary text-primary-foreground hover:bg-primary/90 animate-bounce hover:animate-none"
+            : "bg-[#5c3a1e] text-white hover:bg-[#4a2e15] ring-2 ring-[#5c3a1e]/30 ring-offset-2 ring-offset-background"
         )}
         aria-label={open ? "Close HikerAI" : "Open HikerAI"}
       >
-        {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
+        {open ? (
+          <X className="w-7 h-7" />
+        ) : (
+          <div className="relative flex items-center justify-center">
+            {/* Brown mountain */}
+            <svg viewBox="0 0 40 40" className="w-10 h-10">
+              <polygon points="20,6 4,34 36,34" fill="#c9973a" stroke="#a07830" strokeWidth="1" />
+              <polygon points="20,6 14,20 26,20" fill="#e8dcc8" opacity="0.3" />
+              <polygon points="20,14 16,22 24,22" fill="white" opacity="0.5" />
+            </svg>
+            {/* ChatGPT-style symbol overlay */}
+            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shadow-md border-2 border-background">
+              <span className="text-[8px] font-black text-white leading-none">AI</span>
+            </div>
+          </div>
+        )}
       </button>
       {!open && (
-        <span className="fixed top-[6.25rem] right-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
+        <span className="fixed top-[6.25rem] right-[5.25rem] z-50 bg-[#5c3a1e] text-white text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
           HikerAI
         </span>
       )}

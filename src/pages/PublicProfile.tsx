@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { User, Award, Mountain, MapPin, TrendingUp, Calendar } from "lucide-react";
+import TrekCollectionCard from "@/components/TrekCollectionCard";
 import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
 import { getEarnedBadges } from "@/data/badges";
@@ -88,29 +89,17 @@ const PublicProfile = () => {
           </div>
         </ScrollReveal>
 
-        {/* Completed treks */}
+        {/* Trek Collection Cards */}
         <ScrollReveal delay={120}>
-          <h2 className="text-lg font-display font-semibold mb-4">Completed Treks</h2>
+          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+            <Mountain className="h-5 w-5 text-primary" /> {displayName}'s Collection
+          </h2>
           {completedTrekData.length === 0 ? (
             <p className="text-muted-foreground text-sm">No treks completed yet</p>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {completedTrekData.map(trek => (
-                <Link key={trek.id} to={`/trek/${trek.id}`} className="block bg-card/80 backdrop-blur-sm rounded-xl border border-border p-4 shadow-sm hover:shadow-md transition-all">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Mountain className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{trek.name}</div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-3 mt-1">
-                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{trek.country}</span>
-                        <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" />{trek.altitudeMeters.toLocaleString()}m</span>
-                        <span>{trek.difficulty}</span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <TrekCollectionCard key={trek.id} trek={trek} />
               ))}
             </div>
           )}
