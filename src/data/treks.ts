@@ -26,7 +26,7 @@ export interface Trek {
   country: "India" | "Nepal";
   region: string;
   state: string;
-  difficulty: "Easy" | "Moderate" | "Difficult" | "Challenging";
+  difficulty: "Easy" | "Moderate" | "Difficult" | "Challenging" | "Expert" | "Local";
   durationDays: number;
   altitudeMeters: number;
   bestMonths: number[];
