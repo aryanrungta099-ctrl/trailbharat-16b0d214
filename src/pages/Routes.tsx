@@ -12,6 +12,8 @@ const difficultyColor: Record<string, string> = {
   Moderate: "bg-trek-sky/15 text-trek-sky",
   Difficult: "bg-trek-sunrise/15 text-trek-sunrise",
   Challenging: "bg-destructive/15 text-destructive",
+  Expert: "bg-purple-500/15 text-purple-700",
+  Local: "bg-amber-500/15 text-amber-700",
 };
 
 const safetyColor: Record<string, string> = {
@@ -40,8 +42,10 @@ const altitudeRanges = [
 const CIRCUIT_KEYWORDS = ["circuit", "pass", "three passes"];
 const isAdvancedTrek = (t: Trek) =>
   t.altitudeMeters >= 5000 || CIRCUIT_KEYWORDS.some((kw) => t.name.toLowerCase().includes(kw));
+const isExpertTrek = (t: Trek) => t.difficulty === "Expert" || t.altitudeMeters >= 6000;
+const isLocalTrek = (t: Trek) => t.difficulty === "Local" || t.durationDays <= 2;
 
-type Tab = "beginner" | "advanced";
+type Tab = "beginner" | "advanced" | "expert" | "local";
 type DetailTab = "overview" | "budget" | "weather" | "guesthouses" | "emergency";
 
 const Routes = () => {
