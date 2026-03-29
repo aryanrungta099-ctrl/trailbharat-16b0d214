@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Award, Mountain, Plus, Trash2, Heart, Save } from "lucide-react";
+import { User, Award, Mountain, Plus, Trash2, Heart, Save, Eye } from "lucide-react";
+import TrekCollectionCard from "@/components/TrekCollectionCard";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
@@ -279,34 +280,31 @@ const Profile = () => {
             </div>
           </ScrollReveal>
 
-          {/* Completed treks list */}
+          {/* Trek Collection Cards */}
           <ScrollReveal delay={160}>
-            <h2 className="text-lg font-display font-semibold mb-4">Completed Treks</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+                <Mountain className="h-5 w-5 text-primary" /> Your Collection
+              </h2>
+              <Link to={`/profile/${user.id}`} className="text-xs text-primary hover:underline flex items-center gap-1">
+                <Eye className="h-3 w-3" /> Public View
+              </Link>
+            </div>
             {completedTrekData.length === 0 ? (
               <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-8 text-center text-muted-foreground text-sm">
                 No treks completed yet. Start logging your adventures!
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {completedTrekData.map(trek => (
-                  <div key={trek.id} className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Mountain className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{trek.name}</div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-3 mt-1">
-                        <span>{trek.country}</span>
-                        <span>{trek.altitudeMeters.toLocaleString()}m</span>
-                        <span>{trek.difficulty}</span>
-                      </div>
-                    </div>
+                  <div key={trek.id} className="relative group">
+                    <TrekCollectionCard trek={trek} />
                     <button
-                      onClick={() => removeTrek(trek.id)}
-                      className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors active:scale-95"
+                      onClick={(e) => { e.preventDefault(); removeTrek(trek.id); }}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-destructive/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive z-10"
                       title="Remove"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3" />
                     </button>
                   </div>
                 ))}
