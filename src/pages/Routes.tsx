@@ -67,7 +67,12 @@ const Routes = () => {
   };
 
   const tabTreks = useMemo(() => {
-    return tab === "beginner" ? treks.filter((t) => !isAdvancedTrek(t)) : treks.filter(isAdvancedTrek);
+    switch (tab) {
+      case "expert": return treks.filter(isExpertTrek);
+      case "local": return treks.filter(isLocalTrek);
+      case "advanced": return treks.filter(t => isAdvancedTrek(t) && !isExpertTrek(t));
+      default: return treks.filter(t => !isAdvancedTrek(t) && !isLocalTrek(t));
+    }
   }, [tab]);
 
   const filtered = useMemo(() => {
