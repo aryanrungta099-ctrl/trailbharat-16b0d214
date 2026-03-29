@@ -47,6 +47,7 @@ const Profile = () => {
   const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null; age: number | null; height_cm: number | null; weight_kg: number | null; health_conditions: string | null } | null>(null);
   const [celebrateBadge, setCelebrateBadge] = useState<Badge | null>(null);
   const seenBadgesRef = useRef<Set<string>>(new Set());
+  const seenBadgesLoaded = useRef(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
@@ -76,24 +77,21 @@ const Profile = () => {
     if (stored) {
       try { seenBadgesRef.current = new Set(JSON.parse(stored)); } catch { /* ignore */ }
     }
+    seenBadgesLoaded.current = true;
   }, [user]);
 
-  // Detect truly NEW badge (not seen before) and celebrate
+  // Detect truly NEW badge (not seen before) and celebrate — only after localStorage loaded
   useEffect(() => {
-    if (!user || earnedBadges.length === 0) return;
+    if (!user || earnedBadges.length === 0 || !seenBadgesLoaded.current) return;
     const newBadge = earnedBadges.find(b => !seenBadgesRef.current.has(b.id));
-    if (newBadge) {
+    if (newBadge && seenBadgesRef.current.size > 0) {
+      // Only celebrate if user had previous badges (not first visit)
       setCelebrateBadge(newBadge);
-      // Mark all current badges as seen
-      const allIds = earnedBadges.map(b => b.id);
-      seenBadgesRef.current = new Set(allIds);
-      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
-    } else if (seenBadgesRef.current.size === 0) {
-      // First load — mark all existing as seen without celebrating
-      const allIds = earnedBadges.map(b => b.id);
-      seenBadgesRef.current = new Set(allIds);
-      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
     }
+    // Always mark all current badges as seen
+    const allIds = earnedBadges.map(b => b.id);
+    seenBadgesRef.current = new Set(allIds);
+    localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
   }, [earnedBadges, user]);
 
   const addCompletedTrek = async () => {
