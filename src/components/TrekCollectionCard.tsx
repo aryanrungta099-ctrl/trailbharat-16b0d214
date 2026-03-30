@@ -1,59 +1,49 @@
 import { Link } from "react-router-dom";
-import { MapPin, TrendingUp, Clock, Mountain } from "lucide-react";
+import { MapPin, TrendingUp, Clock } from "lucide-react";
 import type { Trek } from "@/data/treks";
 
-const difficultyGradient: Record<string, string> = {
-  Easy: "from-emerald-600 to-emerald-800",
-  Moderate: "from-sky-600 to-sky-800",
-  Difficult: "from-amber-600 to-amber-800",
-  Challenging: "from-red-600 to-red-800",
-  Expert: "from-purple-600 to-purple-800",
-  Local: "from-yellow-600 to-yellow-800",
-};
-
-const difficultyBorder: Record<string, string> = {
-  Easy: "border-emerald-500/30",
-  Moderate: "border-sky-500/30",
-  Difficult: "border-amber-500/30",
-  Challenging: "border-red-500/30",
-  Expert: "border-purple-500/30",
-  Local: "border-yellow-500/30",
+const difficultyColor: Record<string, string> = {
+  Easy: "#74c69d",
+  Moderate: "#c9973a",
+  Difficult: "#c9973a",
+  Challenging: "#e05c5c",
+  Expert: "#a78bfa",
+  Local: "#c9973a",
 };
 
 export default function TrekCollectionCard({ trek }: { trek: Trek }) {
-  const grad = difficultyGradient[trek.difficulty] || difficultyGradient.Moderate;
-  const border = difficultyBorder[trek.difficulty] || difficultyBorder.Moderate;
+  const color = difficultyColor[trek.difficulty] || difficultyColor.Moderate;
 
   return (
     <Link
       to={`/trek/${trek.id}`}
-      className={`group block rounded-2xl border-2 ${border} overflow-hidden shadow-md hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]`}
+      className="group block glass-card glass-card-transition rounded-2xl overflow-hidden relative"
     >
-      {/* Card header with mountain art */}
-      <div className={`relative bg-gradient-to-br ${grad} h-28 flex items-end p-4`}>
+      {/* Left colored bar */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r" style={{ background: color }} />
+
+      {/* Card header */}
+      <div className="relative h-24 flex items-end p-4 overflow-hidden" style={{ background: `linear-gradient(135deg, ${color}15, ${color}08)` }}>
         {/* Mountain silhouette */}
-        <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 200 100" preserveAspectRatio="none">
-          <polygon points="0,100 40,30 80,70 120,20 160,60 200,10 200,100" fill="white" />
+        <svg className="absolute inset-0 w-full h-full opacity-[0.06]" viewBox="0 0 200 100" preserveAspectRatio="none">
+          <polygon points="0,100 40,30 80,70 120,20 160,60 200,10 200,100" fill="currentColor" />
         </svg>
-        {/* Difficulty badge */}
-        <span className="relative z-10 text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full">
+        <span className="relative z-10 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${color}20`, color }}>
           {trek.difficulty}
         </span>
-        {/* Country flag */}
-        <span className="relative z-10 ml-auto text-[10px] font-medium bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full">
+        <span className="relative z-10 ml-auto text-[10px] font-medium text-foreground/40 px-2 py-0.5 rounded-full bg-foreground/[0.05]">
           {trek.country === "India" ? "🇮🇳" : "🇳🇵"} {trek.country}
         </span>
       </div>
 
-      {/* Card body */}
-      <div className="bg-card p-4">
+      <div className="p-4">
         <h3 className="font-display font-bold text-sm truncate group-hover:text-primary transition-colors">
           {trek.name}
         </h3>
-        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+        <p className="text-xs text-foreground/35 mt-1 flex items-center gap-1">
           <MapPin className="h-3 w-3" /> {trek.region}, {trek.state}
         </p>
-        <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-3 mt-3 text-xs text-foreground/35">
           <span className="flex items-center gap-1">
             <TrendingUp className="h-3 w-3 text-primary" />
             {trek.altitudeMeters.toLocaleString()}m
