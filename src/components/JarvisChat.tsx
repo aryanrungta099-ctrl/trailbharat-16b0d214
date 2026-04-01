@@ -132,11 +132,7 @@ export default function JarvisChat() {
           <X className="w-6 h-6" />
         ) : (
           <div className="relative flex items-center justify-center">
-            <svg viewBox="0 0 40 40" className="w-9 h-9">
-              <polygon points="20,6 4,34 36,34" fill="#74c69d" opacity="0.8" />
-              <polygon points="20,12 12,28 28,28" fill="#c9973a" opacity="0.6" />
-              <polygon points="20,16 15,24 25,24" fill="#e8dcc8" opacity="0.4" />
-            </svg>
+            <img src={hikerAiMountain} alt="HikerAI" className="w-10 h-10 object-contain" width={40} height={40} />
             <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md border-2 border-[#0c1f13]">
               <span className="text-[8px] font-black text-primary-foreground leading-none">AI</span>
             </div>
