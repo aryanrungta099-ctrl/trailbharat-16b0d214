@@ -290,17 +290,42 @@ const Index = () => {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-4 mt-10 animate-reveal animate-reveal-delay-2">
             <Link to="/routes"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full trek-gradient text-primary-foreground font-semibold text-sm hover-scale">
+              className="inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                borderRadius: "50px",
+                background: "linear-gradient(135deg, #2d6a4f, #74c69d)",
+                color: "#0c1f13",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 0 24px rgba(116,198,157,0.4)")}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+            >
               Explore Routes <ArrowRight className="h-4 w-4" />
             </Link>
             <button
               onClick={() => document.getElementById("top-treks-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-accent text-accent-foreground font-semibold text-sm hover-scale">
+              className="relative inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                borderRadius: "50px",
+                background: "linear-gradient(135deg, #8a5a1a, #c9973a)",
+                color: "#fff",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 0 24px rgba(201,151,58,0.4)")}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+            >
               <Star className="h-4 w-4" /> Top Treks
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">Hot</span>
             </button>
             <Link to="/recommended"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-foreground/20 text-foreground font-medium text-sm hover:border-foreground/40 transition-colors">
+              className="relative inline-flex items-center gap-2 px-7 py-3.5 font-medium text-sm text-foreground transition-all duration-200 hover:-translate-y-0.5 border border-foreground/10"
+              style={{
+                borderRadius: "50px",
+                background: "rgba(255,255,255,0.07)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+              }}
+            >
               <Heart className="h-4 w-4" /> Recommended
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">AI</span>
             </Link>
           </div>
 
