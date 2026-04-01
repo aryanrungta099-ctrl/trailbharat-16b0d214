@@ -22,10 +22,11 @@ const Blog = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.from("blog_posts" as any).select("id, title, slug, excerpt, cover_image_url, tags, published, created_at")
+    supabase.from("blog_posts").select("id, title, slug, excerpt, cover_image_url, tags, published, created_at")
       .eq("published", true)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        console.log("Blog posts loaded:", data?.length, error);
         if (data) setPosts(data as any[]);
         setLoading(false);
       });
