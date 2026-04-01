@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
+import hikerAiMountain from "@/assets/hiker-ai-mountain.png";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
