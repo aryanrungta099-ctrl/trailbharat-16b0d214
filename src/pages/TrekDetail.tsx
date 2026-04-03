@@ -355,6 +355,7 @@ function getDayPhoto(trekId: string, day: number): string {
 const TrekDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
+  const { wishlistedIds, toggleWishlist } = useWishlist();
   const baseTrek = treks.find(t => t.id === id);
   const [completionCount, setCompletionCount] = useState(0);
   const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
