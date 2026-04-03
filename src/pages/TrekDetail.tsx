@@ -11,6 +11,11 @@ import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import TrekPhotoGallery from "@/components/TrekPhotoGallery";
+import LiveWeather from "@/components/LiveWeather";
+import WishlistButton from "@/components/WishlistButton";
+import { useWishlist } from "@/hooks/useWishlist";
+import JarvisChat from "@/components/JarvisChat";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
