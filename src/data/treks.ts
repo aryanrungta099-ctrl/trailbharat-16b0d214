@@ -102,6 +102,13 @@ export const treks: Trek[] = [
     durationDays: 8,
     altitudeMeters: 4800,
     bestMonths: m([5, 6, 9, 10]),
+    latitude: 30.2622, longitude: 79.7311,
+    photos: [
+      "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=800&fit=crop",
+    ],
     description: "Known as the Skeleton Lake trek, Roopkund takes you through alpine meadows and past the mysterious glacial lake with human skeletal remains.",
     highlights: ["Mystery of Skeleton Lake", "Ali & Bedni Bugyal meadows", "Views of Trishul & Nanda Ghunti", "Rich mythological history"],
     itinerary: [
