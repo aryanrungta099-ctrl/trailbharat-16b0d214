@@ -473,24 +473,8 @@ const TrekDetail = () => {
               </div>
             </ScrollReveal>
 
-            {/* Trek Images */}
-            {trekImages.length > 0 && (
-              <ScrollReveal delay={40}>
-                <div className="mb-6">
-                  <div className="grid grid-cols-3 gap-2 rounded-xl overflow-hidden">
-                    {trekImages.map((img, i) => (
-                      <div key={i} className="relative aspect-[4/3] bg-muted">
-                        <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                          <p className="text-[10px] text-white/90">{img.caption}</p>
-                          <p className="text-[8px] text-white/60">📷 {img.source}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
-            )}
+            {/* Photo Gallery */}
+            <TrekPhotoGallery photos={trek.photos || trekImages.map(i => i.url)} trekName={trek.name} />
 
             {/* Tabs */}
             <ScrollReveal delay={60}>
