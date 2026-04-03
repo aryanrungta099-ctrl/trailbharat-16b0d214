@@ -34,6 +34,9 @@ export interface Trek {
   highlights: string[];
   itinerary: TrekItineraryDay[];
   budget?: TrekBudget;
+  photos?: string[];
+  latitude?: number;
+  longitude?: number;
 }
 
 const m = (months: number[]) => months;
