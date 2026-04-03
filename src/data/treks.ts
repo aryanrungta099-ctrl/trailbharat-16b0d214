@@ -75,6 +75,14 @@ export const treks: Trek[] = [
     durationDays: 4,
     altitudeMeters: 3810,
     bestMonths: m([12, 1, 2, 3, 4]),
+    latitude: 31.0167, longitude: 78.0833,
+    photos: [
+      "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
+    ],
     description: "One of the best winter treks in India with stunning snow-covered trails, pine forests, and a 360-degree summit view of Himalayan peaks.",
     highlights: ["360° summit panorama", "Snow-covered pine forests", "Juda Ka Talab frozen lake", "Perfect for beginners"],
     itinerary: [
