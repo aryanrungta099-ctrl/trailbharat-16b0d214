@@ -132,6 +132,12 @@ export const treks: Trek[] = [
     durationDays: 6,
     altitudeMeters: 3658,
     bestMonths: m([7, 8, 9]),
+    latitude: 30.7283, longitude: 79.6050,
+    photos: [
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1434394354979-a235cd36269d?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=800&fit=crop",
+    ],
     description: "A UNESCO World Heritage Site bursting with endemic Himalayan flora. Over 600 species of wildflowers carpet the valley during monsoon.",
     highlights: ["UNESCO World Heritage Site", "600+ flower species", "Hemkund Sahib visit", "Rare Brahma Kamal sightings"],
     itinerary: [
