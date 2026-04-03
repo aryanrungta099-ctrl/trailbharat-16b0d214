@@ -236,6 +236,13 @@ export const treks: Trek[] = [
   // ============ INDIA — Himachal Pradesh ============
   {
     id: "hampta-pass", name: "Hampta Pass", country: "India", region: "Kullu-Lahaul", state: "Himachal Pradesh", difficulty: "Moderate", durationDays: 5, altitudeMeters: 4270, bestMonths: m([6, 7, 8, 9, 10]),
+    latitude: 32.3453, longitude: 77.2167,
+    photos: [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=1200&h=800&fit=crop",
+    ],
     description: "A dramatic crossover trek from lush Kullu to barren Lahaul with stunning landscape contrast.",
     highlights: ["Chandratal Lake side trip", "Dramatic landscape shift", "River crossings", "Camping at Balu Ka Ghera"],
     itinerary: genItinerary(5, "Hampta Pass", 2050, 4270),
