@@ -533,6 +533,14 @@ export const treks: Trek[] = [
   // ============ NEPAL ============
   {
     id: "everest-base-camp", name: "Everest Base Camp", country: "Nepal", region: "Khumbu", state: "Solukhumbu", difficulty: "Difficult", durationDays: 14, altitudeMeters: 5364, bestMonths: m([3, 4, 5, 10, 11]),
+    latitude: 28.0025, longitude: 86.8528,
+    photos: [
+      "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
+    ],
     description: "The iconic trek to the base of the world's highest peak through Sherpa villages and past stunning peaks.",
     highlights: ["Standing at Everest's base", "Kala Patthar sunrise", "Namche Bazaar", "Sherpa culture immersion"],
     itinerary: genItinerary(14, "Everest Base Camp", 2610, 5364),
