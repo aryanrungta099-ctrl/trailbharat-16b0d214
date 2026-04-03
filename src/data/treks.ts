@@ -34,9 +34,6 @@ export interface Trek {
   highlights: string[];
   itinerary: TrekItineraryDay[];
   budget?: TrekBudget;
-  photos?: string[];
-  latitude?: number;
-  longitude?: number;
 }
 
 const m = (months: number[]) => months;
@@ -75,14 +72,6 @@ export const treks: Trek[] = [
     durationDays: 4,
     altitudeMeters: 3810,
     bestMonths: m([12, 1, 2, 3, 4]),
-    latitude: 31.0167, longitude: 78.0833,
-    photos: [
-      "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-    ],
     description: "One of the best winter treks in India with stunning snow-covered trails, pine forests, and a 360-degree summit view of Himalayan peaks.",
     highlights: ["360° summit panorama", "Snow-covered pine forests", "Juda Ka Talab frozen lake", "Perfect for beginners"],
     itinerary: [
@@ -102,13 +91,6 @@ export const treks: Trek[] = [
     durationDays: 8,
     altitudeMeters: 4800,
     bestMonths: m([5, 6, 9, 10]),
-    latitude: 30.2622, longitude: 79.7311,
-    photos: [
-      "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=800&fit=crop",
-    ],
     description: "Known as the Skeleton Lake trek, Roopkund takes you through alpine meadows and past the mysterious glacial lake with human skeletal remains.",
     highlights: ["Mystery of Skeleton Lake", "Ali & Bedni Bugyal meadows", "Views of Trishul & Nanda Ghunti", "Rich mythological history"],
     itinerary: [
@@ -132,12 +114,6 @@ export const treks: Trek[] = [
     durationDays: 6,
     altitudeMeters: 3658,
     bestMonths: m([7, 8, 9]),
-    latitude: 30.7283, longitude: 79.6050,
-    photos: [
-      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1434394354979-a235cd36269d?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&h=800&fit=crop",
-    ],
     description: "A UNESCO World Heritage Site bursting with endemic Himalayan flora. Over 600 species of wildflowers carpet the valley during monsoon.",
     highlights: ["UNESCO World Heritage Site", "600+ flower species", "Hemkund Sahib visit", "Rare Brahma Kamal sightings"],
     itinerary: [
@@ -242,13 +218,6 @@ export const treks: Trek[] = [
   // ============ INDIA — Himachal Pradesh ============
   {
     id: "hampta-pass", name: "Hampta Pass", country: "India", region: "Kullu-Lahaul", state: "Himachal Pradesh", difficulty: "Moderate", durationDays: 5, altitudeMeters: 4270, bestMonths: m([6, 7, 8, 9, 10]),
-    latitude: 32.3453, longitude: 77.2167,
-    photos: [
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1477346611705-65d1883cee1e?w=1200&h=800&fit=crop",
-    ],
     description: "A dramatic crossover trek from lush Kullu to barren Lahaul with stunning landscape contrast.",
     highlights: ["Chandratal Lake side trip", "Dramatic landscape shift", "River crossings", "Camping at Balu Ka Ghera"],
     itinerary: genItinerary(5, "Hampta Pass", 2050, 4270),
@@ -539,14 +508,6 @@ export const treks: Trek[] = [
   // ============ NEPAL ============
   {
     id: "everest-base-camp", name: "Everest Base Camp", country: "Nepal", region: "Khumbu", state: "Solukhumbu", difficulty: "Difficult", durationDays: 14, altitudeMeters: 5364, bestMonths: m([3, 4, 5, 10, 11]),
-    latitude: 28.0025, longitude: 86.8528,
-    photos: [
-      "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1486911278844-a81c5267e227?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-    ],
     description: "The iconic trek to the base of the world's highest peak through Sherpa villages and past stunning peaks.",
     highlights: ["Standing at Everest's base", "Kala Patthar sunrise", "Namche Bazaar", "Sherpa culture immersion"],
     itinerary: genItinerary(14, "Everest Base Camp", 2610, 5364),

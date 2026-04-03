@@ -11,11 +11,6 @@ import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import TrekPhotoGallery from "@/components/TrekPhotoGallery";
-import LiveWeather from "@/components/LiveWeather";
-import WishlistButton from "@/components/WishlistButton";
-import { useWishlist } from "@/hooks/useWishlist";
-import JarvisChat from "@/components/JarvisChat";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -355,7 +350,6 @@ function getDayPhoto(trekId: string, day: number): string {
 const TrekDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
-  const { wishlistedIds, toggleWishlist } = useWishlist();
   const baseTrek = treks.find(t => t.id === id);
   const [completionCount, setCompletionCount] = useState(0);
   const [budgetTab, setBudgetTab] = useState<"low" | "high">("low");
@@ -458,7 +452,6 @@ const TrekDetail = () => {
                   <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
                   {extras && <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>{extras.weather.safetyLevel}</span>}
                   <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
-                  <WishlistButton isWishlisted={wishlistedIds.has(trek.id)} onClick={() => toggleWishlist(trek.id)} size="md" />
                 </div>
                 <h1 className="text-3xl md:text-4xl mb-4">{trek.name}</h1>
                 <p className="text-muted-foreground leading-relaxed mb-6">{trek.description}</p>
@@ -473,8 +466,24 @@ const TrekDetail = () => {
               </div>
             </ScrollReveal>
 
-            {/* Photo Gallery */}
-            <TrekPhotoGallery photos={trek.photos || trekImages.map(i => i.url)} trekName={trek.name} />
+            {/* Trek Images */}
+            {trekImages.length > 0 && (
+              <ScrollReveal delay={40}>
+                <div className="mb-6">
+                  <div className="grid grid-cols-3 gap-2 rounded-xl overflow-hidden">
+                    {trekImages.map((img, i) => (
+                      <div key={i} className="relative aspect-[4/3] bg-muted">
+                        <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                          <p className="text-[10px] text-white/90">{img.caption}</p>
+                          <p className="text-[8px] text-white/60">📷 {img.source}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
 
             {/* Tabs */}
             <ScrollReveal delay={60}>

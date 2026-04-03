@@ -545,27 +545,6 @@ export type Database = {
         }
         Relationships: []
       }
-      wishlisted_treks: {
-        Row: {
-          added_at: string
-          id: string
-          trek_id: string
-          user_id: string
-        }
-        Insert: {
-          added_at?: string
-          id?: string
-          trek_id: string
-          user_id: string
-        }
-        Update: {
-          added_at?: string
-          id?: string
-          trek_id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       public_profiles: {
