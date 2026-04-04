@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase } from "lucide-react";
+import { Mountain, Menu, X, LogOut, User, Award, Shield, Briefcase, Home } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/routes", label: "Trek Routes" },
-  { to: "/guides", label: "Sherpas & Agencies" },
+  { to: "/sherpas", label: "Sherpas" },
+  { to: "/agencies", label: "Agencies" },
+  { to: "/guesthouses", label: "Guesthouses" },
   { to: "/experiences", label: "Experiences" },
   { to: "/blog", label: "Blog" },
 ];
