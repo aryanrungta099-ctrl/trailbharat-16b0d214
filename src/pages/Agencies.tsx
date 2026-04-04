@@ -319,11 +319,11 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
 
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3].map(i => <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse"><div className="h-16 w-16 bg-muted rounded-lg mb-4" /><div className="h-5 bg-muted rounded w-2/3 mb-3" /><div className="h-4 bg-muted rounded w-full" /></div>)}</div>
-      ) : listings.length === 0 ? (
-        <div className="text-center py-20"><Briefcase className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" /><p className="text-muted-foreground">No agency listings yet. Be the first!</p></div>
+      ) : filteredListings.length === 0 ? (
+        <div className="text-center py-20"><Briefcase className="h-12 w-12 text-foreground/20 mx-auto mb-4" /><p className="text-foreground/50">{listings.length === 0 ? "No agency listings yet. Be the first!" : "No results match your filters."}</p></div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map((a, i) => (
+          {filteredListings.map((a, i) => (
             <ScrollReveal key={a.id} delay={i * 80}>
               <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-shadow overflow-hidden h-full flex flex-col">
                 <div className="p-6 flex flex-col flex-1">

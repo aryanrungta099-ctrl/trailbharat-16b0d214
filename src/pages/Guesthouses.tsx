@@ -150,6 +150,11 @@ const Guesthouses = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", location: "", trek_region: "", contact_number: "", price_range_min: "", price_range_max: "", description: "", amenities: "" });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPrice, setFilterPrice] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
   const fetchListings = async () => {
     const { data } = await supabase.from("guesthouse_listings" as any).select("*").order("created_at", { ascending: false });
     if (data) setListings(data as any[]);
@@ -157,6 +162,21 @@ const Guesthouses = () => {
   };
 
   useEffect(() => { fetchListings(); }, []);
+
+  const regions = useMemo(() => [...new Set(listings.map(g => g.trek_region).filter(Boolean))], [listings]);
+
+  const filteredListings = useMemo(() => {
+    let result = listings;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(g => g.name.toLowerCase().includes(q) || g.location.toLowerCase().includes(q) || g.trek_region.toLowerCase().includes(q) || g.description.toLowerCase().includes(q));
+    }
+    if (filterRegion) result = result.filter(g => g.trek_region === filterRegion);
+    if (filterPrice === "low") result = result.filter(g => g.price_range_max > 0 && g.price_range_max <= 1000);
+    else if (filterPrice === "mid") result = result.filter(g => g.price_range_min >= 500 && g.price_range_max <= 3000);
+    else if (filterPrice === "high") result = result.filter(g => g.price_range_min >= 3000);
+    return result;
+  }, [listings, searchQuery, filterRegion, filterPrice]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,20 +217,62 @@ const Guesthouses = () => {
   return (
     <main className="pt-24 pb-16 container mx-auto px-4 min-h-screen">
       <SEOHead
-        title="Guesthouses"
-        description="Find comfortable guesthouses along popular trek routes in India & Nepal. Verified stays with amenities, prices, and reviews."
+        title="Guesthouses & Tea Houses"
+        description="Find comfortable guesthouses and tea houses along popular trekking routes in India & Nepal. Verified stays with amenities, prices, and reviews."
         path="/guesthouses"
         jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Guesthouses", url: "/guesthouses" }])}
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-balance">Guesthouse Directory</h1>
-          <p className="text-muted-foreground mt-2 max-w-lg">Find recommended stays along trek routes. Guesthouse owners can list their properties.</p>
+          <h1 className="font-display text-3xl md:text-4xl font-light text-foreground">Guesthouses & Tea Houses</h1>
+          <p className="text-foreground/50 mt-2 max-w-lg">Find recommended stays along trek routes. Guesthouse owners can list their properties.</p>
         </div>
-        {user && (
-          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
+      </div>
+
+      {/* Search & Filters */}
+      <div className="mb-8 space-y-3">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30" />
+            <input
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by name, location, region…"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-foreground/[0.07] bg-card/60 backdrop-blur text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button onClick={() => setShowFilters(!showFilters)} className={`px-4 py-2.5 rounded-xl border text-sm font-medium flex items-center gap-2 transition-colors ${showFilters ? "border-primary/40 bg-primary/10 text-primary" : "border-foreground/[0.07] bg-card/60 text-foreground/50 hover:text-foreground"}`}>
+            <SlidersHorizontal className="h-4 w-4" /> Filters
+          </button>
+        </div>
+        {showFilters && (
+          <div className="flex flex-wrap gap-2 p-4 rounded-xl border border-foreground/[0.07] bg-card/40 backdrop-blur">
+            <span className="text-xs text-foreground/50 self-center mr-2">Price/night:</span>
+            {[{ v: "", l: "All" }, { v: "low", l: "Under ₹1k" }, { v: "mid", l: "₹500–₹3k" }, { v: "high", l: "₹3k+" }].map(o => (
+              <button key={o.v} onClick={() => setFilterPrice(o.v)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterPrice === o.v ? "bg-primary text-primary-foreground" : "bg-foreground/[0.05] text-foreground/60 hover:bg-foreground/[0.1]"}`}>{o.l}</button>
+            ))}
+            {regions.length > 0 && (
+              <>
+                <div className="w-px h-6 bg-foreground/[0.07] mx-2 self-center" />
+                <span className="text-xs text-foreground/50 self-center mr-2">Region:</span>
+                <button onClick={() => setFilterRegion("")} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!filterRegion ? "bg-primary text-primary-foreground" : "bg-foreground/[0.05] text-foreground/60 hover:bg-foreground/[0.1]"}`}>All</button>
+                {regions.map(r => (
+                  <button key={r} onClick={() => setFilterRegion(r)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterRegion === r ? "bg-primary text-primary-foreground" : "bg-foreground/[0.05] text-foreground/60 hover:bg-foreground/[0.1]"}`}>{r}</button>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-end mb-6">
+        {user ? (
+          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
             {showForm ? <><X className="h-4 w-4" /> Cancel</> : <><Plus className="h-4 w-4" /> List Your Guesthouse</>}
           </button>
+        ) : (
+          <Link to="/auth" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 text-primary font-medium text-sm hover:bg-primary/10 transition-colors">
+            <Plus className="h-4 w-4" /> List Your Guesthouse
+          </Link>
         )}
       </div>
 
