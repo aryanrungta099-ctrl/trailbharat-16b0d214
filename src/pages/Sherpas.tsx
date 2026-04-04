@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Image, Share2, ArrowRight } from "lucide-react";
+import { Phone, IndianRupee, Mountain, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Image, Share2, ArrowRight, Search, SlidersHorizontal, BadgeCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 interface SherpaListing {
   id: string; user_id: string; name: string; photo_url: string | null;
