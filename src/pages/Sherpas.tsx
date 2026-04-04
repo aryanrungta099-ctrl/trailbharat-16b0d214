@@ -377,11 +377,11 @@ const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
 
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3].map(i => <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse"><div className="h-24 w-24 rounded-full bg-muted mx-auto mb-4" /><div className="h-5 bg-muted rounded w-2/3 mx-auto mb-3" /><div className="h-4 bg-muted rounded w-full" /></div>)}</div>
-      ) : listings.length === 0 ? (
-        <div className="text-center py-20"><Mountain className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" /><p className="text-muted-foreground">No sherpa listings yet. Be the first!</p></div>
+      ) : filteredListings.length === 0 ? (
+        <div className="text-center py-20"><Mountain className="h-12 w-12 text-foreground/20 mx-auto mb-4" /><p className="text-foreground/50">{listings.length === 0 ? "No sherpa listings yet. Be the first!" : "No results match your filters."}</p></div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map((s, i) => (
+          {filteredListings.map((s, i) => (
             <ScrollReveal key={s.id} delay={i * 80}>
               <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-shadow overflow-hidden h-full flex flex-col">
                 <div className="flex justify-center pt-8 pb-4">
