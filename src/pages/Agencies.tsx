@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar, ArrowRight } from "lucide-react";
+import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar, ArrowRight, Search, SlidersHorizontal, BadgeCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
