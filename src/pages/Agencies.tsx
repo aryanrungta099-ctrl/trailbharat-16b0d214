@@ -196,22 +196,76 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
     toast.success("Listing removed"); fetchListings();
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPrice, setFilterPrice] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredListings = useMemo(() => {
+    let result = listings;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(a => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) || (a.email || "").toLowerCase().includes(q));
+    }
+    if (filterPrice === "low") result = result.filter(a => a.price_range_max > 0 && a.price_range_max <= 15000);
+    else if (filterPrice === "mid") result = result.filter(a => a.price_range_min >= 10000 && a.price_range_max <= 50000);
+    else if (filterPrice === "high") result = result.filter(a => a.price_range_min >= 50000);
+    return result;
+  }, [listings, searchQuery, filterPrice]);
+
   const Wrapper = embedded ? "div" : "main";
   return (
     <Wrapper className={embedded ? "" : "pt-24 pb-16 container mx-auto px-4 min-h-screen"}>
       {!embedded && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-balance">Travel Agencies</h1>
-            <p className="text-muted-foreground mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+        <>
+          <SEOHead
+            title="Travel Agencies"
+            description="Find professional trekking and travel agencies across India & Nepal. Compare prices, read reviews, and book your Himalayan adventure."
+            path="/agencies"
+            jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Travel Agencies", url: "/agencies" }])}
+          />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="font-display text-3xl md:text-4xl font-light text-foreground">Travel Agencies</h1>
+              <p className="text-foreground/50 mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+            </div>
           </div>
-        </div>
+        </>
       )}
+
+      {/* Search & Filters */}
+      <div className="mb-8 space-y-3">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30" />
+            <input
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by agency name, description…"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-foreground/[0.07] bg-card/60 backdrop-blur text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button onClick={() => setShowFilters(!showFilters)} className={`px-4 py-2.5 rounded-xl border text-sm font-medium flex items-center gap-2 transition-colors ${showFilters ? "border-primary/40 bg-primary/10 text-primary" : "border-foreground/[0.07] bg-card/60 text-foreground/50 hover:text-foreground"}`}>
+            <SlidersHorizontal className="h-4 w-4" /> Filters
+          </button>
+        </div>
+        {showFilters && (
+          <div className="flex flex-wrap gap-2 p-4 rounded-xl border border-foreground/[0.07] bg-card/40 backdrop-blur">
+            <span className="text-xs text-foreground/50 self-center mr-2">Price/trek:</span>
+            {[{ v: "", l: "All" }, { v: "low", l: "Under ₹15k" }, { v: "mid", l: "₹10k–₹50k" }, { v: "high", l: "₹50k+" }].map(o => (
+              <button key={o.v} onClick={() => setFilterPrice(o.v)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterPrice === o.v ? "bg-primary text-primary-foreground" : "bg-foreground/[0.05] text-foreground/60 hover:bg-foreground/[0.1]"}`}>{o.l}</button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="flex justify-end mb-6">
-        {user && (
-          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
+        {user ? (
+          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
             {showForm ? <><X className="h-4 w-4" /> Cancel</> : <><Plus className="h-4 w-4" /> List Your Agency</>}
           </button>
+        ) : (
+          <Link to="/auth" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 text-primary font-medium text-sm hover:bg-primary/10 transition-colors">
+            <Plus className="h-4 w-4" /> List Your Agency
+          </Link>
         )}
       </div>
 
