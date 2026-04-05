@@ -80,7 +80,7 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
     const { data: inserted, error } = await supabase.from("guesthouse_reviews").insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
     else {
-      moderateContent({ table: "guesthouse_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      moderateContent({ table: "guesthouse_reviews", recordId: inserted?.id ?? "", textContent: newComment.trim() });
       toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
     }
     setSubmitting(false);
