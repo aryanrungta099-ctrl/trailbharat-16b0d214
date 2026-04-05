@@ -157,7 +157,7 @@ const Guesthouses = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const fetchListings = async () => {
-    const { data } = await supabase.from("guesthouse_listings" as any).select("*").order("created_at", { ascending: false });
+    const { data } = await supabase.from("guesthouse_listings").select("*").order("created_at", { ascending: false });
     if (data) setListings(data as any[]);
     setLoading(false);
   };
