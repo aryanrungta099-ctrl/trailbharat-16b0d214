@@ -56,12 +56,13 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
   const [newComment, setNewComment] = useState("");
 
   const fetchReviews = async () => {
-    const { data } = await supabase.from("guesthouse_reviews" as any).select("*").eq("guesthouse_listing_id", listing.id).order("created_at", { ascending: false });
+    const { data } = await supabase.from("guesthouse_reviews").select("*").eq("guesthouse_listing_id", listing.id).order("created_at", { ascending: false });
     if (data) {
-      const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
+      const reviews = data ?? [];
+      const userIds = [...new Set(reviews.map((r) => r.user_id))];
       const { data: profiles } = await supabase.from("public_profiles").select("user_id, display_name").in("user_id", userIds);
       const nameMap = new Map((profiles || []).map(p => [p.user_id, p.display_name]));
-      setReviews((data as any[]).map((r: any) => ({ ...r, display_name: nameMap.get(r.user_id) || "Guest" })));
+      setReviews(reviews.map((r) => ({ ...r, display_name: nameMap.get(r.user_id) || "Guest" })));
     }
     setLoading(false);
   };
@@ -77,17 +78,17 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("guesthouse_reviews" as any).insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
+    const { data: inserted, error } = await supabase.from("guesthouse_reviews").insert({ guesthouse_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
     else {
-      moderateContent({ table: "guesthouse_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
+      moderateContent({ table: "guesthouse_reviews", recordId: inserted?.id ?? "", textContent: newComment.trim() });
       toast.success("Review submitted!"); setNewRating(0); setNewComment(""); setShowForm(false); fetchReviews();
     }
     setSubmitting(false);
   };
 
   const handleDeleteReview = async (id: string) => {
-    await supabase.from("guesthouse_reviews" as any).delete().eq("id", id);
+    await supabase.from("guesthouse_reviews").delete().eq("id", id);
     toast.success("Review removed");
     fetchReviews();
   };
@@ -157,8 +158,8 @@ const Guesthouses = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const fetchListings = async () => {
-    const { data } = await supabase.from("guesthouse_listings" as any).select("*").order("created_at", { ascending: false });
-    if (data) setListings(data as any[]);
+    const { data } = await supabase.from("guesthouse_listings").select("*").order("created_at", { ascending: false });
+    if (data) setListings(data as GuesthouseListing[]);
     setLoading(false);
   };
 
@@ -189,16 +190,16 @@ const Guesthouses = () => {
       const { error } = await supabase.storage.from("guesthouse-photos").upload(path, photoFile);
       if (!error) photo_url = `${SUPABASE_URL}/storage/v1/object/public/guesthouse-photos/${path}`;
     }
-    const { data: inserted, error } = await supabase.from("guesthouse_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("guesthouse_listings").insert({
       user_id: user.id, name: form.name, photo_url, location: form.location, trek_region: form.trek_region,
       contact_number: form.contact_number, price_range_min: parseInt(form.price_range_min) || 0,
       price_range_max: parseInt(form.price_range_max) || 0, description: form.description,
       amenities: form.amenities.split(",").map(a => a.trim()).filter(Boolean),
-    } as any).select().single();
+    }).select().single();
     if (error) toast.error("Failed to create listing");
     else {
       const textToCheck = `Guesthouse: ${form.name}\nLocation: ${form.location}\nRegion: ${form.trek_region}\nDescription: ${form.description}`;
-      const modResult = await moderateContent({ table: "guesthouse_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      const modResult = await moderateContent({ table: "guesthouse_listings", recordId: inserted?.id ?? "", textContent: textToCheck });
       if (modResult.approved) {
         toast.success("Listing created and auto-approved! ✅");
       } else {
@@ -211,7 +212,7 @@ const Guesthouses = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("guesthouse_listings" as any).delete().eq("id", id);
+    await supabase.from("guesthouse_listings").delete().eq("id", id);
     toast.success("Listing removed"); fetchListings();
   };
 
@@ -327,7 +328,7 @@ const Guesthouses = () => {
                     <div className="flex flex-wrap gap-1.5 mb-3">{g.amenities.map(a => <span key={a} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{a}</span>)}</div>
                   )}
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1">{g.description}</p>
-                  {!g.approved && <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
+                  {!g.approved && <span className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
                   {user?.id === g.user_id && <button onClick={() => handleDelete(g.id)} className="mt-3 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
                   <GhReviewSection listing={g} user={user} />
                 </div>
