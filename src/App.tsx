@@ -18,6 +18,7 @@ import Agencies from "./pages/Agencies.tsx";
 import SherpasAgencies from "./pages/SherpasAgencies.tsx";
 import SherpaDetail from "./pages/SherpaDetail.tsx";
 import AgencyDetail from "./pages/AgencyDetail.tsx";
+import Guesthouses from "./pages/Guesthouses.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import Profile from "./pages/Profile.tsx";
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/sherpa/:id" element={<SherpaDetail />} />
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/agency/:id" element={<AgencyDetail />} />
+            <Route path="/guesthouses" element={<Guesthouses />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/profile" element={<Profile />} />
