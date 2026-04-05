@@ -87,7 +87,7 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
   };
 
   const handleDeleteReview = async (id: string) => {
-    await supabase.from("guesthouse_reviews" as any).delete().eq("id", id);
+    await supabase.from("guesthouse_reviews").delete().eq("id", id);
     toast.success("Review removed");
     fetchReviews();
   };
