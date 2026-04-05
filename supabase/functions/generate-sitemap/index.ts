@@ -75,6 +75,12 @@ Deno.serve(async (req) => {
       .select("id, updated_at")
       .eq("approved", true);
 
+    // Fetch approved guesthouses
+    const { data: guesthouses } = await supabase
+      .from("guesthouse_listings")
+      .select("id, updated_at")
+      .eq("approved", true);
+
     const today = new Date().toISOString().split("T")[0];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -104,6 +110,18 @@ Deno.serve(async (req) => {
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>${SITE_URL}/sherpas</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/agencies</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>${SITE_URL}/blog</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
@@ -116,10 +134,22 @@ Deno.serve(async (req) => {
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>${SITE_URL}/tips</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>${SITE_URL}/recommended</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/suggest</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`;
 
     // Trek pages
@@ -166,6 +196,19 @@ Deno.serve(async (req) => {
   <url>
     <loc>${SITE_URL}/agency/${a.id}</loc>
     <lastmod>${a.updated_at?.split("T")[0] || today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+      }
+    }
+
+    // Guesthouse pages
+    if (guesthouses) {
+      for (const g of guesthouses) {
+        xml += `
+  <url>
+    <loc>${SITE_URL}/guesthouse/${g.id}</loc>
+    <lastmod>${g.updated_at?.split("T")[0] || today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
