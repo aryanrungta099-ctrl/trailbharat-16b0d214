@@ -202,6 +202,19 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Guesthouse pages
+    if (guesthouses) {
+      for (const g of guesthouses) {
+        xml += `
+  <url>
+    <loc>${SITE_URL}/guesthouse/${g.id}</loc>
+    <lastmod>${g.updated_at?.split("T")[0] || today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+      }
+    }
+
     xml += `\n</urlset>`;
 
     return new Response(xml, {
