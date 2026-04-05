@@ -32,7 +32,7 @@ const AgencyDetail = () => {
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
-    supabase.from("agency_listings" as any).select("*").eq("id", id).single()
+    supabase.from("agency_listings").select("*").eq("id", id).single()
       .then(({ data }) => { setAgency(data); setLoading(false); });
   }, [id]);
 
