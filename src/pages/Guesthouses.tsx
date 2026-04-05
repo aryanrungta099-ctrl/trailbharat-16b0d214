@@ -198,7 +198,7 @@ const Guesthouses = () => {
     if (error) toast.error("Failed to create listing");
     else {
       const textToCheck = `Guesthouse: ${form.name}\nLocation: ${form.location}\nRegion: ${form.trek_region}\nDescription: ${form.description}`;
-      const modResult = await moderateContent({ table: "guesthouse_listings", recordId: (inserted as any).id, textContent: textToCheck });
+      const modResult = await moderateContent({ table: "guesthouse_listings", recordId: inserted?.id ?? "", textContent: textToCheck });
       if (modResult.approved) {
         toast.success("Listing created and auto-approved! ✅");
       } else {
