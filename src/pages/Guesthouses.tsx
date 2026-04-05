@@ -159,7 +159,7 @@ const Guesthouses = () => {
 
   const fetchListings = async () => {
     const { data } = await supabase.from("guesthouse_listings").select("*").order("created_at", { ascending: false });
-    if (data) setListings(data as any[]);
+    if (data) setListings(data as GuesthouseListing[]);
     setLoading(false);
   };
 
