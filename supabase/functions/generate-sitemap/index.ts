@@ -110,6 +110,18 @@ Deno.serve(async (req) => {
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>${SITE_URL}/sherpas</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/agencies</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>${SITE_URL}/blog</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
@@ -122,10 +134,22 @@ Deno.serve(async (req) => {
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>${SITE_URL}/tips</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>${SITE_URL}/recommended</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/suggest</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`;
 
     // Trek pages
