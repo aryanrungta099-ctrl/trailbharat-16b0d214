@@ -80,12 +80,12 @@ const Admin = () => {
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
   const approve = async (table: string, id: string) => {
-    await supabase.from(table as any).update({ approved: true } as any).eq("id", id);
+    await supabase.from(table as any).update({ approved: true }).eq("id", id);
     toast.success("Approved"); fetchAll();
   };
 
   const approveExperience = async (id: string) => {
-    await supabase.from("experiences").update({ approved: true } as any).eq("id", id);
+    await supabase.from("experiences").update({ approved: true }).eq("id", id);
     toast.success("Experience approved"); fetchAll();
   };
 
@@ -116,10 +116,10 @@ const Admin = () => {
     const tags = blogForm.tags.split(",").map(t => t.trim()).filter(Boolean);
     const payload = { user_id: user.id, title: blogForm.title, slug, excerpt: blogForm.excerpt, content: blogForm.content, cover_image_url: blogForm.cover_image_url || null, tags, published: blogForm.published };
     if (editingPost) {
-      const { error } = await supabase.from("blog_posts").update(payload as any).eq("id", editingPost.id);
+      const { error } = await supabase.from("blog_posts").update(payload).eq("id", editingPost.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Post updated!");
     } else {
-      const { error } = await supabase.from("blog_posts").insert(payload as any);
+      const { error } = await supabase.from("blog_posts").insert(payload);
       if (error) toast.error("Failed: " + error.message); else toast.success("Post created!");
     }
     setShowBlogForm(false); setEditingPost(null); setBlogSubmitting(false); fetchAll();
@@ -148,10 +148,10 @@ const Admin = () => {
     const facilities = teaHouseForm.facilities.split(",").map(f => f.trim()).filter(Boolean);
     const payload = { trek_id: teaHouseForm.trek_id, village: teaHouseForm.village, name: teaHouseForm.name, contact_number: teaHouseForm.contact_number, facilities, price_range: teaHouseForm.price_range, description: teaHouseForm.description };
     if (editingTeaHouse) {
-      const { error } = await supabase.from("trek_tea_houses").update(payload as any).eq("id", editingTeaHouse.id);
+      const { error } = await supabase.from("trek_tea_houses").update(payload).eq("id", editingTeaHouse.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Tea house updated!");
     } else {
-      const { error } = await supabase.from("trek_tea_houses").insert(payload as any);
+      const { error } = await supabase.from("trek_tea_houses").insert(payload);
       if (error) toast.error("Failed: " + error.message); else toast.success("Tea house added!");
     }
     setShowTeaHouseForm(false); setEditingTeaHouse(null); setTeaHouseSubmitting(false); fetchAll();
@@ -195,10 +195,10 @@ const Admin = () => {
 
     const existing = trekOverrides.find(o => o.trek_id === editingTrek);
     if (existing) {
-      const { error } = await supabase.from("trek_overrides").update(payload as any).eq("id", existing.id);
+      const { error } = await supabase.from("trek_overrides").update(payload).eq("id", existing.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Trek updated!");
     } else {
-      const { error } = await supabase.from("trek_overrides").insert(payload as any);
+      const { error } = await supabase.from("trek_overrides").insert(payload);
       if (error) toast.error("Failed: " + error.message); else toast.success("Trek override saved!");
     }
     setShowTrekForm(false); setEditingTrek(null); setTrekSubmitting(false); fetchAll();

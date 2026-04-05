@@ -64,7 +64,7 @@ function ReviewSection({ listing, user }: { listing: SherpaListing; user: any })
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("sherpa_reviews").insert({ sherpa_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
+    const { data: inserted, error } = await supabase.from("sherpa_reviews").insert({ sherpa_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
     if (error) toast.error(error.message.includes("unique") ? "Already reviewed" : "Failed");
     else {
       moderateContent({ table: "sherpa_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
@@ -215,7 +215,7 @@ const Sherpas = ({ embedded = false }: { embedded?: boolean }) => {
       price_range_max: parseInt(form.price_range_max) || 0,
       description: form.description,
       gallery_urls,
-    } as any).select().single();
+    }).select().single();
 
     if (error) toast.error("Failed to create listing");
     else {

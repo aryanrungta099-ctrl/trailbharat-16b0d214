@@ -56,7 +56,7 @@ const AgencyDetail = () => {
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("agency_reviews").insert({ agency_listing_id: id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
+    const { data: inserted, error } = await supabase.from("agency_reviews").insert({ agency_listing_id: id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
     if (error) toast.error("Failed");
     else {
       moderateContent({ table: "agency_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
