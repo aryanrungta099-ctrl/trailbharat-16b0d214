@@ -58,10 +58,11 @@ function GhReviewSection({ listing, user }: { listing: GuesthouseListing; user: 
   const fetchReviews = async () => {
     const { data } = await supabase.from("guesthouse_reviews").select("*").eq("guesthouse_listing_id", listing.id).order("created_at", { ascending: false });
     if (data) {
-      const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
+      const reviews = data ?? [];
+      const userIds = [...new Set(reviews.map((r) => r.user_id))];
       const { data: profiles } = await supabase.from("public_profiles").select("user_id, display_name").in("user_id", userIds);
       const nameMap = new Map((profiles || []).map(p => [p.user_id, p.display_name]));
-      setReviews((data as any[]).map((r: any) => ({ ...r, display_name: nameMap.get(r.user_id) || "Guest" })));
+      setReviews(reviews.map((r) => ({ ...r, display_name: nameMap.get(r.user_id) || "Guest" })));
     }
     setLoading(false);
   };
