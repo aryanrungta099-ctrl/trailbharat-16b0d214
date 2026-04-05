@@ -211,7 +211,7 @@ const Guesthouses = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("guesthouse_listings" as any).delete().eq("id", id);
+    await supabase.from("guesthouse_listings").delete().eq("id", id);
     toast.success("Listing removed"); fetchListings();
   };
 
