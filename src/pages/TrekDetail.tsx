@@ -88,7 +88,7 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
       }
     });
     // Fetch guesthouses in this trek's region
-    supabase.from("guesthouse_listings" as any).select("*").eq("approved", true).then(({ data }) => {
+    supabase.from("guesthouse_listings").select("*").eq("approved", true).then(({ data }) => {
       if (data) {
         const matching = (data as any[]).filter(g =>
           g.trek_region.toLowerCase().includes(trek.region.toLowerCase()) ||
@@ -99,7 +99,7 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
       }
     });
     // Fetch agencies offering this trek
-    supabase.from("agency_listings" as any).select("*").eq("approved", true).then(({ data }) => {
+    supabase.from("agency_listings").select("*").eq("approved", true).then(({ data }) => {
       if (data) {
         const matching = (data as any[]).filter(a => a.treks_offered && a.treks_offered.includes(trek.id));
         setAgencies(matching);
@@ -230,7 +230,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
   const [newComment, setNewComment] = useState("");
 
   const fetchReviews = async () => {
-    const { data } = await supabase.from("trek_reviews" as any).select("*").eq("trek_id", trekId).order("created_at", { ascending: false });
+    const { data } = await supabase.from("trek_reviews").select("*").eq("trek_id", trekId).order("created_at", { ascending: false });
     if (data) {
       const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
       if (userIds.length > 0) {
@@ -254,7 +254,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("trek_reviews" as any).insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
+    const { data: inserted, error } = await supabase.from("trek_reviews").insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error("Failed");
     else {
       moderateContent({ table: "trek_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
@@ -299,7 +299,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
                 </div>
                 {r.comment && <p className="text-xs text-muted-foreground mt-1">{r.comment}</p>}
                 {user?.id === r.user_id && (
-                  <button onClick={async () => { await supabase.from("trek_reviews" as any).delete().eq("id", r.id); toast.success("Deleted"); fetchReviews(); }} className="text-[10px] text-destructive hover:underline mt-1">Delete</button>
+                  <button onClick={async () => { await supabase.from("trek_reviews").delete().eq("id", r.id); toast.success("Deleted"); fetchReviews(); }} className="text-[10px] text-destructive hover:underline mt-1">Delete</button>
                 )}
               </div>
             </div>
@@ -360,10 +360,10 @@ const TrekDetail = () => {
   // Fetch override data and tea houses
   useEffect(() => {
     if (!baseTrek) return;
-    supabase.from("trek_overrides" as any).select("*").eq("trek_id", baseTrek.id).maybeSingle().then(({ data }) => {
+    supabase.from("trek_overrides").select("*").eq("trek_id", baseTrek.id).maybeSingle().then(({ data }) => {
       if (data) setTrekOverride(data);
     });
-    supabase.from("trek_tea_houses" as any).select("*").eq("trek_id", baseTrek.id).order("village").then(({ data }) => {
+    supabase.from("trek_tea_houses").select("*").eq("trek_id", baseTrek.id).order("village").then(({ data }) => {
       if (data) setTeaHouses(data as any[]);
     });
   }, [baseTrek?.id]);
