@@ -189,12 +189,12 @@ const Guesthouses = () => {
       const { error } = await supabase.storage.from("guesthouse-photos").upload(path, photoFile);
       if (!error) photo_url = `${SUPABASE_URL}/storage/v1/object/public/guesthouse-photos/${path}`;
     }
-    const { data: inserted, error } = await supabase.from("guesthouse_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("guesthouse_listings").insert({
       user_id: user.id, name: form.name, photo_url, location: form.location, trek_region: form.trek_region,
       contact_number: form.contact_number, price_range_min: parseInt(form.price_range_min) || 0,
       price_range_max: parseInt(form.price_range_max) || 0, description: form.description,
       amenities: form.amenities.split(",").map(a => a.trim()).filter(Boolean),
-    } as any).select().single();
+    }).select().single();
     if (error) toast.error("Failed to create listing");
     else {
       const textToCheck = `Guesthouse: ${form.name}\nLocation: ${form.location}\nRegion: ${form.trek_region}\nDescription: ${form.description}`;
