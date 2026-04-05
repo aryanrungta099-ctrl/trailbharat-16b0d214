@@ -327,7 +327,7 @@ const Guesthouses = () => {
                     <div className="flex flex-wrap gap-1.5 mb-3">{g.amenities.map(a => <span key={a} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{a}</span>)}</div>
                   )}
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1">{g.description}</p>
-                  {!g.approved && <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
+                  {!g.approved && <span className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded-full mt-2 inline-block w-fit">⏳ Pending approval</span>}
                   {user?.id === g.user_id && <button onClick={() => handleDelete(g.id)} className="mt-3 flex items-center gap-1 text-xs text-destructive hover:underline self-end"><Trash2 className="h-3.5 w-3.5" /> Remove</button>}
                   <GhReviewSection listing={g} user={user} />
                 </div>
