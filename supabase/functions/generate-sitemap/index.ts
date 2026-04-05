@@ -75,6 +75,12 @@ Deno.serve(async (req) => {
       .select("id, updated_at")
       .eq("approved", true);
 
+    // Fetch approved guesthouses
+    const { data: guesthouses } = await supabase
+      .from("guesthouse_listings")
+      .select("id, updated_at")
+      .eq("approved", true);
+
     const today = new Date().toISOString().split("T")[0];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
