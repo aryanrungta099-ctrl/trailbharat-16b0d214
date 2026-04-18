@@ -539,19 +539,10 @@ const TrekDetail = () => {
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
                         return (
                           <div key={day.day} className="border border-border rounded-xl overflow-hidden">
-                            {/* Day photo */}
-                            <div className="relative aspect-[3/1] bg-muted overflow-hidden">
-                              <img
-                                src={getDayPhoto(trek.id, day.day)}
-                                alt={`Day ${day.day}: ${day.title}`}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                              <div className="absolute bottom-3 left-4 right-4">
-                                <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs">Day {day.day}</span>
-                                <h4 className="text-white font-semibold text-sm mt-1">{day.title}</h4>
-                              </div>
+                            {/* Day header */}
+                            <div className="bg-muted/40 px-4 py-3 flex items-center gap-3 border-b border-border">
+                              <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs shrink-0">Day {day.day}</span>
+                              <h4 className="font-semibold text-sm text-foreground">{day.title}</h4>
                             </div>
                             <div className="p-4">
                               <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
