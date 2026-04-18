@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import EnquiryForm from "@/components/EnquiryForm";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -781,6 +782,11 @@ const TrekDetail = () => {
                   </div>
                 </div>
               )}
+
+              {/* Enquiry */}
+              <div className="mt-6">
+                <EnquiryForm defaultTrekName={trek.name} />
+              </div>
 
               {/* Trek Reviews */}
               <div className="mt-6">

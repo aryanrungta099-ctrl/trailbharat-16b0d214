@@ -9,6 +9,7 @@ import { getEarnedBadges, Badge } from "@/data/badges";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import EnquiryForm from "@/components/EnquiryForm";
 
 /* ── Badge Celebration Overlay ── */
 const BadgeCelebration = ({ badge, onDone }: { badge: Badge; onDone: () => void }) => {
@@ -275,6 +276,20 @@ const Profile = () => {
                   {submitting ? "Adding…" : "Add Trek"}
                 </button>
               </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Interested Treks → Enquiry */}
+          <ScrollReveal delay={150}>
+            <div className="mb-8">
+              <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+                <Heart className="h-5 w-5 text-primary" /> Interested in a Trek?
+              </h2>
+              <EnquiryForm
+                defaultName={profile?.display_name || ""}
+                defaultEmail={user.email || ""}
+                trekOptions={treks.map(t => `${t.name} (${t.country})`)}
+              />
             </div>
           </ScrollReveal>
 
