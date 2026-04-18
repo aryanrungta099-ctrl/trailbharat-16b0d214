@@ -12,6 +12,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import EnquiryForm from "@/components/EnquiryForm";
+import { realTrekPhotos } from "@/data/realTrekPhotos";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -333,7 +334,19 @@ const TREK_PHOTOS = [
   "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop",
 ];
 
-function getTrekImages(trek: Trek): { url: string; caption: string; source: string }[] {
+function getTrekImages(trek: Trek): { url: string; caption: string; source: string; descUrl?: string; license?: string; artist?: string }[] {
+  // Prefer real Wikimedia photos if available for this trek
+  const real = realTrekPhotos[trek.id];
+  if (real && real.length > 0) {
+    return real.slice(0, 3).map(p => ({
+      url: p.url,
+      caption: p.caption || `${trek.name}`,
+      source: p.source,
+      descUrl: p.descUrl,
+      license: p.license,
+      artist: p.artist,
+    }));
+  }
   const hash = trek.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return [
     { url: TREK_PHOTOS[hash % TREK_PHOTOS.length], caption: `${trek.region} landscape`, source: "Unsplash" },
@@ -344,6 +357,10 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
 
 // Get an itinerary day photo based on trek and day
 function getDayPhoto(trekId: string, day: number): string {
+  const real = realTrekPhotos[trekId];
+  if (real && real.length > 0) {
+    return real[(day - 1) % real.length].url;
+  }
   const hash = trekId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return TREK_PHOTOS[(hash + day * 3) % TREK_PHOTOS.length];
 }
@@ -476,8 +493,14 @@ const TrekDetail = () => {
                       <div key={i} className="relative aspect-[4/3] bg-muted">
                         <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                          <p className="text-[10px] text-white/90">{img.caption}</p>
-                          <p className="text-[8px] text-white/60">📷 {img.source}</p>
+                          <p className="text-[10px] text-white/90 line-clamp-1">{img.caption}</p>
+                          {img.descUrl ? (
+                            <a href={img.descUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] text-white/60 hover:text-white/90">
+                              📷 {img.source}{img.license ? ` · ${img.license}` : ""}
+                            </a>
+                          ) : (
+                            <p className="text-[8px] text-white/60">📷 {img.source}</p>
+                          )}
                         </div>
                       </div>
                     ))}
