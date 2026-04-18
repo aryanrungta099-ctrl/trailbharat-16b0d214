@@ -27,6 +27,7 @@ import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Unsubscribe from "./pages/Unsubscribe.tsx";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/suggest" element={<SuggestTrek />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
