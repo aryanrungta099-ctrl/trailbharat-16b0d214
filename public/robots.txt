@@ -6,3 +6,4 @@ Disallow: /profile
 
 # Single canonical sitemap (always up-to-date, generated from live data)
 Sitemap: https://himalayantrails.aryanrungta.com/sitemap.xml
+Sitemap: https://otzzgoelrtpdwkhvkntk.supabase.co/functions/v1/generate-sitemap
