@@ -46,14 +46,16 @@ const Footer = () => (
           <h4 className="font-display text-sm font-semibold mb-4 uppercase tracking-[0.15em] text-foreground/60">Safety</h4>
           <ul className="space-y-2.5 text-sm">
             <li><Link to="/tips" className="text-foreground/35 hover:text-primary transition-colors story-link">Essential Prep</Link></li>
+            <li><Link to="/ams" className="text-foreground/35 hover:text-primary transition-colors story-link">AMS Hub & Calculator</Link></li>
             <li><Link to="/blog" className="text-foreground/35 hover:text-primary transition-colors story-link">Safety Guides</Link></li>
-            <li><Link to="/blog" className="text-foreground/35 hover:text-primary transition-colors story-link">AMS Info</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="font-display text-sm font-semibold mb-4 uppercase tracking-[0.15em] text-foreground/60">Company</h4>
           <ul className="space-y-2.5 text-sm">
-            <li><Link to="/" className="text-foreground/35 hover:text-primary transition-colors story-link">About</Link></li>
+            <li><Link to="/about" className="text-foreground/35 hover:text-primary transition-colors story-link">About</Link></li>
+            <li><Link to="/methodology" className="text-foreground/35 hover:text-primary transition-colors story-link">Methodology</Link></li>
+            <li><Link to="/contact" className="text-foreground/35 hover:text-primary transition-colors story-link">Contact</Link></li>
             <li><Link to="/agencies" className="text-foreground/35 hover:text-primary transition-colors story-link">Advertise</Link></li>
           </ul>
         </div>

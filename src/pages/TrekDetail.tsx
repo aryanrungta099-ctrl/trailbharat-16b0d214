@@ -13,6 +13,7 @@ import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import EnquiryForm from "@/components/EnquiryForm";
 import { realTrekPhotos } from "@/data/realTrekPhotos";
+import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -811,7 +812,8 @@ const TrekDetail = () => {
 
           {/* Right sidebar - services */}
           <aside className="lg:w-96 shrink-0">
-            <div className="lg:sticky lg:top-20">
+            <div className="lg:sticky lg:top-20 space-y-4">
+              <AmsRiskBlock trek={trek} />
               <TrekServicePanel trek={trek} />
             </div>
           </aside>
