@@ -1,5 +1,6 @@
 import { Shield, Backpack, HeartPulse, Cloud, Footprints, Droplets, Sun, AlertTriangle } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const tips = [
   {
