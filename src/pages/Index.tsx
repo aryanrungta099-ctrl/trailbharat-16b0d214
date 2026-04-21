@@ -12,6 +12,7 @@ import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 import FirstTrekModal from "@/components/FirstTrekModal";
 import SEOHead, { websiteSchema } from "@/components/SEOHead";
+import DiscoveryHero from "@/components/DiscoveryHero";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
 
@@ -123,6 +124,8 @@ const Index = () => {
   const [guesthouses, setGuesthouses] = useState<any[]>([]);
   const [agencies, setAgencies] = useState<any[]>([]);
   const [trekReviews, setTrekReviews] = useState<Record<string, { avg: number; count: number }>>({});
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [totalSherpas, setTotalSherpas] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
@@ -227,6 +230,7 @@ const Index = () => {
       .then(({ data }) => { if (data) setAgencies(data); });
     supabase.from("trek_reviews").select("trek_id, rating").then(({ data }) => {
       if (!data) return;
+      setTotalReviews(data.length);
       const map: Record<string, { sum: number; count: number }> = {};
       data.forEach(r => {
         if (!map[r.trek_id]) map[r.trek_id] = { sum: 0, count: 0 };
@@ -237,6 +241,8 @@ const Index = () => {
       Object.entries(map).forEach(([id, v]) => { result[id] = { avg: v.sum / v.count, count: v.count }; });
       setTrekReviews(result);
     });
+    supabase.from("sherpa_listings").select("id", { count: "exact", head: true }).eq("approved", true)
+      .then(({ count }) => { if (count !== null) setTotalSherpas(count); });
   }, []);
 
   return (
