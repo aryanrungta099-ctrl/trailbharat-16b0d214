@@ -544,28 +544,43 @@ export type Database = {
       }
       trek_overrides: {
         Row: {
+          author_credentials: string | null
+          author_name: string | null
+          content_source: string
           description: string | null
           highlights: string[] | null
           id: string
           itinerary_json: Json | null
+          last_verified_at: string | null
+          long_form_content: string | null
           trek_id: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          author_credentials?: string | null
+          author_name?: string | null
+          content_source?: string
           description?: string | null
           highlights?: string[] | null
           id?: string
           itinerary_json?: Json | null
+          last_verified_at?: string | null
+          long_form_content?: string | null
           trek_id: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          author_credentials?: string | null
+          author_name?: string | null
+          content_source?: string
           description?: string | null
           highlights?: string[] | null
           id?: string
           itinerary_json?: Json | null
+          last_verified_at?: string | null
+          long_form_content?: string | null
           trek_id?: string
           updated_at?: string
           updated_by?: string | null
