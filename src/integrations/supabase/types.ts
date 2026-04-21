@@ -550,9 +550,11 @@ export type Database = {
           description: string | null
           highlights: string[] | null
           id: string
+          is_flagship: boolean
           itinerary_json: Json | null
           last_verified_at: string | null
           long_form_content: string | null
+          noindex: boolean
           trek_id: string
           updated_at: string
           updated_by: string | null
@@ -564,9 +566,11 @@ export type Database = {
           description?: string | null
           highlights?: string[] | null
           id?: string
+          is_flagship?: boolean
           itinerary_json?: Json | null
           last_verified_at?: string | null
           long_form_content?: string | null
+          noindex?: boolean
           trek_id: string
           updated_at?: string
           updated_by?: string | null
@@ -578,9 +582,11 @@ export type Database = {
           description?: string | null
           highlights?: string[] | null
           id?: string
+          is_flagship?: boolean
           itinerary_json?: Json | null
           last_verified_at?: string | null
           long_form_content?: string | null
+          noindex?: boolean
           trek_id?: string
           updated_at?: string
           updated_by?: string | null
