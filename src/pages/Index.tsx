@@ -12,6 +12,7 @@ import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 import FirstTrekModal from "@/components/FirstTrekModal";
 import SEOHead, { websiteSchema } from "@/components/SEOHead";
+import DiscoveryHero from "@/components/DiscoveryHero";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
 
@@ -123,6 +124,8 @@ const Index = () => {
   const [guesthouses, setGuesthouses] = useState<any[]>([]);
   const [agencies, setAgencies] = useState<any[]>([]);
   const [trekReviews, setTrekReviews] = useState<Record<string, { avg: number; count: number }>>({});
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [totalSherpas, setTotalSherpas] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [searchResults, setSearchResults] = useState<typeof treks | null>(null);
@@ -227,6 +230,7 @@ const Index = () => {
       .then(({ data }) => { if (data) setAgencies(data); });
     supabase.from("trek_reviews").select("trek_id, rating").then(({ data }) => {
       if (!data) return;
+      setTotalReviews(data.length);
       const map: Record<string, { sum: number; count: number }> = {};
       data.forEach(r => {
         if (!map[r.trek_id]) map[r.trek_id] = { sum: 0, count: 0 };
@@ -237,6 +241,8 @@ const Index = () => {
       Object.entries(map).forEach(([id, v]) => { result[id] = { avg: v.sum / v.count, count: v.count }; });
       setTrekReviews(result);
     });
+    supabase.from("sherpa_listings").select("id", { count: "exact", head: true }).eq("approved", true)
+      .then(({ count }) => { if (count !== null) setTotalSherpas(count); });
   }, []);
 
   return (
@@ -248,95 +254,12 @@ const Index = () => {
         jsonLd={websiteSchema}
       />
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative h-screen min-h-[600px] flex items-end overflow-hidden">
-        {/* Background images */}
-        {heroImages.map((img, i) => (
-          <img key={i} src={img} alt={`Himalayan landscape ${i + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ${i === heroIndex ? "opacity-30" : "opacity-0"}`}
-            loading={i === 0 ? "eager" : "lazy"} />
-        ))}
-
-        {/* Mountain parallax layers */}
-        <MountainLayers mouseX={mousePos.x} mouseY={mousePos.y} />
-
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1f13] via-[#0c1f13]/60 to-transparent" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, transparent 60%, #0c1f13 100%)" }} />
-
-        {/* Hero content */}
-        <div className="relative z-10 container mx-auto px-4 pb-24 md:pb-32">
-          {/* First Trek badge */}
-          <button
-            onClick={() => setShowFirstTrek(true)}
-            className="mb-8 flex items-center gap-3 group cursor-pointer bg-transparent border border-alpine-mint/30 rounded-full px-5 py-2.5 hover:border-alpine-mint/60 transition-all"
-            aria-label="First Trek? Get personalized advice"
-          >
-            <div className="relative">
-              <div className="w-3 h-3 rounded-full bg-primary" />
-              <div className="absolute inset-0 w-3 h-3 rounded-full bg-primary animate-pulse-ring" />
-            </div>
-            <span className="text-sm font-body font-medium text-foreground/90">First Trek? Get personalized advice →</span>
-          </button>
-
-          <h1 className="text-foreground max-w-3xl" style={{ fontSize: "clamp(3rem, 8vw, 6rem)", fontWeight: 300 }}>
-            Himalayan{" "}
-            <em className="italic text-primary" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Trails</em>
-          </h1>
-          <p className="mt-6 text-foreground/60 text-lg md:text-xl max-w-lg font-body font-light animate-reveal animate-reveal-delay-1">
-            Your complete guide to trekking across India & Nepal — routes, safety tips, and real stories from the trail.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-wrap items-center gap-4 mt-10 animate-reveal animate-reveal-delay-2">
-            <Link to="/routes"
-              className="inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
-              style={{
-                borderRadius: "50px",
-                background: "linear-gradient(135deg, #2d6a4f, #74c69d)",
-                color: "#0c1f13",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 0 24px rgba(116,198,157,0.4)")}
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-            >
-              Explore Routes <ArrowRight className="h-4 w-4" />
-            </Link>
-            <button
-              onClick={() => document.getElementById("top-treks-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="relative inline-flex items-center gap-2 px-7 py-3.5 font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5"
-              style={{
-                borderRadius: "50px",
-                background: "linear-gradient(135deg, #8a5a1a, #c9973a)",
-                color: "#fff",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 0 24px rgba(201,151,58,0.4)")}
-              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-            >
-              <Star className="h-4 w-4" /> Top Treks
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">Hot</span>
-            </button>
-            <Link to="/recommended"
-              className="relative inline-flex items-center gap-2 px-7 py-3.5 font-medium text-sm text-foreground transition-all duration-200 hover:-translate-y-0.5 border border-foreground/10"
-              style={{
-                borderRadius: "50px",
-                background: "rgba(255,255,255,0.07)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-              }}
-            >
-              <Heart className="h-4 w-4" /> Recommended
-              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">AI</span>
-            </Link>
-          </div>
-
-          <p className="mt-6 text-foreground/40 text-sm font-body animate-reveal animate-reveal-delay-3">
-            Having trouble? Consult{" "}
-            <button onClick={() => window.dispatchEvent(new CustomEvent("open-hiker-ai"))} className="font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer bg-transparent border-none p-0 story-link">
-              HikerAI
-            </button>{" "}→
-          </p>
-        </div>
-      </section>
+      {/* ═══ DISCOVERY HERO (P5) ═══ */}
+      <DiscoveryHero
+        trekCount={treks.length}
+        reviewCount={totalReviews}
+        sherpaCount={totalSherpas}
+      />
 
       {/* ═══ SOCIAL PROOF BAR ═══ */}
       <section className="relative z-20 py-8 border-y border-foreground/[0.05]" style={{ background: "linear-gradient(135deg, #111e16 0%, #0c1f13 100%)" }}>

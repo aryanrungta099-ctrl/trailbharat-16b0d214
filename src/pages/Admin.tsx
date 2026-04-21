@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, Check, X, Trash2, Mountain, Home, Briefcase, MessageSquare, Star, Image, FileText, Plus, Edit2, Eye, EyeOff, MapPin, Phone, Coffee } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import AiBatchPanel from "@/components/AiBatchPanel";
 import { treks } from "@/data/treks";
 
 const Admin = () => {
@@ -446,6 +447,14 @@ const Admin = () => {
               <p className="text-sm text-muted-foreground mb-3">Edit trek descriptions, highlights, and itinerary data. Changes override the default content.</p>
               <input value={trekSearchQuery} onChange={e => setTrekSearchQuery(e.target.value)} placeholder="Search treks by name or region..." className={inputClass} />
             </div>
+
+            {/* AI Batch Content Generator */}
+            <AiBatchPanel
+              treks={treks}
+              overrides={trekOverrides}
+              onDone={fetchAll}
+            />
+
 
             {showTrekForm && editingTrek && (
               <ScrollReveal>
