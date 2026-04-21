@@ -447,6 +447,14 @@ const Admin = () => {
               <input value={trekSearchQuery} onChange={e => setTrekSearchQuery(e.target.value)} placeholder="Search treks by name or region..." className={inputClass} />
             </div>
 
+            {/* AI Batch Content Generator */}
+            <AiBatchPanel
+              treks={treks}
+              overrides={trekOverrides}
+              onDone={fetchAll}
+            />
+
+
             {showTrekForm && editingTrek && (
               <ScrollReveal>
                 <form onSubmit={handleTrekSubmit} className="bg-card border border-border rounded-xl p-6 mb-8 space-y-4">
