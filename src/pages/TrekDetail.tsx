@@ -14,6 +14,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import EnquiryForm from "@/components/EnquiryForm";
 import { realTrekPhotos } from "@/data/realTrekPhotos";
 import { AmsRiskBlock } from "@/components/AmsRiskBlock";
+import ReactMarkdown from "react-markdown";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
