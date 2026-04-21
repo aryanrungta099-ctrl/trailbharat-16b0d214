@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, Check, X, Trash2, Mountain, Home, Briefcase, MessageSquare, Star, Image, FileText, Plus, Edit2, Eye, EyeOff, MapPin, Phone, Coffee } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import AiBatchPanel from "@/components/AiBatchPanel";
 import { treks } from "@/data/treks";
 
 const Admin = () => {
