@@ -473,6 +473,17 @@ const TrekDetail = () => {
                   <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
                 </div>
                 <h1 className="text-3xl md:text-4xl mb-4">{trek.name}</h1>
+
+                {/* AI-content banner — shown only for ai_generated pages */}
+                {trekOverride?.content_source === "ai_generated" && (
+                  <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <p>
+                      <strong>This guide is AI-assisted and pending editorial review.</strong> Verified details are marked with ✓. Spotted an error? <a href="mailto:corrections@himalayantrails.aryanrungta.com" className="underline">Report it</a>.
+                    </p>
+                  </div>
+                )}
+
                 <p className="text-muted-foreground leading-relaxed mb-6">{trek.description}</p>
 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -481,6 +492,20 @@ const TrekDetail = () => {
                   <span className="inline-flex items-center gap-1.5"><TrendingUp className="h-4 w-4 text-primary" />{trek.altitudeMeters.toLocaleString()}m</span>
                   <span className="inline-flex items-center gap-1.5"><Calendar className="h-4 w-4 text-primary" />{trek.bestMonths.map(m => MONTHS[m - 1]).join(", ")}</span>
                   <span className="inline-flex items-center gap-1.5"><Users className="h-4 w-4 text-primary" />{completionCount} completed</span>
+                </div>
+
+                {/* Trust strip */}
+                <div className="mt-5 pt-4 border-t border-border flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Shield className="h-3 w-3 text-trek-moss" />
+                    {trekOverride?.last_verified_at
+                      ? <>Last verified: <time dateTime={trekOverride.last_verified_at}>{new Date(trekOverride.last_verified_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</time></>
+                      : <>Editorial baseline · {new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</>}
+                  </span>
+                  {trekOverride?.author_name && (
+                    <span>By <span className="font-medium text-foreground">{trekOverride.author_name}</span>{trekOverride.author_credentials ? `, ${trekOverride.author_credentials}` : ""}</span>
+                  )}
+                  <a href={`mailto:corrections@himalayantrails.aryanrungta.com?subject=Outdated info: ${encodeURIComponent(trek.name)}`} className="text-primary hover:underline ml-auto">Report outdated info →</a>
                 </div>
               </div>
             </ScrollReveal>
