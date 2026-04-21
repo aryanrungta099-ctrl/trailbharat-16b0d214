@@ -536,6 +536,22 @@ const TrekDetail = () => {
               </ScrollReveal>
             )}
 
+            {/* Long-form editorial / AI guide */}
+            {trekOverride?.long_form_content && (
+              <ScrollReveal delay={50}>
+                <article className="mb-8 prose prose-invert prose-sm md:prose-base max-w-none
+                             prose-headings:font-display prose-headings:text-foreground
+                             prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border prose-h2:pb-2
+                             prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
+                             prose-p:text-muted-foreground prose-p:leading-relaxed
+                             prose-strong:text-foreground prose-a:text-primary
+                             prose-table:text-xs prose-th:text-foreground prose-td:text-muted-foreground
+                             prose-li:text-muted-foreground">
+                  <ReactMarkdown>{trekOverride.long_form_content}</ReactMarkdown>
+                </article>
+              </ScrollReveal>
+            )}
+
             {/* Tabs */}
             <ScrollReveal delay={60}>
               <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1">
