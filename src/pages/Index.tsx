@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { treks, allRegions, allStates } from "@/data/treks";
 import JarvisChat from "@/components/JarvisChat";
 import FirstTrekModal from "@/components/FirstTrekModal";
-import SEOHead, { websiteSchema } from "@/components/SEOHead";
+import SEOHead, { websiteSchema, organizationSchema } from "@/components/SEOHead";
 import DiscoveryHero from "@/components/DiscoveryHero";
 
 const heroImages = [heroImg1, heroImg2, heroImg3, heroImg4];
@@ -251,7 +251,7 @@ const Index = () => {
         title="Himalayan Trails"
         description="Your complete guide to trekking across India & Nepal — 200+ routes, safety tips, gear guides, and real stories from the trail."
         path="/"
-        jsonLd={websiteSchema}
+        jsonLd={[websiteSchema, organizationSchema]}
       />
 
       {/* ═══ DISCOVERY HERO (P5) ═══ */}
