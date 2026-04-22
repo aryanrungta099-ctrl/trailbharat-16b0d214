@@ -21,12 +21,16 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
+  const [forceMode, setForceMode] = useState(false);
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
   );
 
-  const pending = treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
+  // In force mode, all treks are eligible. Otherwise skip flagships + already-written.
+  const pending = forceMode
+    ? treks
+    : treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
   const totalAiGenerated = overrides.filter(o => o.content_source === "ai_generated").length;
   const totalEditorial = overrides.filter(o => o.content_source === "editorial" && o.long_form_content).length;
 
@@ -36,8 +40,8 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
     const batch = pending.slice(0, batchSize);
     setProgress({ done: 0, total: batch.length, ok: 0, failed: 0 });
 
-    // Send in chunks of 5 to avoid edge fn timeout
-    const CHUNK = 5;
+    // Smaller chunks because the deeper prompt + Pro model takes longer per trek.
+    const CHUNK = 3;
     let ok = 0, failed = 0;
 
     for (let i = 0; i < batch.length; i += CHUNK) {
@@ -50,7 +54,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
 
       try {
         const { data, error } = await supabase.functions.invoke("generate-trek-content", {
-          body: { treks: slice },
+          body: { treks: slice, force: forceMode },
         });
 
         if (error) {
@@ -64,7 +68,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
           for (const r of data?.results || []) {
             if (r.ok) {
               ok++;
-              setLog(l => [`✓ ${r.id} (${r.length} chars)`, ...l]);
+              setLog(l => [`✓ ${r.id} (${r.words}w / ${r.length} chars)`, ...l]);
             } else {
               failed++;
               setLog(l => [`✗ ${r.id}: ${r.error}`, ...l]);
@@ -93,38 +97,53 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
             AI Content Generator
           </h3>
           <p className="text-xs text-muted-foreground mt-1 max-w-xl">
-            Generates structured 1200–1800 word guides for treks without long-form content.
-            Skips the 20 hand-written flagships. Marks output as <code className="text-primary">ai_generated</code>.
+            Generates deep 1800–2000 word SEO guides using <code className="text-primary">gemini-2.5-pro</code>.
+            By default, skips the 20 hand-written flagships and any trek that already has long-form content.
+            Toggle <em>Force regenerate</em> to overwrite EVERY trek (incl. flagships & editorial).
+            Output is marked <code className="text-primary">ai_generated</code>.
           </p>
         </div>
         <div className="flex gap-3 text-xs">
           <Stat label="Editorial" value={totalEditorial} color="text-primary" />
           <Stat label="AI generated" value={totalAiGenerated} color="text-accent" />
-          <Stat label="Pending" value={pending.length} color="text-muted-foreground" />
+          <Stat label="Eligible" value={pending.length} color="text-muted-foreground" />
         </div>
       </div>
+
+      <label className="flex items-center gap-2 mb-3 text-xs cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={forceMode}
+          onChange={(e) => setForceMode(e.target.checked)}
+          disabled={running}
+          className="h-3.5 w-3.5 rounded accent-primary"
+        />
+        <span className={forceMode ? "text-destructive font-medium" : "text-muted-foreground"}>
+          Force regenerate ALL treks (overwrites flagships & editorial)
+        </span>
+      </label>
 
       <div className="flex flex-wrap gap-2">
         <button
           disabled={running || !pending.length}
-          onClick={() => runBatch(5)}
+          onClick={() => runBatch(3)}
           className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
-          Test: generate 5
+          Test: generate 3
         </button>
         <button
           disabled={running || !pending.length}
-          onClick={() => runBatch(25)}
+          onClick={() => runBatch(15)}
           className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
-          Generate 25
+          Generate 15
         </button>
         <button
           disabled={running || !pending.length}
           onClick={() => runBatch(pending.length)}
-          className="px-4 py-2 rounded-lg trek-gradient text-primary-foreground text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className={`px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition ${forceMode ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "trek-gradient text-primary-foreground"}`}
         >
-          Generate all {pending.length}
+          {forceMode ? `⚠ Regenerate all ${pending.length}` : `Generate all ${pending.length}`}
         </button>
       </div>
 
