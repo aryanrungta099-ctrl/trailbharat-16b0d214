@@ -15,6 +15,7 @@ import EnquiryForm from "@/components/EnquiryForm";
 import { realTrekPhotos } from "@/data/realTrekPhotos";
 import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 import ReactMarkdown from "react-markdown";
+import RelatedTreks from "@/components/RelatedTreks";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -849,6 +850,12 @@ const TrekDetail = () => {
               <div className="mt-6">
                 <TrekReviewSection trekId={trek.id} user={user} />
               </div>
+
+              {/* Internal linking — for SEO crawl traversal */}
+              <section className="mt-10" aria-label="Related treks">
+                <h2 className="font-display text-2xl font-semibold mb-4">Explore related treks</h2>
+                <RelatedTreks trek={trek} />
+              </section>
             </ScrollReveal>
           </div>
 
