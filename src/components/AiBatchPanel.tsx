@@ -21,12 +21,16 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
+  const [forceMode, setForceMode] = useState(false);
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
   );
 
-  const pending = treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
+  // In force mode, all treks are eligible. Otherwise skip flagships + already-written.
+  const pending = forceMode
+    ? treks
+    : treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
   const totalAiGenerated = overrides.filter(o => o.content_source === "ai_generated").length;
   const totalEditorial = overrides.filter(o => o.content_source === "editorial" && o.long_form_content).length;
 
@@ -36,8 +40,8 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
     const batch = pending.slice(0, batchSize);
     setProgress({ done: 0, total: batch.length, ok: 0, failed: 0 });
 
-    // Send in chunks of 5 to avoid edge fn timeout
-    const CHUNK = 5;
+    // Smaller chunks because the deeper prompt + Pro model takes longer per trek.
+    const CHUNK = 3;
     let ok = 0, failed = 0;
 
     for (let i = 0; i < batch.length; i += CHUNK) {
@@ -50,7 +54,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
 
       try {
         const { data, error } = await supabase.functions.invoke("generate-trek-content", {
-          body: { treks: slice },
+          body: { treks: slice, force: forceMode },
         });
 
         if (error) {
@@ -64,7 +68,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
           for (const r of data?.results || []) {
             if (r.ok) {
               ok++;
-              setLog(l => [`✓ ${r.id} (${r.length} chars)`, ...l]);
+              setLog(l => [`✓ ${r.id} (${r.words}w / ${r.length} chars)`, ...l]);
             } else {
               failed++;
               setLog(l => [`✗ ${r.id}: ${r.error}`, ...l]);
