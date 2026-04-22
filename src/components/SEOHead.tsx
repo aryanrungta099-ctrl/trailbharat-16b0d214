@@ -4,6 +4,18 @@ const SITE_URL = "https://himalayantrails.aryanrungta.com";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=1200&h=630&fit=crop";
 const SITE_NAME = "Himalayan Trails";
 
+// Strip tracking params from canonical URLs
+const TRACKING_PARAMS = ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","mc_cid","mc_eid","ref","source"];
+const cleanCanonicalPath = (path: string): string => {
+  const [base, query] = path.split("?");
+  if (!query) return base.replace(/\/$/, "") || "/";
+  const params = new URLSearchParams(query);
+  TRACKING_PARAMS.forEach(p => params.delete(p));
+  const remaining = params.toString();
+  const clean = remaining ? `${base}?${remaining}` : base;
+  return clean.replace(/\/$/, "") || "/";
+};
+
 interface SEOHeadProps {
   title: string;
   description: string;
