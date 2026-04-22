@@ -7,52 +7,61 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PROMPT = (t: any) => `You are writing a structured trekking guide for SEO indexing.
+const PROMPT = (t: any) => `You are writing a deep, SEO-optimised long-form trekking guide for Himalayan Trails.
 Trek: ${t.name} (${t.country}, ${t.state})
 Region: ${t.region} | Difficulty: ${t.difficulty} | Duration: ${t.durationDays} days
 Max altitude: ${t.altitudeMeters}m | Best months: ${t.bestMonths.join(",")}
 Short description: ${t.description}
 Highlights: ${(t.highlights || []).join(", ")}
 
-Write a 1200-1800 word guide using EXACTLY these markdown sections in order:
+TARGET LENGTH: 1800–2000 words. Do NOT go under 1800. Be substantive — no filler, no repetition.
+
+Use EXACTLY these markdown sections in this order:
 
 ## Overview
-2-3 paragraphs about the trek's character, terrain, and what makes it distinctive.
+3–4 rich paragraphs (~350 words). Cover: the trek's character & landscape; what makes it distinctive vs nearby alternatives; cultural/historical context of the region; who it appeals to. Naturally weave in the trek name, region, and 2–3 long-tail keywords (e.g. "${t.name} trek itinerary", "best time for ${t.name}", "${t.name} difficulty").
 
 ## Quick Facts
-Bullet list: location, duration, difficulty, max altitude, best season, base town/airport (only if confident).
+Bullet list: location, duration, difficulty, max altitude, total distance (if confident), best season, base town/airport, trek style (camping/teahouse), permits-at-a-glance.
 
 ## Day-by-Day Itinerary
-Markdown table: Day | Stage | Distance | Altitude | Notes. Use "—" if unsure rather than invent.
+Markdown table with columns: Day | Stage | Distance (km) | Altitude (m) | Terrain & Notes. One row per day for all ${t.durationDays} days. Use "—" only if genuinely uncertain. Follow the table with 2–3 sentences summarising the arc of the trek (acclimatisation pattern, the climax day, descent).
 
 ## Best Time to Visit
-Month-by-month breakdown.
+Month-by-month breakdown (at least 6 months). For each: weather, trail conditions, crowd level, photography appeal. Call out monsoon/winter closures explicitly.
 
 ## Difficulty & Fitness
-Who can do it, training, prior experience.
+~250 words. Who can attempt it, prior experience needed, training plan (cardio weeks, strength, altitude prep), red flags that mean you should pick an easier trek first. Mention pace expectations (km/day, ascent/day).
 
 ## AMS Risk Summary
-Days above 3000m/4000m/5000m if applicable, recommended acclimatisation, red flags. End with: "**Note:** This is general guidance — see our [AMS Hub](/ams) for detailed protocols. Consult a doctor before using Diamox."
+Quantify days spent above 3000m / 4000m / 5000m for this trek. Recommended acclimatisation pattern, hydration, ascent rate. List 4–5 red-flag symptoms. End with: "**Note:** This is general guidance — see our [AMS Hub](/ams) for detailed protocols. Always consult a doctor before using Diamox or any altitude medication."
 
 ## How to Reach
-Nearest airport, railhead, road route. Leave blank if unsure.
+Nearest airport, railhead, and road route from the closest major hub. Approximate travel times. Mention shared taxi vs private options. Leave blank only if genuinely unknown.
 
 ## What to Pack
-Bullet list specific to this trek's altitude and season.
+Categorised bullet list (Clothing / Footwear / Sleeping / Backpack / Personal / Documents) tailored to this trek's altitude and season. At least 20 items.
 
 ## Permits Required
-List required permits. If unknown, write "Verified permit details coming soon — check with local trek operators."
+List each permit with issuing authority. If specific fees/processes are uncertain, write "Verify current fees with local trek operators or the forest department before travel."
 
 ## Budget Range
-General range only. No specific agencies or quoted prices.
+General per-person range in INR for self-organised vs guided trips. Break down: transport, permits, guide/porter, food, gear rental. No specific agency names or quoted prices.
+
+## Safety & Responsible Trekking
+~200 words. Weather hazards specific to this trek, river crossings, wildlife, mobile network gaps, evacuation realities. Leave-no-trace principles, local etiquette, supporting the local economy.
+
+## Nearby Treks & Extensions
+3–5 bullet suggestions of related treks in the same region (shorter alternatives, harder progressions, combinable side trips). Use generic names — do not link.
 
 ## FAQs
-4-6 beginner Q&A.
+6–8 beginner Q&A targeting common search queries (e.g. "Is ${t.name} suitable for beginners?", "How cold does it get?", "Is there mobile network?", "Can solo women trek this?").
 
 RULES:
 - No specific guide/agency names. No invented permit fees, phone numbers, or dates.
 - No medical dosing advice — only point readers to the AMS Hub and a doctor.
-- Output pure markdown only, no preamble. Start with \`## Overview\`.`;
+- Vary sentence length. Use Indian English. Avoid AI-tells like "nestled", "embark", "in conclusion", "tapestry".
+- Output pure markdown only, no preamble. Start directly with \`## Overview\`.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
