@@ -87,8 +87,9 @@ Deno.serve(async (req) => {
       .from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin");
     if (!roles?.length) return json({ error: "admin only" }, 403);
 
-    const { treks } = await req.json();
+    const { treks, force, model: requestedModel } = await req.json();
     if (!Array.isArray(treks) || !treks.length) return json({ error: "no treks" }, 400);
+    const model = requestedModel || "google/gemini-2.5-pro";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
     const results: any[] = [];
@@ -102,9 +103,9 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
+            model,
             messages: [
-              { role: "system", content: "You write factually careful, SEO-optimised trekking guides. When unsure of a specific detail, leave it blank rather than fabricate." },
+              { role: "system", content: "You write factually careful, deeply researched, SEO-optimised long-form trekking guides for Indian and Nepali Himalayan routes. Hit the requested word count. When unsure of a specific detail, leave it blank rather than fabricate." },
               { role: "user", content: PROMPT(trek) },
             ],
           }),
@@ -118,11 +119,21 @@ Deno.serve(async (req) => {
         const content = aiData.choices?.[0]?.message?.content;
         if (!content) { results.push({ id: trek.id, error: "empty" }); continue; }
 
-        // delete existing AI rows then insert fresh
+        const wordCount = content.trim().split(/\s+/).length;
+        if (wordCount < 1500) {
+          results.push({ id: trek.id, error: `too_short_${wordCount}w` });
+          continue;
+        }
+
+        // force=true wipes ALL existing long-form for this trek (incl. editorial)
+        const sourcesToDelete = force
+          ? ["ai_generated", "ai_generated_reviewed", "editorial"]
+          : ["ai_generated", "ai_generated_reviewed"];
+
         await supabase.from("trek_overrides")
           .delete()
           .eq("trek_id", trek.id)
-          .in("content_source", ["ai_generated", "ai_generated_reviewed"]);
+          .in("content_source", sourcesToDelete);
 
         const { error: insErr } = await supabase.from("trek_overrides").insert({
           trek_id: trek.id,
@@ -132,8 +143,8 @@ Deno.serve(async (req) => {
         });
         if (insErr) { results.push({ id: trek.id, error: insErr.message }); continue; }
 
-        results.push({ id: trek.id, ok: true, length: content.length });
-        await new Promise(r => setTimeout(r, 800));
+        results.push({ id: trek.id, ok: true, length: content.length, words: wordCount });
+        await new Promise(r => setTimeout(r, 1200));
       } catch (e) {
         results.push({ id: trek.id, error: String(e) });
       }
