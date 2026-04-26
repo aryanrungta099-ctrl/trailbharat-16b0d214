@@ -16,6 +16,7 @@ import { realTrekPhotos } from "@/data/realTrekPhotos";
 import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 import ReactMarkdown from "react-markdown";
 import RelatedTreks from "@/components/RelatedTreks";
+import PersonalizeItineraryPanel, { PersonalizedPlan } from "@/components/PersonalizeItineraryPanel";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -377,6 +378,7 @@ const TrekDetail = () => {
   const [activeTab, setActiveTab] = useState<"overview" | "altitude" | "budget" | "safety" | "stays" | "emergency">("overview");
   const [trekOverride, setTrekOverride] = useState<any>(null);
   const [teaHouses, setTeaHouses] = useState<any[]>([]);
+  const [personalizedPlan, setPersonalizedPlan] = useState<PersonalizedPlan | null>(null);
 
   // Fetch override data and tea houses
   useEffect(() => {
@@ -575,7 +577,7 @@ const TrekDetail = () => {
                     </ul>
                   </div>
 
-                  <PersonalizeItineraryPanel trek={trek} user={user} />
+                  <PersonalizeItineraryPanel trek={trek} user={user} plan={personalizedPlan} onPlan={setPersonalizedPlan} />
 
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="mb-4">Day-by-Day Itinerary</h3>
