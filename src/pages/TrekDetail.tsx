@@ -16,6 +16,7 @@ import { realTrekPhotos } from "@/data/realTrekPhotos";
 import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 import ReactMarkdown from "react-markdown";
 import RelatedTreks from "@/components/RelatedTreks";
+import PersonalizeItineraryPanel, { PersonalizedPlan } from "@/components/PersonalizeItineraryPanel";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -341,7 +342,7 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
   // Prefer real Wikimedia photos if available for this trek
   const real = realTrekPhotos[trek.id];
   if (real && real.length > 0) {
-    return real.slice(0, 3).map(p => ({
+    return real.map(p => ({
       url: p.url,
       caption: p.caption || `${trek.name}`,
       source: p.source,
@@ -377,6 +378,7 @@ const TrekDetail = () => {
   const [activeTab, setActiveTab] = useState<"overview" | "altitude" | "budget" | "safety" | "stays" | "emergency">("overview");
   const [trekOverride, setTrekOverride] = useState<any>(null);
   const [teaHouses, setTeaHouses] = useState<any[]>([]);
+  const [personalizedPlan, setPersonalizedPlan] = useState<PersonalizedPlan | null>(null);
 
   // Fetch override data and tea houses
   useEffect(() => {
@@ -575,12 +577,20 @@ const TrekDetail = () => {
                     </ul>
                   </div>
 
+                  <PersonalizeItineraryPanel trek={trek} user={user} plan={personalizedPlan} onPlan={setPersonalizedPlan} />
+
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="mb-4">Day-by-Day Itinerary</h3>
                     <div className="space-y-4">
-                      {trek.itinerary.map(day => {
+                      {trek.itinerary.map((day, idx) => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
+                        const dayPhoto = getDayPhoto(trek.id, day.day);
+                        const personalNote = personalizedPlan?.dayPlans?.find((p: any) => p.day === day.day);
+                        const statusColor = personalNote?.status === "abort_recommended" ? "bg-destructive/10 border-destructive/30 text-destructive"
+                          : personalNote?.status === "rest_recommended" ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400"
+                          : personalNote?.status === "watch" ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400"
+                          : "bg-trek-moss/10 border-trek-moss/30 text-trek-moss";
                         return (
                           <div key={day.day} className="border border-border rounded-xl overflow-hidden">
                             {/* Day header */}
@@ -588,6 +598,15 @@ const TrekDetail = () => {
                               <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs shrink-0">Day {day.day}</span>
                               <h4 className="font-semibold text-sm text-foreground">{day.title}</h4>
                             </div>
+                            {/* Day photo */}
+                            {dayPhoto && (
+                              <div className="relative aspect-[16/7] bg-muted overflow-hidden">
+                                <img src={dayPhoto} alt={`${day.townName || day.title}`} className="w-full h-full object-cover" loading="lazy" />
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2">
+                                  <p className="text-[11px] text-white/90 font-medium">{day.townName || day.title}</p>
+                                </div>
+                              </div>
+                            )}
                             <div className="p-4">
                               <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
                               <div className="flex flex-wrap gap-3 mt-2 text-xs">
@@ -595,6 +614,13 @@ const TrekDetail = () => {
                                 {day.elevation && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">⛰️ {day.elevation}</span>}
                                 {day.townAltitude && <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full">📍 {day.townAltitude.toLocaleString()}m</span>}
                               </div>
+                              {/* Personalised note */}
+                              {personalNote && (
+                                <div className={`mt-3 rounded-lg p-2.5 border text-[11px] ${statusColor}`}>
+                                  <span className="font-semibold uppercase tracking-wider mr-1.5">{personalNote.status.replace("_", " ")}:</span>
+                                  {personalNote.note}
+                                </div>
+                              )}
                               {/* Town/Village Info */}
                               {day.townName && day.townDescription && (
                                 <div className="mt-3 bg-muted/50 rounded-lg p-3 border border-border/50">
@@ -859,12 +885,35 @@ const TrekDetail = () => {
             </ScrollReveal>
           </div>
 
-          {/* Right sidebar - services */}
+          {/* Right sidebar - services + scrolling photo gallery */}
           <aside className="lg:w-96 shrink-0">
             <div className="lg:sticky lg:top-20 space-y-4">
               <AmsRiskBlock trek={trek} />
               <TrekServicePanel trek={trek} />
             </div>
+            {/* Non-sticky photo rail — fills the empty right column as the user scrolls the long-form content */}
+            {trekImages.length > 0 && (
+              <div className="hidden lg:block mt-6 space-y-4">
+                <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium px-1">From the trail</h3>
+                {trekImages.concat(trekImages).slice(0, 8).map((img, i) => (
+                  <figure key={`rail-${i}`} className="rounded-xl overflow-hidden border border-border bg-card">
+                    <div className="relative aspect-[4/3] bg-muted">
+                      <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                    <figcaption className="p-2.5">
+                      <p className="text-[11px] text-foreground font-medium leading-snug">{img.caption}</p>
+                      {img.descUrl ? (
+                        <a href={img.descUrl} target="_blank" rel="noopener noreferrer" className="text-[9px] text-muted-foreground hover:text-foreground">
+                          📷 {img.source}{img.license ? ` · ${img.license}` : ""}{img.artist ? ` · ${img.artist.replace(/<[^>]+>/g, "").slice(0, 30)}` : ""}
+                        </a>
+                      ) : (
+                        <p className="text-[9px] text-muted-foreground">📷 {img.source}</p>
+                      )}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            )}
           </aside>
         </div>
       </div>
