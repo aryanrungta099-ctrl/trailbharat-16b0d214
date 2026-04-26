@@ -885,12 +885,35 @@ const TrekDetail = () => {
             </ScrollReveal>
           </div>
 
-          {/* Right sidebar - services */}
+          {/* Right sidebar - services + scrolling photo gallery */}
           <aside className="lg:w-96 shrink-0">
             <div className="lg:sticky lg:top-20 space-y-4">
               <AmsRiskBlock trek={trek} />
               <TrekServicePanel trek={trek} />
             </div>
+            {/* Non-sticky photo rail — fills the empty right column as the user scrolls the long-form content */}
+            {trekImages.length > 0 && (
+              <div className="hidden lg:block mt-6 space-y-4">
+                <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium px-1">From the trail</h3>
+                {trekImages.concat(trekImages).slice(0, 8).map((img, i) => (
+                  <figure key={`rail-${i}`} className="rounded-xl overflow-hidden border border-border bg-card">
+                    <div className="relative aspect-[4/3] bg-muted">
+                      <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                    <figcaption className="p-2.5">
+                      <p className="text-[11px] text-foreground font-medium leading-snug">{img.caption}</p>
+                      {img.descUrl ? (
+                        <a href={img.descUrl} target="_blank" rel="noopener noreferrer" className="text-[9px] text-muted-foreground hover:text-foreground">
+                          📷 {img.source}{img.license ? ` · ${img.license}` : ""}{img.artist ? ` · ${img.artist.replace(/<[^>]+>/g, "").slice(0, 30)}` : ""}
+                        </a>
+                      ) : (
+                        <p className="text-[9px] text-muted-foreground">📷 {img.source}</p>
+                      )}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            )}
           </aside>
         </div>
       </div>
