@@ -575,12 +575,20 @@ const TrekDetail = () => {
                     </ul>
                   </div>
 
+                  <PersonalizeItineraryPanel trek={trek} user={user} />
+
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="mb-4">Day-by-Day Itinerary</h3>
                     <div className="space-y-4">
-                      {trek.itinerary.map(day => {
+                      {trek.itinerary.map((day, idx) => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
+                        const dayPhoto = getDayPhoto(trek.id, day.day);
+                        const personalNote = personalizedPlan?.dayPlans?.find((p: any) => p.day === day.day);
+                        const statusColor = personalNote?.status === "abort_recommended" ? "bg-destructive/10 border-destructive/30 text-destructive"
+                          : personalNote?.status === "rest_recommended" ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400"
+                          : personalNote?.status === "watch" ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400"
+                          : "bg-trek-moss/10 border-trek-moss/30 text-trek-moss";
                         return (
                           <div key={day.day} className="border border-border rounded-xl overflow-hidden">
                             {/* Day header */}
@@ -588,6 +596,15 @@ const TrekDetail = () => {
                               <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs shrink-0">Day {day.day}</span>
                               <h4 className="font-semibold text-sm text-foreground">{day.title}</h4>
                             </div>
+                            {/* Day photo */}
+                            {dayPhoto && (
+                              <div className="relative aspect-[16/7] bg-muted overflow-hidden">
+                                <img src={dayPhoto} alt={`${day.townName || day.title}`} className="w-full h-full object-cover" loading="lazy" />
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2">
+                                  <p className="text-[11px] text-white/90 font-medium">{day.townName || day.title}</p>
+                                </div>
+                              </div>
+                            )}
                             <div className="p-4">
                               <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
                               <div className="flex flex-wrap gap-3 mt-2 text-xs">
@@ -595,6 +612,13 @@ const TrekDetail = () => {
                                 {day.elevation && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">⛰️ {day.elevation}</span>}
                                 {day.townAltitude && <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full">📍 {day.townAltitude.toLocaleString()}m</span>}
                               </div>
+                              {/* Personalised note */}
+                              {personalNote && (
+                                <div className={`mt-3 rounded-lg p-2.5 border text-[11px] ${statusColor}`}>
+                                  <span className="font-semibold uppercase tracking-wider mr-1.5">{personalNote.status.replace("_", " ")}:</span>
+                                  {personalNote.note}
+                                </div>
+                              )}
                               {/* Town/Village Info */}
                               {day.townName && day.townDescription && (
                                 <div className="mt-3 bg-muted/50 rounded-lg p-3 border border-border/50">
