@@ -64,6 +64,8 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/suggest" element={<SuggestTrek />} />
+            <Route path="/suggest-trek" element={<SuggestTrek />} />
+            <Route path="/find-my-trek" element={<SuggestTrek />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/ams" element={<AmsHub />} />
