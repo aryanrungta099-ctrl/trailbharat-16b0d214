@@ -342,7 +342,7 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
   // Prefer real Wikimedia photos if available for this trek
   const real = realTrekPhotos[trek.id];
   if (real && real.length > 0) {
-    return real.slice(0, 3).map(p => ({
+    return real.map(p => ({
       url: p.url,
       caption: p.caption || `${trek.name}`,
       source: p.source,
