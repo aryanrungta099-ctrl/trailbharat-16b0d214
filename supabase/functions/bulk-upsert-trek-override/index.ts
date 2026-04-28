@@ -11,8 +11,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
     const secret = req.headers.get("x-bulk-secret");
-    const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!secret || secret !== expected) {
+    const expected = Deno.env.get("LOVABLE_API_KEY");
+    if (!secret || !expected || secret !== expected) {
       return json({ error: "unauthorized" }, 401);
     }
 
