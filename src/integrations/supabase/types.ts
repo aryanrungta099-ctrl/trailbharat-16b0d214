@@ -175,6 +175,93 @@ export type Database = {
         }
         Relationships: []
       }
+      email_send_log: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          message_id: string | null
+          metadata: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email: string
+          status: string
+          template_name: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message_id?: string | null
+          metadata?: Json | null
+          recipient_email?: string
+          status?: string
+          template_name?: string
+        }
+        Relationships: []
+      }
+      email_send_state: {
+        Row: {
+          auth_email_ttl_minutes: number
+          batch_size: number
+          id: number
+          retry_after_until: string | null
+          send_delay_ms: number
+          transactional_email_ttl_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          auth_email_ttl_minutes?: number
+          batch_size?: number
+          id?: number
+          retry_after_until?: string | null
+          send_delay_ms?: number
+          transactional_email_ttl_minutes?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_unsubscribe_tokens: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          token: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       experiences: {
         Row: {
           approved: boolean
@@ -431,30 +518,75 @@ export type Database = {
           },
         ]
       }
+      suppressed_emails: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          metadata: Json | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json | null
+          reason?: string
+        }
+        Relationships: []
+      }
       trek_overrides: {
         Row: {
+          author_credentials: string | null
+          author_name: string | null
+          content_source: string
           description: string | null
           highlights: string[] | null
           id: string
+          is_flagship: boolean
           itinerary_json: Json | null
+          last_verified_at: string | null
+          long_form_content: string | null
+          noindex: boolean
           trek_id: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          author_credentials?: string | null
+          author_name?: string | null
+          content_source?: string
           description?: string | null
           highlights?: string[] | null
           id?: string
+          is_flagship?: boolean
           itinerary_json?: Json | null
+          last_verified_at?: string | null
+          long_form_content?: string | null
+          noindex?: boolean
           trek_id: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          author_credentials?: string | null
+          author_name?: string | null
+          content_source?: string
           description?: string | null
           highlights?: string[] | null
           id?: string
+          is_flagship?: boolean
           itinerary_json?: Json | null
+          last_verified_at?: string | null
+          long_form_content?: string | null
+          noindex?: boolean
           trek_id?: string
           updated_at?: string
           updated_by?: string | null
@@ -545,6 +677,27 @@ export type Database = {
         }
         Relationships: []
       }
+      wishlisted_treks: {
+        Row: {
+          added_at: string
+          id: string
+          trek_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          trek_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          trek_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_profiles: {
@@ -570,12 +723,37 @@ export type Database = {
       }
     }
     Functions: {
+      delete_email: {
+        Args: { message_id: number; queue_name: string }
+        Returns: boolean
+      }
+      enqueue_email: {
+        Args: { payload: Json; queue_name: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      move_to_dlq: {
+        Args: {
+          dlq_name: string
+          message_id: number
+          payload: Json
+          source_queue: string
+        }
+        Returns: number
+      }
+      read_email_batch: {
+        Args: { batch_size: number; queue_name: string; vt: number }
+        Returns: {
+          message: Json
+          msg_id: number
+          read_ct: number
+        }[]
       }
     }
     Enums: {
