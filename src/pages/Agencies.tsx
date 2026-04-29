@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar, ArrowRight } from "lucide-react";
+import { Phone, IndianRupee, Briefcase, Plus, X, Upload, Trash2, Star, MessageSquare, ChevronDown, ChevronUp, Globe, Mail, Users, Calendar, ArrowRight, Search, SlidersHorizontal, BadgeCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { treks } from "@/data/treks";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
+import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -43,7 +44,7 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
   const [newComment, setNewComment] = useState("");
 
   const fetchReviews = async () => {
-    const { data } = await supabase.from("agency_reviews" as any).select("*").eq("agency_listing_id", listing.id).order("created_at", { ascending: false });
+    const { data } = await supabase.from("agency_reviews").select("*").eq("agency_listing_id", listing.id).order("created_at", { ascending: false });
     if (data) {
       const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
       const { data: profiles } = await supabase.from("public_profiles").select("user_id, display_name").in("user_id", userIds);
@@ -64,7 +65,7 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("agency_reviews" as any).insert({ agency_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
+    const { data: inserted, error } = await supabase.from("agency_reviews").insert({ agency_listing_id: listing.id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
     if (error) toast.error("Failed to submit");
     else {
       moderateContent({ table: "agency_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
@@ -74,7 +75,7 @@ function AgencyReviewSection({ listing, user }: { listing: AgencyListing; user: 
   };
 
   const handleDeleteReview = async (id: string) => {
-    await supabase.from("agency_reviews" as any).delete().eq("id", id);
+    await supabase.from("agency_reviews").delete().eq("id", id);
     toast.success("Review removed"); fetchReviews();
   };
 
@@ -140,7 +141,7 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
   const [form, setForm] = useState({ name: "", description: "", website: "", contact_number: "", email: "", price_range_min: "", price_range_max: "", established_year: "", team_size: "" });
 
   const fetchListings = async () => {
-    const { data } = await supabase.from("agency_listings" as any).select("*").order("created_at", { ascending: false });
+    const { data } = await supabase.from("agency_listings").select("*").order("created_at", { ascending: false });
     if (data) setListings(data as any[]);
     setLoading(false);
   };
@@ -166,7 +167,7 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
       const { error } = await supabase.storage.from("agency-photos").upload(path, logoFile);
       if (!error) logo_url = `${SUPABASE_URL}/storage/v1/object/public/agency-photos/${path}`;
     }
-    const { data: inserted, error } = await supabase.from("agency_listings" as any).insert({
+    const { data: inserted, error } = await supabase.from("agency_listings").insert({
       user_id: user.id, name: form.name, logo_url, description: form.description,
       website: form.website || null, contact_number: form.contact_number,
       email: form.email || null, treks_offered: selectedTreks,
@@ -174,7 +175,7 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
       price_range_max: parseInt(form.price_range_max) || 0,
       established_year: parseInt(form.established_year) || null,
       team_size: parseInt(form.team_size) || null,
-    } as any).select().single();
+    }).select().single();
     if (error) toast.error("Failed to create listing");
     else {
       const textToCheck = `Agency: ${form.name}\nDescription: ${form.description}\nWebsite: ${form.website}`;
@@ -191,26 +192,80 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
   };
 
   const handleDelete = async (id: string) => {
-    await supabase.from("agency_listings" as any).delete().eq("id", id);
+    await supabase.from("agency_listings").delete().eq("id", id);
     toast.success("Listing removed"); fetchListings();
   };
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPrice, setFilterPrice] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredListings = useMemo(() => {
+    let result = listings;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(a => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q) || (a.email || "").toLowerCase().includes(q));
+    }
+    if (filterPrice === "low") result = result.filter(a => a.price_range_max > 0 && a.price_range_max <= 15000);
+    else if (filterPrice === "mid") result = result.filter(a => a.price_range_min >= 10000 && a.price_range_max <= 50000);
+    else if (filterPrice === "high") result = result.filter(a => a.price_range_min >= 50000);
+    return result;
+  }, [listings, searchQuery, filterPrice]);
 
   const Wrapper = embedded ? "div" : "main";
   return (
     <Wrapper className={embedded ? "" : "pt-24 pb-16 container mx-auto px-4 min-h-screen"}>
       {!embedded && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-balance">Travel Agencies</h1>
-            <p className="text-muted-foreground mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+        <>
+          <SEOHead
+            title="Travel Agencies"
+            description="Find professional trekking and travel agencies across India & Nepal. Compare prices, read reviews, and book your Himalayan adventure."
+            path="/agencies"
+            jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Travel Agencies", url: "/agencies" }])}
+          />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="font-display text-3xl md:text-4xl font-light text-foreground">Travel Agencies</h1>
+              <p className="text-foreground/50 mt-2 max-w-lg">Find agencies that organize treks across India & Nepal, or list your own agency.</p>
+            </div>
           </div>
-        </div>
+        </>
       )}
+
+      {/* Search & Filters */}
+      <div className="mb-8 space-y-3">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30" />
+            <input
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by agency name, description…"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-foreground/[0.07] bg-card/60 backdrop-blur text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button onClick={() => setShowFilters(!showFilters)} className={`px-4 py-2.5 rounded-xl border text-sm font-medium flex items-center gap-2 transition-colors ${showFilters ? "border-primary/40 bg-primary/10 text-primary" : "border-foreground/[0.07] bg-card/60 text-foreground/50 hover:text-foreground"}`}>
+            <SlidersHorizontal className="h-4 w-4" /> Filters
+          </button>
+        </div>
+        {showFilters && (
+          <div className="flex flex-wrap gap-2 p-4 rounded-xl border border-foreground/[0.07] bg-card/40 backdrop-blur">
+            <span className="text-xs text-foreground/50 self-center mr-2">Price/trek:</span>
+            {[{ v: "", l: "All" }, { v: "low", l: "Under ₹15k" }, { v: "mid", l: "₹10k–₹50k" }, { v: "high", l: "₹50k+" }].map(o => (
+              <button key={o.v} onClick={() => setFilterPrice(o.v)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterPrice === o.v ? "bg-primary text-primary-foreground" : "bg-foreground/[0.05] text-foreground/60 hover:bg-foreground/[0.1]"}`}>{o.l}</button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="flex justify-end mb-6">
-        {user && (
-          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
+        {user ? (
+          <button onClick={() => setShowForm(!showForm)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl trek-gradient text-primary-foreground font-semibold text-sm shadow-md hover:shadow-lg active:scale-[0.97] transition">
             {showForm ? <><X className="h-4 w-4" /> Cancel</> : <><Plus className="h-4 w-4" /> List Your Agency</>}
           </button>
+        ) : (
+          <Link to="/auth" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-primary/30 text-primary font-medium text-sm hover:bg-primary/10 transition-colors">
+            <Plus className="h-4 w-4" /> List Your Agency
+          </Link>
         )}
       </div>
 
@@ -264,11 +319,11 @@ const Agencies = ({ embedded = false }: { embedded?: boolean }) => {
 
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3].map(i => <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse"><div className="h-16 w-16 bg-muted rounded-lg mb-4" /><div className="h-5 bg-muted rounded w-2/3 mb-3" /><div className="h-4 bg-muted rounded w-full" /></div>)}</div>
-      ) : listings.length === 0 ? (
-        <div className="text-center py-20"><Briefcase className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" /><p className="text-muted-foreground">No agency listings yet. Be the first!</p></div>
+      ) : filteredListings.length === 0 ? (
+        <div className="text-center py-20"><Briefcase className="h-12 w-12 text-foreground/20 mx-auto mb-4" /><p className="text-foreground/50">{listings.length === 0 ? "No agency listings yet. Be the first!" : "No results match your filters."}</p></div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {listings.map((a, i) => (
+          {filteredListings.map((a, i) => (
             <ScrollReveal key={a.id} delay={i * 80}>
               <div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-lg transition-shadow overflow-hidden h-full flex flex-col">
                 <div className="p-6 flex flex-col flex-1">

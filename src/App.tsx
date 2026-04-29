@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
+import ScrollToTop from "@/components/ScrollToTop";
 
 import Footer from "@/components/Footer";
 import Index from "./pages/Index.tsx";
@@ -18,6 +19,7 @@ import Agencies from "./pages/Agencies.tsx";
 import SherpasAgencies from "./pages/SherpasAgencies.tsx";
 import SherpaDetail from "./pages/SherpaDetail.tsx";
 import AgencyDetail from "./pages/AgencyDetail.tsx";
+import Guesthouses from "./pages/Guesthouses.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
 import Profile from "./pages/Profile.tsx";
@@ -26,6 +28,11 @@ import Admin from "./pages/Admin.tsx";
 import RecommendedTreks from "./pages/RecommendedTreks.tsx";
 import SuggestTrek from "./pages/SuggestTrek.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Unsubscribe from "./pages/Unsubscribe.tsx";
+import AmsHub from "./pages/AmsHub.tsx";
+import About from "./pages/About.tsx";
+import Methodology from "./pages/Methodology.tsx";
+import Contact from "./pages/Contact.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +43,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <Navbar />
           <Routes>
             <Route path="/" element={<Index />} />
@@ -48,6 +56,7 @@ const App = () => (
             <Route path="/sherpa/:id" element={<SherpaDetail />} />
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/agency/:id" element={<AgencyDetail />} />
+            <Route path="/guesthouses" element={<Guesthouses />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/profile" element={<Profile />} />
@@ -55,7 +64,14 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/recommended" element={<RecommendedTreks />} />
             <Route path="/suggest" element={<SuggestTrek />} />
+            <Route path="/suggest-trek" element={<SuggestTrek />} />
+            <Route path="/find-my-trek" element={<SuggestTrek />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/ams" element={<AmsHub />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/methodology" element={<Methodology />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
