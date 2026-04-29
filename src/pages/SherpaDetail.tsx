@@ -36,7 +36,7 @@ const SherpaDetail = () => {
   }, [id]);
 
   const fetchReviews = async () => {
-    const { data } = await supabase.from("sherpa_reviews").select("*").eq("sherpa_listing_id", id).order("created_at", { ascending: false });
+    const { data } = await supabase.from("sherpa_reviews" as any).select("*").eq("sherpa_listing_id", id).order("created_at", { ascending: false });
     if (data) {
       const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
       const { data: profiles } = await supabase.from("public_profiles").select("user_id, display_name").in("user_id", userIds);
@@ -55,7 +55,7 @@ const SherpaDetail = () => {
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("sherpa_reviews").insert({ sherpa_listing_id: id, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
+    const { data: inserted, error } = await supabase.from("sherpa_reviews" as any).insert({ sherpa_listing_id: id, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error("Failed");
     else {
       moderateContent({ table: "sherpa_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });

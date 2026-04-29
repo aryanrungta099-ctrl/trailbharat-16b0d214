@@ -12,8 +12,6 @@ const difficultyColor: Record<string, string> = {
   Moderate: "bg-trek-sky/15 text-trek-sky",
   Difficult: "bg-trek-sunrise/15 text-trek-sunrise",
   Challenging: "bg-destructive/15 text-destructive",
-  Expert: "bg-purple-500/15 text-purple-700",
-  Local: "bg-amber-500/15 text-amber-700",
 };
 
 const safetyColor: Record<string, string> = {
@@ -42,10 +40,8 @@ const altitudeRanges = [
 const CIRCUIT_KEYWORDS = ["circuit", "pass", "three passes"];
 const isAdvancedTrek = (t: Trek) =>
   t.altitudeMeters >= 5000 || CIRCUIT_KEYWORDS.some((kw) => t.name.toLowerCase().includes(kw));
-const isExpertTrek = (t: Trek) => t.difficulty === "Expert" || t.altitudeMeters >= 6000;
-const isLocalTrek = (t: Trek) => t.difficulty === "Local" || t.durationDays <= 2;
 
-type Tab = "beginner" | "advanced" | "expert" | "local";
+type Tab = "beginner" | "advanced";
 type DetailTab = "overview" | "budget" | "weather" | "guesthouses" | "emergency";
 
 const Routes = () => {
@@ -67,12 +63,7 @@ const Routes = () => {
   };
 
   const tabTreks = useMemo(() => {
-    switch (tab) {
-      case "expert": return treks.filter(isExpertTrek);
-      case "local": return treks.filter(isLocalTrek);
-      case "advanced": return treks.filter(t => isAdvancedTrek(t) && !isExpertTrek(t));
-      default: return treks.filter(t => !isAdvancedTrek(t) && !isLocalTrek(t));
-    }
+    return tab === "beginner" ? treks.filter((t) => !isAdvancedTrek(t)) : treks.filter(isAdvancedTrek);
   }, [tab]);
 
   const filtered = useMemo(() => {
@@ -92,10 +83,8 @@ const Routes = () => {
   }, [tabTreks, query, country, difficulty, region, durationIdx, altitudeIdx, month]);
 
   const activeFilters = [country !== "All", difficulty !== "All", region !== "All", durationIdx !== 0, altitudeIdx !== 0, month !== 0].filter(Boolean).length;
-  const beginnerCount = treks.filter((t) => !isAdvancedTrek(t) && !isLocalTrek(t)).length;
-  const advancedCount = treks.filter(t => isAdvancedTrek(t) && !isExpertTrek(t)).length;
-  const expertCount = treks.filter(isExpertTrek).length;
-  const localCount = treks.filter(isLocalTrek).length;
+  const beginnerCount = treks.filter((t) => !isAdvancedTrek(t)).length;
+  const advancedCount = treks.filter(isAdvancedTrek).length;
 
   return (
     <main className="pt-24 pb-16 relative">
@@ -119,24 +108,22 @@ const Routes = () => {
 
         {/* Tabs */}
         <ScrollReveal delay={60}>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {([
-              { key: "beginner" as Tab, icon: "🥾", label: "Beginner", count: beginnerCount, style: "trek-gradient" },
-              { key: "advanced" as Tab, icon: "⛰️", label: "Advanced", count: advancedCount, style: "trek-gradient-warm" },
-              { key: "expert" as Tab, icon: "🏔️", label: "Expert", count: expertCount, style: "bg-purple-600" },
-              { key: "local" as Tab, icon: "📍", label: "Local", count: localCount, style: "bg-amber-600" },
-            ]).map(t => (
-              <button
-                key={t.key}
-                onClick={() => { setTab(t.key); setExpanded(null); }}
-                className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97] ${tab === t.key ? `${t.style} text-primary-foreground shadow-md` : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}
-              >
-                {t.icon} {t.label} <span className="opacity-70">({t.count})</span>
-              </button>
-            ))}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => { setTab("beginner"); setExpanded(null); }}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97] ${tab === "beginner" ? "trek-gradient text-primary-foreground shadow-md" : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+            >
+              🥾 Beginner Routes <span className="opacity-70">({beginnerCount})</span>
+            </button>
+            <button
+              onClick={() => { setTab("advanced"); setExpanded(null); }}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.97] ${tab === "advanced" ? "trek-gradient-warm text-primary-foreground shadow-md" : "bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+            >
+              ⛰️ Advanced Routes <span className="opacity-70">({advancedCount})</span>
+            </button>
           </div>
           <p className="text-xs text-muted-foreground mb-6 -mt-3">
-            {tab === "beginner" ? "Treks below 5,000m — ideal for first-timers and intermediate trekkers." : tab === "advanced" ? "High-altitude circuits and treks above 5,000m — for experienced trekkers." : tab === "expert" ? "Technical climbs and peaks above 6,000m — requires mountaineering experience." : "Short day hikes and weekend treks near cities — perfect for a quick getaway."}
+            {tab === "beginner" ? "Treks below 5,000m — ideal for first-timers and intermediate trekkers." : "High-altitude circuits and treks above 5,000m — for experienced trekkers."}
           </p>
         </ScrollReveal>
 

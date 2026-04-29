@@ -7,6 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Static trek data - IDs to generate URLs
 const TREK_IDS = [
   "agasthyakoodam","agasthyarkoodam","ama-dablam-bc","amarkantak","annapurna-base-camp",
   "annapurna-circuit","annapurna-in-monsoon","annapurna-panorama","api-nampa",
@@ -46,159 +47,144 @@ const TREK_IDS = [
   "upper-mustang","valley-of-flowers","warwan-valley","western-nepal-saipal","zuluk-loop"
 ];
 
-interface UrlEntry {
-  loc: string;
-  lastmod: string;
-  changefreq: string;
-  priority: string;
-}
-
-function urlsetXml(urls: UrlEntry[]): string {
-  const items = urls.map(u => `  <url>
-    <loc>${u.loc}</loc>
-    <lastmod>${u.lastmod}</lastmod>
-    <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${items}
-</urlset>`;
-}
-
-function sitemapIndexXml(maps: { loc: string; lastmod: string }[]): string {
-  const items = maps.map(m => `  <sitemap>
-    <loc>${m.loc}</loc>
-    <lastmod>${m.lastmod}</lastmod>
-  </sitemap>`).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${items}
-</sitemapindex>`;
-}
-
-const xmlResponse = (xml: string) => new Response(xml, {
-  headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" },
-});
-
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
   try {
-    const url = new URL(req.url);
-    const section = url.searchParams.get("section");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch blog posts
+    const { data: blogPosts } = await supabase
+      .from("blog_posts")
+      .select("slug, updated_at")
+      .eq("published", true);
+
+    // Fetch approved sherpas
+    const { data: sherpas } = await supabase
+      .from("sherpa_listings")
+      .select("id, updated_at")
+      .eq("approved", true);
+
+    // Fetch approved agencies
+    const { data: agencies } = await supabase
+      .from("agency_listings")
+      .select("id, updated_at")
+      .eq("approved", true);
+
     const today = new Date().toISOString().split("T")[0];
-    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const base = `${url.origin}${url.pathname}`;
 
-    // ----- Sitemap Index (default) -----
-    if (!section) {
-      const maps = [
-        { loc: `${base}?section=static`, lastmod: today },
-        { loc: `${base}?section=routes`, lastmod: today },
-        { loc: `${base}?section=blog`, lastmod: today },
-        { loc: `${base}?section=sherpas`, lastmod: today },
-        { loc: `${base}?section=agencies`, lastmod: today },
-        { loc: `${base}?section=guesthouses`, lastmod: today },
-      ];
-      return xmlResponse(sitemapIndexXml(maps));
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_URL}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/routes</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/experiences</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/guides</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/blog</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/guesthouses</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/recommended</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+
+    // Trek pages
+    for (const id of TREK_IDS) {
+      xml += `
+  <url>
+    <loc>${SITE_URL}/trek/${id}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
     }
 
-    // ----- Static pages -----
-    if (section === "static") {
-      const urls: UrlEntry[] = [
-        { loc: `${SITE_URL}/`, lastmod: today, changefreq: "weekly", priority: "1.0" },
-        { loc: `${SITE_URL}/routes`, lastmod: today, changefreq: "weekly", priority: "0.9" },
-        { loc: `${SITE_URL}/blog`, lastmod: today, changefreq: "daily", priority: "0.9" },
-        { loc: `${SITE_URL}/guides`, lastmod: today, changefreq: "weekly", priority: "0.8" },
-        { loc: `${SITE_URL}/recommended`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-        { loc: `${SITE_URL}/suggest`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-        { loc: `${SITE_URL}/sherpas`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-        { loc: `${SITE_URL}/agencies`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-        { loc: `${SITE_URL}/guesthouses`, lastmod: today, changefreq: "weekly", priority: "0.7" },
-        { loc: `${SITE_URL}/experiences`, lastmod: today, changefreq: "weekly", priority: "0.6" },
-        { loc: `${SITE_URL}/tips`, lastmod: today, changefreq: "monthly", priority: "0.6" },
-        { loc: `${SITE_URL}/ams`, lastmod: today, changefreq: "monthly", priority: "0.6" },
-        { loc: `${SITE_URL}/about`, lastmod: today, changefreq: "monthly", priority: "0.5" },
-        { loc: `${SITE_URL}/contact`, lastmod: today, changefreq: "monthly", priority: "0.5" },
-        { loc: `${SITE_URL}/methodology`, lastmod: today, changefreq: "monthly", priority: "0.4" },
-      ];
-      return xmlResponse(urlsetXml(urls));
-    }
-
-    // ----- Routes (treks) — flagship priority + noindex filter -----
-    if (section === "routes") {
-      const { data: overrides } = await supabase
-        .from("trek_overrides")
-        .select("trek_id, is_flagship, noindex, updated_at");
-      const overrideMap = new Map((overrides || []).map(o => [o.trek_id, o]));
-
-      const urls: UrlEntry[] = [];
-      for (const id of TREK_IDS) {
-        const o = overrideMap.get(id);
-        if (o?.noindex) continue; // skip noindex'd treks
-        const isFlagship = o?.is_flagship === true;
-        const lastmod = o?.updated_at?.split("T")[0] || today;
-        urls.push({
-          loc: `${SITE_URL}/trek/${id}`,
-          lastmod,
-          changefreq: isFlagship ? "weekly" : "monthly",
-          priority: isFlagship ? "0.9" : "0.7",
-        });
+    // Blog posts
+    if (blogPosts) {
+      for (const post of blogPosts) {
+        xml += `
+  <url>
+    <loc>${SITE_URL}/blog/${post.slug}</loc>
+    <lastmod>${post.updated_at?.split("T")[0] || today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
       }
-      return xmlResponse(urlsetXml(urls));
     }
 
-    // ----- Blog posts -----
-    if (section === "blog") {
-      const { data } = await supabase.from("blog_posts").select("slug, updated_at").eq("published", true);
-      const urls: UrlEntry[] = (data || []).map(p => ({
-        loc: `${SITE_URL}/blog/${p.slug}`,
-        lastmod: p.updated_at?.split("T")[0] || today,
-        changefreq: "monthly",
-        priority: "0.6",
-      }));
-      return xmlResponse(urlsetXml(urls));
+    // Sherpa pages
+    if (sherpas) {
+      for (const s of sherpas) {
+        xml += `
+  <url>
+    <loc>${SITE_URL}/sherpa/${s.id}</loc>
+    <lastmod>${s.updated_at?.split("T")[0] || today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+      }
     }
 
-    // ----- Sherpas -----
-    if (section === "sherpas") {
-      const { data } = await supabase.from("sherpa_listings").select("id, updated_at").eq("approved", true);
-      const urls: UrlEntry[] = (data || []).map(s => ({
-        loc: `${SITE_URL}/sherpa/${s.id}`,
-        lastmod: s.updated_at?.split("T")[0] || today,
-        changefreq: "monthly",
-        priority: "0.5",
-      }));
-      return xmlResponse(urlsetXml(urls));
+    // Agency pages
+    if (agencies) {
+      for (const a of agencies) {
+        xml += `
+  <url>
+    <loc>${SITE_URL}/agency/${a.id}</loc>
+    <lastmod>${a.updated_at?.split("T")[0] || today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+      }
     }
 
-    // ----- Agencies -----
-    if (section === "agencies") {
-      const { data } = await supabase.from("agency_listings").select("id, updated_at").eq("approved", true);
-      const urls: UrlEntry[] = (data || []).map(a => ({
-        loc: `${SITE_URL}/agency/${a.id}`,
-        lastmod: a.updated_at?.split("T")[0] || today,
-        changefreq: "monthly",
-        priority: "0.5",
-      }));
-      return xmlResponse(urlsetXml(urls));
-    }
+    xml += `\n</urlset>`;
 
-    // ----- Guesthouses -----
-    if (section === "guesthouses") {
-      const { data } = await supabase.from("guesthouse_listings").select("id, updated_at").eq("approved", true);
-      const urls: UrlEntry[] = (data || []).map(g => ({
-        loc: `${SITE_URL}/guesthouse/${g.id}`,
-        lastmod: g.updated_at?.split("T")[0] || today,
-        changefreq: "monthly",
-        priority: "0.5",
-      }));
-      return xmlResponse(urlsetXml(urls));
-    }
-
-    return new Response("Unknown section", { status: 404, headers: corsHeaders });
+    return new Response(xml, {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/xml",
+        "Cache-Control": "public, max-age=3600",
+      },
+    });
   } catch (error) {
-    return new Response(`Error generating sitemap: ${(error as Error).message}`, { status: 500, headers: corsHeaders });
+    return new Response(`Error generating sitemap: ${error.message}`, {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 });

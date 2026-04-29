@@ -1,6 +1,5 @@
 import { Shield, Backpack, HeartPulse, Cloud, Footprints, Droplets, Sun, AlertTriangle } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
-import SEOHead, { breadcrumbSchema } from "@/components/SEOHead";
 
 const tips = [
   {
@@ -87,15 +86,6 @@ const tips = [
 
 const Tips = () => (
   <main className="pt-24 pb-16">
-    <SEOHead
-      title="Trekking Safety Tips & Essential Guidance"
-      description="Expert trekking safety tips covering altitude sickness (AMS), fitness training, gear packing, hydration, sun protection, and emergency preparedness for Himalayan treks."
-      path="/tips"
-      jsonLd={breadcrumbSchema([
-        { name: "Home", url: "/" },
-        { name: "Safety Tips", url: "/tips" },
-      ])}
-    />
     <div className="container mx-auto px-4">
       <ScrollReveal>
         <h1 className="text-balance mb-2">Safety Tips & Guidance</h1>

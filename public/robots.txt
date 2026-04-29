@@ -4,8 +4,5 @@ Disallow: /admin
 Disallow: /auth
 Disallow: /profile
 
-# Single canonical sitemap (always up-to-date, generated from live data)
 Sitemap: https://himalayantrails.aryanrungta.com/sitemap.xml
-
-# Blog RSS feed
-# https://himalayantrails.aryanrungta.com/blog/rss.xml (proxied via /sitemap.xml index)
+Sitemap: https://otzzgoelrtpdwkhvkntk.supabase.co/functions/v1/generate-sitemap

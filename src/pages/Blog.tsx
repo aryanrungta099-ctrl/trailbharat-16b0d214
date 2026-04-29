@@ -22,11 +22,10 @@ const Blog = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.from("blog_posts").select("id, title, slug, excerpt, cover_image_url, tags, published, created_at")
+    supabase.from("blog_posts" as any).select("id, title, slug, excerpt, cover_image_url, tags, published, created_at")
       .eq("published", true)
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        console.log("Blog posts loaded:", data?.length, error);
+      .then(({ data }) => {
         if (data) setPosts(data as any[]);
         setLoading(false);
       });
@@ -43,8 +42,6 @@ const Blog = () => {
         path="/blog"
         jsonLd={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Blog", url: "/blog" }])}
       />
-      {/* RSS feed discovery */}
-      <link rel="alternate" type="application/rss+xml" title="Himalayan Trails Blog" href={`https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/blog-rss`} />
       <div className="max-w-4xl mx-auto">
         <h1 className="text-balance mb-2">Blog</h1>
         <p className="text-muted-foreground mb-8 max-w-lg">

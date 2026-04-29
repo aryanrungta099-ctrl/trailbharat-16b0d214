@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, Check, X, Trash2, Mountain, Home, Briefcase, MessageSquare, Star, Image, FileText, Plus, Edit2, Eye, EyeOff, MapPin, Phone, Coffee } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
-import AiBatchPanel from "@/components/AiBatchPanel";
 import { treks } from "@/data/treks";
 
 const Admin = () => {
@@ -54,16 +53,16 @@ const Admin = () => {
   const fetchAll = async () => {
     const [s, g, a, e, sr, gr, ar, tr, bp, th, to] = await Promise.all([
       supabase.from("sherpa_listings").select("*").order("created_at", { ascending: false }),
-      supabase.from("guesthouse_listings").select("*").order("created_at", { ascending: false }),
-      supabase.from("agency_listings").select("*").order("created_at", { ascending: false }),
+      supabase.from("guesthouse_listings" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("agency_listings" as any).select("*").order("created_at", { ascending: false }),
       supabase.from("experiences").select("*, profiles(display_name)").order("created_at", { ascending: false }),
-      supabase.from("sherpa_reviews").select("*").order("created_at", { ascending: false }),
-      supabase.from("guesthouse_reviews").select("*").order("created_at", { ascending: false }),
-      supabase.from("agency_reviews").select("*").order("created_at", { ascending: false }),
-      supabase.from("trek_reviews").select("*").order("created_at", { ascending: false }),
-      supabase.from("blog_posts").select("*").order("created_at", { ascending: false }),
-      supabase.from("trek_tea_houses").select("*").order("trek_id").order("village"),
-      supabase.from("trek_overrides").select("*").order("trek_id"),
+      supabase.from("sherpa_reviews" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("guesthouse_reviews" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("agency_reviews" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("trek_reviews" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("blog_posts" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("trek_tea_houses" as any).select("*").order("trek_id").order("village"),
+      supabase.from("trek_overrides" as any).select("*").order("trek_id"),
     ]);
     if (s.data) setSherpaListings(s.data);
     if (g.data) setGuesthouseListings(g.data as any[]);
@@ -81,12 +80,12 @@ const Admin = () => {
   useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
   const approve = async (table: string, id: string) => {
-    await supabase.from(table as any).update({ approved: true }).eq("id", id);
+    await supabase.from(table as any).update({ approved: true } as any).eq("id", id);
     toast.success("Approved"); fetchAll();
   };
 
   const approveExperience = async (id: string) => {
-    await supabase.from("experiences").update({ approved: true }).eq("id", id);
+    await supabase.from("experiences").update({ approved: true } as any).eq("id", id);
     toast.success("Experience approved"); fetchAll();
   };
 
@@ -117,17 +116,17 @@ const Admin = () => {
     const tags = blogForm.tags.split(",").map(t => t.trim()).filter(Boolean);
     const payload = { user_id: user.id, title: blogForm.title, slug, excerpt: blogForm.excerpt, content: blogForm.content, cover_image_url: blogForm.cover_image_url || null, tags, published: blogForm.published };
     if (editingPost) {
-      const { error } = await supabase.from("blog_posts").update(payload).eq("id", editingPost.id);
+      const { error } = await supabase.from("blog_posts" as any).update(payload as any).eq("id", editingPost.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Post updated!");
     } else {
-      const { error } = await supabase.from("blog_posts").insert(payload);
+      const { error } = await supabase.from("blog_posts" as any).insert(payload as any);
       if (error) toast.error("Failed: " + error.message); else toast.success("Post created!");
     }
     setShowBlogForm(false); setEditingPost(null); setBlogSubmitting(false); fetchAll();
   };
 
   const togglePublish = async (post: any) => {
-    await supabase.from("blog_posts").update({ published: !post.published } as any).eq("id", post.id);
+    await supabase.from("blog_posts" as any).update({ published: !post.published } as any).eq("id", post.id);
     toast.success(post.published ? "Unpublished" : "Published"); fetchAll();
   };
 
@@ -149,10 +148,10 @@ const Admin = () => {
     const facilities = teaHouseForm.facilities.split(",").map(f => f.trim()).filter(Boolean);
     const payload = { trek_id: teaHouseForm.trek_id, village: teaHouseForm.village, name: teaHouseForm.name, contact_number: teaHouseForm.contact_number, facilities, price_range: teaHouseForm.price_range, description: teaHouseForm.description };
     if (editingTeaHouse) {
-      const { error } = await supabase.from("trek_tea_houses").update(payload).eq("id", editingTeaHouse.id);
+      const { error } = await supabase.from("trek_tea_houses" as any).update(payload as any).eq("id", editingTeaHouse.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Tea house updated!");
     } else {
-      const { error } = await supabase.from("trek_tea_houses").insert(payload);
+      const { error } = await supabase.from("trek_tea_houses" as any).insert(payload as any);
       if (error) toast.error("Failed: " + error.message); else toast.success("Tea house added!");
     }
     setShowTeaHouseForm(false); setEditingTeaHouse(null); setTeaHouseSubmitting(false); fetchAll();
@@ -196,17 +195,17 @@ const Admin = () => {
 
     const existing = trekOverrides.find(o => o.trek_id === editingTrek);
     if (existing) {
-      const { error } = await supabase.from("trek_overrides").update(payload).eq("id", existing.id);
+      const { error } = await supabase.from("trek_overrides" as any).update(payload as any).eq("id", existing.id);
       if (error) toast.error("Failed: " + error.message); else toast.success("Trek updated!");
     } else {
-      const { error } = await supabase.from("trek_overrides").insert(payload);
+      const { error } = await supabase.from("trek_overrides" as any).insert(payload as any);
       if (error) toast.error("Failed: " + error.message); else toast.success("Trek override saved!");
     }
     setShowTrekForm(false); setEditingTrek(null); setTrekSubmitting(false); fetchAll();
   };
 
   const deleteTrekOverride = async (id: string) => {
-    await supabase.from("trek_overrides").delete().eq("id", id);
+    await supabase.from("trek_overrides" as any).delete().eq("id", id);
     toast.success("Override removed — trek reverted to default"); fetchAll();
   };
 
@@ -447,14 +446,6 @@ const Admin = () => {
               <p className="text-sm text-muted-foreground mb-3">Edit trek descriptions, highlights, and itinerary data. Changes override the default content.</p>
               <input value={trekSearchQuery} onChange={e => setTrekSearchQuery(e.target.value)} placeholder="Search treks by name or region..." className={inputClass} />
             </div>
-
-            {/* AI Batch Content Generator */}
-            <AiBatchPanel
-              treks={treks}
-              overrides={trekOverrides}
-              onDone={fetchAll}
-            />
-
 
             {showTrekForm && editingTrek && (
               <ScrollReveal>

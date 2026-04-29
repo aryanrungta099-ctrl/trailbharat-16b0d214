@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { User, Award, Mountain, Plus, Trash2, Heart, Save, Eye } from "lucide-react";
-import TrekCollectionCard from "@/components/TrekCollectionCard";
+import { User, Award, Mountain, Plus, Trash2, Heart, Save } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { treks } from "@/data/treks";
@@ -9,7 +8,6 @@ import { getEarnedBadges, Badge } from "@/data/badges";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
-import EnquiryForm from "@/components/EnquiryForm";
 
 /* ── Badge Celebration Overlay ── */
 const BadgeCelebration = ({ badge, onDone }: { badge: Badge; onDone: () => void }) => {
@@ -48,7 +46,6 @@ const Profile = () => {
   const [profile, setProfile] = useState<{ display_name: string; bio: string | null; avatar_url: string | null; age: number | null; height_cm: number | null; weight_kg: number | null; health_conditions: string | null } | null>(null);
   const [celebrateBadge, setCelebrateBadge] = useState<Badge | null>(null);
   const seenBadgesRef = useRef<Set<string>>(new Set());
-  const seenBadgesLoaded = useRef(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
@@ -78,21 +75,24 @@ const Profile = () => {
     if (stored) {
       try { seenBadgesRef.current = new Set(JSON.parse(stored)); } catch { /* ignore */ }
     }
-    seenBadgesLoaded.current = true;
   }, [user]);
 
-  // Detect truly NEW badge (not seen before) and celebrate — only after localStorage loaded
+  // Detect truly NEW badge (not seen before) and celebrate
   useEffect(() => {
-    if (!user || earnedBadges.length === 0 || !seenBadgesLoaded.current) return;
+    if (!user || earnedBadges.length === 0) return;
     const newBadge = earnedBadges.find(b => !seenBadgesRef.current.has(b.id));
-    if (newBadge && seenBadgesRef.current.size > 0) {
-      // Only celebrate if user had previous badges (not first visit)
+    if (newBadge) {
       setCelebrateBadge(newBadge);
+      // Mark all current badges as seen
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
+    } else if (seenBadgesRef.current.size === 0) {
+      // First load — mark all existing as seen without celebrating
+      const allIds = earnedBadges.map(b => b.id);
+      seenBadgesRef.current = new Set(allIds);
+      localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
     }
-    // Always mark all current badges as seen
-    const allIds = earnedBadges.map(b => b.id);
-    seenBadgesRef.current = new Set(allIds);
-    localStorage.setItem(`seen-badges-${user.id}`, JSON.stringify(allIds));
   }, [earnedBadges, user]);
 
   const addCompletedTrek = async () => {
@@ -279,45 +279,34 @@ const Profile = () => {
             </div>
           </ScrollReveal>
 
-          {/* Interested Treks → Enquiry */}
-          <ScrollReveal delay={150}>
-            <div className="mb-8">
-              <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
-                <Heart className="h-5 w-5 text-primary" /> Interested in a Trek?
-              </h2>
-              <EnquiryForm
-                defaultName={profile?.display_name || ""}
-                defaultEmail={user.email || ""}
-                trekOptions={treks.map(t => `${t.name} (${t.country})`)}
-              />
-            </div>
-          </ScrollReveal>
-
-          {/* Trek Collection Cards */}
+          {/* Completed treks list */}
           <ScrollReveal delay={160}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-display font-semibold flex items-center gap-2">
-                <Mountain className="h-5 w-5 text-primary" /> Your Collection
-              </h2>
-              <Link to={`/profile/${user.id}`} className="text-xs text-primary hover:underline flex items-center gap-1">
-                <Eye className="h-3 w-3" /> Public View
-              </Link>
-            </div>
+            <h2 className="text-lg font-display font-semibold mb-4">Completed Treks</h2>
             {completedTrekData.length === 0 ? (
               <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-8 text-center text-muted-foreground text-sm">
                 No treks completed yet. Start logging your adventures!
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="space-y-3">
                 {completedTrekData.map(trek => (
-                  <div key={trek.id} className="relative group">
-                    <TrekCollectionCard trek={trek} />
+                  <div key={trek.id} className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Mountain className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{trek.name}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-3 mt-1">
+                        <span>{trek.country}</span>
+                        <span>{trek.altitudeMeters.toLocaleString()}m</span>
+                        <span>{trek.difficulty}</span>
+                      </div>
+                    </div>
                     <button
-                      onClick={(e) => { e.preventDefault(); removeTrek(trek.id); }}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-destructive/80 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive z-10"
+                      onClick={() => removeTrek(trek.id)}
+                      className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors active:scale-95"
                       title="Remove"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 ))}

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
-import hikerAiMountain from "@/assets/hiker-ai-mountain.png";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -116,51 +115,41 @@ export default function JarvisChat() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — top right, bigger */}
       <button
         onClick={() => setOpen(!open)}
         className={cn(
           "fixed top-20 right-4 z-50 rounded-full shadow-lg transition-all duration-300",
-          "w-14 h-14 flex items-center justify-center",
+          "w-16 h-16 flex items-center justify-center",
           open
             ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 rotate-90"
-            : "bg-[#111e16] text-primary hover:bg-[#172518] border border-primary/30"
+            : "bg-primary text-primary-foreground hover:bg-primary/90 animate-bounce hover:animate-none"
         )}
         aria-label={open ? "Close HikerAI" : "Open HikerAI"}
       >
-        {open ? (
-          <X className="w-6 h-6" />
-        ) : (
-          <div className="relative flex items-center justify-center">
-            <img src={hikerAiMountain} alt="HikerAI" className="w-10 h-10 object-contain" width={40} height={40} />
-            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md border-2 border-[#0c1f13]">
-              <span className="text-[8px] font-black text-primary-foreground leading-none">AI</span>
-            </div>
-          </div>
-        )}
+        {open ? <X className="w-7 h-7" /> : <Bot className="w-7 h-7" />}
       </button>
       {!open && (
-        <span className="fixed top-[5.75rem] right-[4.75rem] z-50 bg-[#111e16] text-primary text-xs font-semibold px-2 py-1 rounded-md shadow border border-primary/20 pointer-events-none">
+        <span className="fixed top-[6.25rem] right-[5.25rem] z-50 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-md shadow pointer-events-none">
           HikerAI
         </span>
       )}
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed top-40 right-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-foreground/[0.07] flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300"
-          style={{ background: "#0c1f13" }}>
+        <div className="fixed top-40 right-4 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-12rem)] rounded-2xl shadow-2xl border border-border bg-background flex flex-col overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300">
           {/* Header */}
-          <div className="px-4 py-3 flex items-center gap-3 shrink-0 border-b border-foreground/[0.07]" style={{ background: "#111e16" }}>
-            <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-primary" />
+          <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3 shrink-0">
+            <div className="w-9 h-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+              <Bot className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-display font-semibold text-sm text-foreground leading-tight">HikerAI</p>
-              <p className="text-xs text-foreground/40">Your trekking expert</p>
+              <p className="font-semibold text-sm leading-tight">HikerAI</p>
+              <p className="text-xs opacity-80">Your trekking expert</p>
             </div>
             <div className="ml-auto flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-foreground/40">Online</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs opacity-70">Online</span>
             </div>
           </div>
 
@@ -177,13 +166,12 @@ export default function JarvisChat() {
                   className={cn(
                     "max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed",
                     m.role === "user"
-                      ? "bg-primary/20 text-foreground rounded-br-md"
-                      : "rounded-bl-md text-foreground"
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "bg-muted text-foreground rounded-bl-md"
                   )}
-                  style={m.role === "assistant" ? { background: "#172518" } : undefined}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert prose-p:my-1 prose-ul:my-1 max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                    <div className="prose prose-sm prose-p:my-1 prose-ul:my-1 max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
                       <ReactMarkdown>{m.content}</ReactMarkdown>
                     </div>
                   ) : (
@@ -191,8 +179,8 @@ export default function JarvisChat() {
                   )}
                 </div>
                 {m.role === "user" && (
-                  <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-1">
-                    <User className="w-4 h-4 text-primary" />
+                  <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0 mt-1">
+                    <User className="w-4 h-4 text-primary-foreground" />
                   </div>
                 )}
               </div>
@@ -202,11 +190,11 @@ export default function JarvisChat() {
                 <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
-                <div className="rounded-2xl rounded-bl-md px-4 py-3" style={{ background: "#172518" }}>
+                <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-foreground/20 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 bg-foreground/20 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 bg-foreground/20 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
@@ -214,7 +202,7 @@ export default function JarvisChat() {
           </div>
 
           {/* Input */}
-          <div className="border-t border-foreground/[0.07] p-3 shrink-0">
+          <div className="border-t border-border p-3 shrink-0">
             <form
               onSubmit={(e) => { e.preventDefault(); send(); }}
               className="flex gap-2"
@@ -223,8 +211,8 @@ export default function JarvisChat() {
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask HikerAI anything..."
-                className="flex-1 rounded-full border border-foreground/[0.1] bg-[#111e16] px-4 py-2 text-sm text-foreground placeholder:text-foreground/25 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                placeholder="Ask Jarvis anything..."
+                className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 disabled={isLoading}
               />
               <button

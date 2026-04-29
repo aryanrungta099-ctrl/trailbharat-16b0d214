@@ -11,20 +11,12 @@ import { toast } from "sonner";
 import ScrollReveal from "@/components/ScrollReveal";
 import { moderateContent } from "@/lib/moderation";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import EnquiryForm from "@/components/EnquiryForm";
-import { realTrekPhotos } from "@/data/realTrekPhotos";
-import { AmsRiskBlock } from "@/components/AmsRiskBlock";
-import ReactMarkdown from "react-markdown";
-import RelatedTreks from "@/components/RelatedTreks";
-import PersonalizeItineraryPanel, { PersonalizedPlan } from "@/components/PersonalizeItineraryPanel";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
   Moderate: "bg-trek-sky/15 text-trek-sky",
   Difficult: "bg-trek-sunrise/15 text-trek-sunrise",
   Challenging: "bg-destructive/15 text-destructive",
-  Expert: "bg-purple-500/15 text-purple-700",
-  Local: "bg-amber-500/15 text-amber-700",
 };
 
 const safetyColor: Record<string, string> = {
@@ -94,7 +86,7 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
       }
     });
     // Fetch guesthouses in this trek's region
-    supabase.from("guesthouse_listings").select("*").eq("approved", true).then(({ data }) => {
+    supabase.from("guesthouse_listings" as any).select("*").eq("approved", true).then(({ data }) => {
       if (data) {
         const matching = (data as any[]).filter(g =>
           g.trek_region.toLowerCase().includes(trek.region.toLowerCase()) ||
@@ -105,7 +97,7 @@ function TrekServicePanel({ trek }: { trek: Trek }) {
       }
     });
     // Fetch agencies offering this trek
-    supabase.from("agency_listings").select("*").eq("approved", true).then(({ data }) => {
+    supabase.from("agency_listings" as any).select("*").eq("approved", true).then(({ data }) => {
       if (data) {
         const matching = (data as any[]).filter(a => a.treks_offered && a.treks_offered.includes(trek.id));
         setAgencies(matching);
@@ -236,7 +228,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
   const [newComment, setNewComment] = useState("");
 
   const fetchReviews = async () => {
-    const { data } = await supabase.from("trek_reviews").select("*").eq("trek_id", trekId).order("created_at", { ascending: false });
+    const { data } = await supabase.from("trek_reviews" as any).select("*").eq("trek_id", trekId).order("created_at", { ascending: false });
     if (data) {
       const userIds = [...new Set((data as any[]).map((r: any) => r.user_id))];
       if (userIds.length > 0) {
@@ -260,7 +252,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
     if (!user) { toast.error("Please log in"); return; }
     if (newRating === 0) { toast.error("Please select a rating"); return; }
     setSubmitting(true);
-    const { data: inserted, error } = await supabase.from("trek_reviews").insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() }).select().single();
+    const { data: inserted, error } = await supabase.from("trek_reviews" as any).insert({ trek_id: trekId, user_id: user.id, rating: newRating, comment: newComment.trim() } as any).select().single();
     if (error) toast.error("Failed");
     else {
       moderateContent({ table: "trek_reviews", recordId: (inserted as any).id, textContent: newComment.trim() });
@@ -305,7 +297,7 @@ function TrekReviewSection({ trekId, user }: { trekId: string; user: any }) {
                 </div>
                 {r.comment && <p className="text-xs text-muted-foreground mt-1">{r.comment}</p>}
                 {user?.id === r.user_id && (
-                  <button onClick={async () => { await supabase.from("trek_reviews").delete().eq("id", r.id); toast.success("Deleted"); fetchReviews(); }} className="text-[10px] text-destructive hover:underline mt-1">Delete</button>
+                  <button onClick={async () => { await supabase.from("trek_reviews" as any).delete().eq("id", r.id); toast.success("Deleted"); fetchReviews(); }} className="text-[10px] text-destructive hover:underline mt-1">Delete</button>
                 )}
               </div>
             </div>
@@ -338,19 +330,7 @@ const TREK_PHOTOS = [
   "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=500&fit=crop",
 ];
 
-function getTrekImages(trek: Trek): { url: string; caption: string; source: string; descUrl?: string; license?: string; artist?: string }[] {
-  // Prefer real Wikimedia photos if available for this trek
-  const real = realTrekPhotos[trek.id];
-  if (real && real.length > 0) {
-    return real.map(p => ({
-      url: p.url,
-      caption: p.caption || `${trek.name}`,
-      source: p.source,
-      descUrl: p.descUrl,
-      license: p.license,
-      artist: p.artist,
-    }));
-  }
+function getTrekImages(trek: Trek): { url: string; caption: string; source: string }[] {
   const hash = trek.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return [
     { url: TREK_PHOTOS[hash % TREK_PHOTOS.length], caption: `${trek.region} landscape`, source: "Unsplash" },
@@ -361,10 +341,6 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
 
 // Get an itinerary day photo based on trek and day
 function getDayPhoto(trekId: string, day: number): string {
-  const real = realTrekPhotos[trekId];
-  if (real && real.length > 0) {
-    return real[(day - 1) % real.length].url;
-  }
   const hash = trekId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return TREK_PHOTOS[(hash + day * 3) % TREK_PHOTOS.length];
 }
@@ -378,15 +354,14 @@ const TrekDetail = () => {
   const [activeTab, setActiveTab] = useState<"overview" | "altitude" | "budget" | "safety" | "stays" | "emergency">("overview");
   const [trekOverride, setTrekOverride] = useState<any>(null);
   const [teaHouses, setTeaHouses] = useState<any[]>([]);
-  const [personalizedPlan, setPersonalizedPlan] = useState<PersonalizedPlan | null>(null);
 
   // Fetch override data and tea houses
   useEffect(() => {
     if (!baseTrek) return;
-    supabase.from("trek_overrides").select("*").eq("trek_id", baseTrek.id).maybeSingle().then(({ data }) => {
+    supabase.from("trek_overrides" as any).select("*").eq("trek_id", baseTrek.id).maybeSingle().then(({ data }) => {
       if (data) setTrekOverride(data);
     });
-    supabase.from("trek_tea_houses").select("*").eq("trek_id", baseTrek.id).order("village").then(({ data }) => {
+    supabase.from("trek_tea_houses" as any).select("*").eq("trek_id", baseTrek.id).order("village").then(({ data }) => {
       if (data) setTeaHouses(data as any[]);
     });
   }, [baseTrek?.id]);
@@ -477,17 +452,6 @@ const TrekDetail = () => {
                   <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
                 </div>
                 <h1 className="text-3xl md:text-4xl mb-4">{trek.name}</h1>
-
-                {/* AI-content banner — shown only for ai_generated pages */}
-                {trekOverride?.content_source === "ai_generated" && (
-                  <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-                    <p>
-                      <strong>This guide is AI-assisted and pending editorial review.</strong> Verified details are marked with ✓. Spotted an error? <a href="mailto:corrections@himalayantrails.aryanrungta.com" className="underline">Report it</a>.
-                    </p>
-                  </div>
-                )}
-
                 <p className="text-muted-foreground leading-relaxed mb-6">{trek.description}</p>
 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -496,20 +460,6 @@ const TrekDetail = () => {
                   <span className="inline-flex items-center gap-1.5"><TrendingUp className="h-4 w-4 text-primary" />{trek.altitudeMeters.toLocaleString()}m</span>
                   <span className="inline-flex items-center gap-1.5"><Calendar className="h-4 w-4 text-primary" />{trek.bestMonths.map(m => MONTHS[m - 1]).join(", ")}</span>
                   <span className="inline-flex items-center gap-1.5"><Users className="h-4 w-4 text-primary" />{completionCount} completed</span>
-                </div>
-
-                {/* Trust strip */}
-                <div className="mt-5 pt-4 border-t border-border flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <Shield className="h-3 w-3 text-trek-moss" />
-                    {trekOverride?.last_verified_at
-                      ? <>Last verified: <time dateTime={trekOverride.last_verified_at}>{new Date(trekOverride.last_verified_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</time></>
-                      : <>Editorial baseline · {new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</>}
-                  </span>
-                  {trekOverride?.author_name && (
-                    <span>By <span className="font-medium text-foreground">{trekOverride.author_name}</span>{trekOverride.author_credentials ? `, ${trekOverride.author_credentials}` : ""}</span>
-                  )}
-                  <a href={`mailto:corrections@himalayantrails.aryanrungta.com?subject=Outdated info: ${encodeURIComponent(trek.name)}`} className="text-primary hover:underline ml-auto">Report outdated info →</a>
                 </div>
               </div>
             </ScrollReveal>
@@ -523,35 +473,13 @@ const TrekDetail = () => {
                       <div key={i} className="relative aspect-[4/3] bg-muted">
                         <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                          <p className="text-[10px] text-white/90 line-clamp-1">{img.caption}</p>
-                          {img.descUrl ? (
-                            <a href={img.descUrl} target="_blank" rel="noopener noreferrer" className="text-[8px] text-white/60 hover:text-white/90">
-                              📷 {img.source}{img.license ? ` · ${img.license}` : ""}
-                            </a>
-                          ) : (
-                            <p className="text-[8px] text-white/60">📷 {img.source}</p>
-                          )}
+                          <p className="text-[10px] text-white/90">{img.caption}</p>
+                          <p className="text-[8px] text-white/60">📷 {img.source}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              </ScrollReveal>
-            )}
-
-            {/* Long-form editorial / AI guide */}
-            {trekOverride?.long_form_content && (
-              <ScrollReveal delay={50}>
-                <article className="mb-8 prose prose-invert prose-sm md:prose-base max-w-none
-                             prose-headings:font-display prose-headings:text-foreground
-                             prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border prose-h2:pb-2
-                             prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
-                             prose-p:text-muted-foreground prose-p:leading-relaxed
-                             prose-strong:text-foreground prose-a:text-primary
-                             prose-table:text-xs prose-th:text-foreground prose-td:text-muted-foreground
-                             prose-li:text-muted-foreground">
-                  <ReactMarkdown>{trekOverride.long_form_content}</ReactMarkdown>
-                </article>
               </ScrollReveal>
             )}
 
@@ -577,36 +505,28 @@ const TrekDetail = () => {
                     </ul>
                   </div>
 
-                  <PersonalizeItineraryPanel trek={trek} user={user} plan={personalizedPlan} onPlan={setPersonalizedPlan} />
-
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="mb-4">Day-by-Day Itinerary</h3>
                     <div className="space-y-4">
-                      {trek.itinerary.map((day, idx) => {
+                      {trek.itinerary.map(day => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
-                        const dayPhoto = getDayPhoto(trek.id, day.day);
-                        const personalNote = personalizedPlan?.dayPlans?.find((p: any) => p.day === day.day);
-                        const statusColor = personalNote?.status === "abort_recommended" ? "bg-destructive/10 border-destructive/30 text-destructive"
-                          : personalNote?.status === "rest_recommended" ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400"
-                          : personalNote?.status === "watch" ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400"
-                          : "bg-trek-moss/10 border-trek-moss/30 text-trek-moss";
                         return (
                           <div key={day.day} className="border border-border rounded-xl overflow-hidden">
-                            {/* Day header */}
-                            <div className="bg-muted/40 px-4 py-3 flex items-center gap-3 border-b border-border">
-                              <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs shrink-0">Day {day.day}</span>
-                              <h4 className="font-semibold text-sm text-foreground">{day.title}</h4>
-                            </div>
                             {/* Day photo */}
-                            {dayPhoto && (
-                              <div className="relative aspect-[16/7] bg-muted overflow-hidden">
-                                <img src={dayPhoto} alt={`${day.townName || day.title}`} className="w-full h-full object-cover" loading="lazy" />
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-2">
-                                  <p className="text-[11px] text-white/90 font-medium">{day.townName || day.title}</p>
-                                </div>
+                            <div className="relative aspect-[3/1] bg-muted overflow-hidden">
+                              <img
+                                src={getDayPhoto(trek.id, day.day)}
+                                alt={`Day ${day.day}: ${day.title}`}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                              <div className="absolute bottom-3 left-4 right-4">
+                                <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-semibold text-xs">Day {day.day}</span>
+                                <h4 className="text-white font-semibold text-sm mt-1">{day.title}</h4>
                               </div>
-                            )}
+                            </div>
                             <div className="p-4">
                               <p className="text-sm text-muted-foreground leading-relaxed">{day.description}</p>
                               <div className="flex flex-wrap gap-3 mt-2 text-xs">
@@ -614,13 +534,6 @@ const TrekDetail = () => {
                                 {day.elevation && <span className="inline-flex items-center gap-1 bg-muted px-2 py-1 rounded-full">⛰️ {day.elevation}</span>}
                                 {day.townAltitude && <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full">📍 {day.townAltitude.toLocaleString()}m</span>}
                               </div>
-                              {/* Personalised note */}
-                              {personalNote && (
-                                <div className={`mt-3 rounded-lg p-2.5 border text-[11px] ${statusColor}`}>
-                                  <span className="font-semibold uppercase tracking-wider mr-1.5">{personalNote.status.replace("_", " ")}:</span>
-                                  {personalNote.note}
-                                </div>
-                              )}
                               {/* Town/Village Info */}
                               {day.townName && day.townDescription && (
                                 <div className="mt-3 bg-muted/50 rounded-lg p-3 border border-border/50">
@@ -867,53 +780,18 @@ const TrekDetail = () => {
                 </div>
               )}
 
-              {/* Enquiry */}
-              <div className="mt-6">
-                <EnquiryForm defaultTrekName={trek.name} />
-              </div>
-
               {/* Trek Reviews */}
               <div className="mt-6">
                 <TrekReviewSection trekId={trek.id} user={user} />
               </div>
-
-              {/* Internal linking — for SEO crawl traversal */}
-              <section className="mt-10" aria-label="Related treks">
-                <h2 className="font-display text-2xl font-semibold mb-4">Explore related treks</h2>
-                <RelatedTreks trek={trek} />
-              </section>
             </ScrollReveal>
           </div>
 
-          {/* Right sidebar - services + scrolling photo gallery */}
+          {/* Right sidebar - services */}
           <aside className="lg:w-96 shrink-0">
-            <div className="lg:sticky lg:top-20 space-y-4">
-              <AmsRiskBlock trek={trek} />
+            <div className="lg:sticky lg:top-20">
               <TrekServicePanel trek={trek} />
             </div>
-            {/* Non-sticky photo rail — fills the empty right column as the user scrolls the long-form content */}
-            {trekImages.length > 0 && (
-              <div className="hidden lg:block mt-6 space-y-4">
-                <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium px-1">From the trail</h3>
-                {trekImages.concat(trekImages).slice(0, 8).map((img, i) => (
-                  <figure key={`rail-${i}`} className="rounded-xl overflow-hidden border border-border bg-card">
-                    <div className="relative aspect-[4/3] bg-muted">
-                      <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                    <figcaption className="p-2.5">
-                      <p className="text-[11px] text-foreground font-medium leading-snug">{img.caption}</p>
-                      {img.descUrl ? (
-                        <a href={img.descUrl} target="_blank" rel="noopener noreferrer" className="text-[9px] text-muted-foreground hover:text-foreground">
-                          📷 {img.source}{img.license ? ` · ${img.license}` : ""}{img.artist ? ` · ${img.artist.replace(/<[^>]+>/g, "").slice(0, 30)}` : ""}
-                        </a>
-                      ) : (
-                        <p className="text-[9px] text-muted-foreground">📷 {img.source}</p>
-                      )}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            )}
           </aside>
         </div>
       </div>

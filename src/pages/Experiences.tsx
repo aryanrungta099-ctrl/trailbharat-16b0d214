@@ -91,7 +91,7 @@ const Experiences = () => {
       rating,
       photo_urls: uploadedUrls,
       approved: false,
-    }).select().single();
+    } as any).select().single();
 
     if (!error) {
       const textToCheck = `Trek: ${trek.trim()}\nStory: ${story.trim()}`;

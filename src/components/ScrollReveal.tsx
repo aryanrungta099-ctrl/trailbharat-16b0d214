@@ -13,17 +13,9 @@ const ScrollReveal = ({ children, className = "", delay = 0 }: Props) => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // If already in viewport on mount, reveal immediately (avoids hidden content
-    // when navigating to a route or switching content while scrolled).
-    const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight && rect.bottom > 0;
-    if (inView) {
-      setVisible(true);
-      return;
-    }
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.05 }
+      { threshold: 0.15 }
     );
     observer.observe(el);
     return () => observer.disconnect();
