@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { trek_id, content, itinerary, highlights } = body;
+    const { trek_id, content, itinerary, highlights, photo_urls } = body;
     if (!trek_id) return json({ error: "trek_id required" }, 400);
 
     const supabase = createClient(
