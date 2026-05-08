@@ -414,6 +414,8 @@ const TrekDetail = () => {
         caption: `${trek.name} — view ${i + 1}`,
         source: "trekthehimalayas.com",
         descUrl: url,
+        license: undefined as string | undefined,
+        artist: undefined as string | undefined,
       }));
     }
     return getTrekImages(trek);
