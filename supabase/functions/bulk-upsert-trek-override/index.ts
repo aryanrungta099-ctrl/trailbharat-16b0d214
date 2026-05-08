@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
     if (typeof content === "string" && content.length > 100) patch.long_form_content = content;
     if (itinerary && typeof itinerary === "object") patch.itinerary_json = itinerary;
     if (Array.isArray(highlights) && highlights.length) patch.highlights = highlights;
+    if (Array.isArray(photo_urls) && photo_urls.length) patch.photo_urls = photo_urls;
 
     if (existing) {
       const { error } = await supabase.from("trek_overrides").update(patch).eq("id", existing.id);
