@@ -1,0 +1,1 @@
+ALTER TABLE public.trek_overrides ADD COLUMN IF NOT EXISTS photo_urls TEXT[] NOT NULL DEFAULT '{}'::text[];
