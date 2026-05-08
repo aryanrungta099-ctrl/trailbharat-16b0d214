@@ -555,6 +555,7 @@ export type Database = {
           last_verified_at: string | null
           long_form_content: string | null
           noindex: boolean
+          photo_urls: string[]
           trek_id: string
           updated_at: string
           updated_by: string | null
@@ -571,6 +572,7 @@ export type Database = {
           last_verified_at?: string | null
           long_form_content?: string | null
           noindex?: boolean
+          photo_urls?: string[]
           trek_id: string
           updated_at?: string
           updated_by?: string | null
@@ -587,6 +589,7 @@ export type Database = {
           last_verified_at?: string | null
           long_form_content?: string | null
           noindex?: boolean
+          photo_urls?: string[]
           trek_id?: string
           updated_at?: string
           updated_by?: string | null

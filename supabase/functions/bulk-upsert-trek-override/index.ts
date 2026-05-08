@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { trek_id, content, itinerary, highlights } = body;
+    const { trek_id, content, itinerary, highlights, photo_urls } = body;
     if (!trek_id) return json({ error: "trek_id required" }, 400);
 
     const supabase = createClient(
@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
     if (typeof content === "string" && content.length > 100) patch.long_form_content = content;
     if (itinerary && typeof itinerary === "object") patch.itinerary_json = itinerary;
     if (Array.isArray(highlights) && highlights.length) patch.highlights = highlights;
+    if (Array.isArray(photo_urls) && photo_urls.length) patch.photo_urls = photo_urls;
 
     if (existing) {
       const { error } = await supabase.from("trek_overrides").update(patch).eq("id", existing.id);

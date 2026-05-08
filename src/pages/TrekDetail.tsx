@@ -405,7 +405,21 @@ const TrekDetail = () => {
 
   const budget = useMemo(() => trek ? (trek.budget ?? generateBudget(trek.country, trek.durationDays, trek.difficulty, trek.altitudeMeters, trek.name)) : null, [trek]);
   const extras = useMemo(() => trek ? generateTrekExtras(trek.name, trek.country, trek.region, trek.state, trek.altitudeMeters, trek.difficulty, trek.durationDays, trek.bestMonths, trek.highlights, trek.itinerary) : null, [trek]);
-  const trekImages = useMemo(() => trek ? getTrekImages(trek) : [], [trek]);
+  const trekImages = useMemo(() => {
+    if (!trek) return [];
+    const overridePhotos = (trekOverride as any)?.photo_urls as string[] | undefined;
+    if (overridePhotos && overridePhotos.length > 0) {
+      return overridePhotos.map((url, i) => ({
+        url,
+        caption: `${trek.name} — view ${i + 1}`,
+        source: "trekthehimalayas.com",
+        descUrl: url,
+        license: undefined as string | undefined,
+        artist: undefined as string | undefined,
+      }));
+    }
+    return getTrekImages(trek);
+  }, [trek, trekOverride]);
 
   const altitudeData = useMemo(() => {
     if (!trek) return [];
