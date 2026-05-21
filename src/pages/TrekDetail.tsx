@@ -17,6 +17,9 @@ import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 import ReactMarkdown from "react-markdown";
 import RelatedTreks from "@/components/RelatedTreks";
 import PersonalizeItineraryPanel, { PersonalizedPlan } from "@/components/PersonalizeItineraryPanel";
+import FlagshipHero from "@/components/flagship/FlagshipHero";
+import StickyReadingNav from "@/components/flagship/StickyReadingNav";
+import FlagshipMarkdown, { parseFlagshipSections } from "@/components/flagship/FlagshipMarkdown";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
@@ -432,6 +435,16 @@ const TrekDetail = () => {
 
   const elevationRates = useMemo(() => trek ? getElevationRate(trek.itinerary) : [], [trek]);
 
+  const isFlagship = Boolean(trekOverride?.is_flagship && trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
+  const flagshipParsed = useMemo(() => {
+    if (!isFlagship) return null;
+    return parseFlagshipSections(trekOverride.long_form_content as string);
+  }, [isFlagship, trekOverride?.long_form_content]);
+  const flagshipNav = useMemo(() => {
+    if (!flagshipParsed) return [];
+    return flagshipParsed.nav.slice(0, 8);
+  }, [flagshipParsed]);
+
   useEffect(() => {
     if (!trek) return;
     supabase.from("completed_treks").select("id", { count: "exact" }).eq("trek_id", trek.id)
@@ -472,16 +485,24 @@ const TrekDetail = () => {
         </svg>
       </div>
       <div className="relative z-10">
+      {isFlagship && (
+        <FlagshipHero
+          trek={trek}
+          heroImage={trekImages[0]}
+          tagline={trek.description.split(/(?<=[.!?])\s+/)[0]}
+        />
+      )}
       <div className="container mx-auto px-4">
         {/* Back link */}
-        <Link to="/routes" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link to="/routes" className={`inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors ${isFlagship ? "mt-4" : ""}`}>
           <ArrowLeft className="h-4 w-4" /> Back to routes
         </Link>
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Main content */}
           <div className="flex-1 min-w-0">
-            {/* Header */}
+            {/* Header — standard layout only; flagship uses FlagshipHero above */}
+            {!isFlagship && (
             <ScrollReveal>
               <div className="bg-card rounded-2xl border border-border p-8 mb-6 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -527,9 +548,10 @@ const TrekDetail = () => {
                 </div>
               </div>
             </ScrollReveal>
+            )}
 
-            {/* Trek Images */}
-            {trekImages.length > 0 && (
+            {/* Trek Images — standard layout only */}
+            {!isFlagship && trekImages.length > 0 && (
               <ScrollReveal delay={40}>
                 <div className="mb-6">
                   <div className="grid grid-cols-3 gap-2 rounded-xl overflow-hidden">
@@ -553,8 +575,30 @@ const TrekDetail = () => {
               </ScrollReveal>
             )}
 
-            {/* Long-form editorial / AI guide */}
-            {trekOverride?.long_form_content && (
+            {/* Flagship editorial layout */}
+            {isFlagship && flagshipParsed && (
+              <>
+                <StickyReadingNav sections={flagshipNav} />
+                <FlagshipMarkdown sections={flagshipParsed.sections} images={trekImages} />
+                {/* Trust strip — flagship variant */}
+                <div className="mt-10 mb-8 pt-5 border-t border-border flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Shield className="h-3 w-3 text-trek-moss" />
+                    {trekOverride?.last_verified_at
+                      ? <>Last verified: <time dateTime={trekOverride.last_verified_at}>{new Date(trekOverride.last_verified_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</time></>
+                      : <>Editorial baseline · {new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</>}
+                  </span>
+                  {trekOverride?.author_name && (
+                    <span>By <span className="font-medium text-foreground">{trekOverride.author_name}</span>{trekOverride.author_credentials ? `, ${trekOverride.author_credentials}` : ""}</span>
+                  )}
+                  <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
+                  <a href={`mailto:corrections@himalayantrails.aryanrungta.com?subject=Outdated info: ${encodeURIComponent(trek.name)}`} className="text-primary hover:underline ml-auto">Report outdated info →</a>
+                </div>
+              </>
+            )}
+
+            {/* Long-form editorial / AI guide — standard layout fallback */}
+            {!isFlagship && trekOverride?.long_form_content && (
               <ScrollReveal delay={50}>
                 <article className="mb-8 prose prose-invert prose-sm md:prose-base max-w-none
                              prose-headings:font-display prose-headings:text-foreground
