@@ -1,32 +1,13 @@
 ## Goal
-Extract the rewritten trek content from your Gemini AI Studio session file (`Rewriting_Himalayan_Treks`) and push all 264 trek rewrites into the `trek_overrides` table.
+Produce a single file containing the raw source data for the 36 treks that didn't get rewritten, so you can paste it straight into Gemini.
 
 ## Steps
+1. Read `treks-not-rewritten.txt` (the 36 missing trek IDs from last run).
+2. Open `himalayan-trails-full-export.md` and split it into per-trek blocks by `## ` headings.
+3. Match each block by its embedded `**ID**: \`slug\`` line against the 36 missing IDs.
+4. Concatenate the 36 matched blocks into one file `/mnt/documents/treks-remaining-36.md` and present it as a download.
+5. Also write `/mnt/documents/gemini-prompt-remaining.md` with the ready-to-paste prompt + the trek list inline, so you can just upload one file to Gemini.
 
-1. **Parse the Gemini session JSON**
-   - The file is an AI Studio export — rewritten content lives inside `chunkedPrompt.chunks[]` as `role: "model"` text chunks.
-   - Write a script that walks all model chunks, concatenates the text, and extracts each `## Trek Name` block.
-
-2. **Map trek names → trek IDs**
-   - Load `src/data/treks.ts` + `src/data/additionalTreks.ts` to build a `name → id` lookup.
-   - Fuzzy-match Gemini's H2 headings against trek names (handles minor punctuation/casing differences).
-   - Log any unmatched headings so you can review.
-
-3. **Bulk upsert via existing edge function**
-   - Use the already-deployed `bulk-upsert-trek-override` function (auth via `LOVABLE_API_KEY` shared secret).
-   - For each matched trek, POST `{ trek_id, content }` — the function updates `long_form_content` and sets `content_source = 'ai_generated'`.
-   - Throttle ~5 requests/sec to avoid hammering the DB.
-
-4. **Report results**
-   - Print: total chunks parsed, treks matched, treks upserted, unmatched headings list.
-   - Save unmatched list to `/mnt/documents/unmatched-treks.txt` if any.
-
-## Technical details
-- Script: `/tmp/import_gemini.ts` (run with `bun`)
-- No schema changes, no new code in the app
-- No UI changes — purely a data backfill
-- Existing `bulk-upsert-trek-override` function and `trek_overrides` RLS are unchanged
-
-## What you'll see after
-- Trek detail pages will render the new editorial prose (since `long_form_content` overrides the default description)
-- You can review/edit any trek in `/admin` as usual
+## What you get
+- `treks-remaining-36.md` — the source data for just the 36 untouched treks
+- `gemini-prompt-remaining.md` — the full prompt with that data inlined (single upload to Gemini)
