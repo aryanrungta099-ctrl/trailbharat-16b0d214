@@ -363,7 +363,10 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
 }
 
 // Get an itinerary day photo based on trek and day
-function getDayPhoto(trekId: string, day: number): string {
+function getDayPhoto(trekId: string, day: number, overridePhotos?: string[]): string {
+  if (overridePhotos && overridePhotos.length > 0) {
+    return overridePhotos[(day - 1) % overridePhotos.length];
+  }
   const real = realTrekPhotos[trekId];
   if (real && real.length > 0) {
     return real[(day - 1) % real.length].url;
