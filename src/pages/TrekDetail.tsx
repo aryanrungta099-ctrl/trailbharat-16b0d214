@@ -398,11 +398,13 @@ const TrekDetail = () => {
   const trek = useMemo(() => {
     if (!baseTrek) return null;
     if (!trekOverride) return baseTrek;
+    const overrideItin = Array.isArray(trekOverride.itinerary_json) ? (trekOverride.itinerary_json as any[]) : null;
+    const overrideHighlights = Array.isArray(trekOverride.highlights) ? trekOverride.highlights : null;
     return {
       ...baseTrek,
       description: trekOverride.description || baseTrek.description,
-      highlights: trekOverride.highlights?.length > 0 ? trekOverride.highlights : baseTrek.highlights,
-      itinerary: trekOverride.itinerary_json ? (trekOverride.itinerary_json as any[]) : baseTrek.itinerary,
+      highlights: overrideHighlights && overrideHighlights.length > 0 ? overrideHighlights : baseTrek.highlights,
+      itinerary: overrideItin && overrideItin.length > 0 ? overrideItin : baseTrek.itinerary,
     };
   }, [baseTrek, trekOverride]);
 
