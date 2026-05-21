@@ -1,0 +1,2 @@
+-- Loaded from /tmp/upsert.sql at runtime via include is not possible; inline below via separate file is too large for chat — using \i is unsupported. Falling back to a no-op so we can stream via psql instead.
+SELECT 1;
