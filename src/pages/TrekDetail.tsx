@@ -442,11 +442,7 @@ const TrekDetail = () => {
   }, [isFlagship, trekOverride?.long_form_content]);
   const flagshipNav = useMemo(() => {
     if (!flagshipParsed) return [];
-    return [
-      ...flagshipParsed.nav.slice(0, 6),
-      { id: "itinerary", label: "Itinerary" },
-      { id: "reviews", label: "Reviews" },
-    ];
+    return flagshipParsed.nav.slice(0, 8);
   }, [flagshipParsed]);
 
   useEffect(() => {
