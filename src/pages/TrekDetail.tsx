@@ -435,7 +435,8 @@ const TrekDetail = () => {
 
   const elevationRates = useMemo(() => trek ? getElevationRate(trek.itinerary) : [], [trek]);
 
-  const isFlagship = Boolean(trekOverride?.is_flagship && trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
+  const isFlagship = Boolean(trek);
+  const hasLongForm = Boolean(trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
   const flagshipParsed = useMemo(() => {
     if (!isFlagship) return null;
     return parseFlagshipSections(trekOverride.long_form_content as string);
