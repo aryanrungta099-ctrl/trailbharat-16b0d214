@@ -435,6 +435,20 @@ const TrekDetail = () => {
 
   const elevationRates = useMemo(() => trek ? getElevationRate(trek.itinerary) : [], [trek]);
 
+  const isFlagship = Boolean(trekOverride?.is_flagship && trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
+  const flagshipParsed = useMemo(() => {
+    if (!isFlagship) return null;
+    return parseFlagshipSections(trekOverride.long_form_content as string);
+  }, [isFlagship, trekOverride?.long_form_content]);
+  const flagshipNav = useMemo(() => {
+    if (!flagshipParsed) return [];
+    return [
+      ...flagshipParsed.nav.slice(0, 6),
+      { id: "itinerary", label: "Itinerary" },
+      { id: "reviews", label: "Reviews" },
+    ];
+  }, [flagshipParsed]);
+
   useEffect(() => {
     if (!trek) return;
     supabase.from("completed_treks").select("id", { count: "exact" }).eq("trek_id", trek.id)
