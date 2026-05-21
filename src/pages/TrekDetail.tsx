@@ -663,7 +663,7 @@ const TrekDetail = () => {
                       {trek.itinerary.map((day, idx) => {
                         const villageName = day.townName || day.title.split(" to ").pop()?.trim() || "";
                         const villageTeaHouses = teaHouses.filter(th => th.village.toLowerCase() === villageName.toLowerCase());
-                        const dayPhoto = getDayPhoto(trek.id, day.day);
+                        const dayPhoto = getDayPhoto(trek.id, day.day, (trekOverride as any)?.photo_urls);
                         const personalNote = personalizedPlan?.dayPlans?.find((p: any) => p.day === day.day);
                         const statusColor = personalNote?.status === "abort_recommended" ? "bg-destructive/10 border-destructive/30 text-destructive"
                           : personalNote?.status === "rest_recommended" ? "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400"
