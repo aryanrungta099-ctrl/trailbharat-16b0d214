@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 
 function parseElev(s: string | undefined): number {
   if (!s) return 0;
-  return parseInt(s.replace(/[^0-9]/g, "")) || 0;
+  // Extract all numbers (ignoring thousands separators) and take the max sensible altitude.
+  const nums = (s.replace(/[,\s](?=\d{3}\b)/g, "").match(/\d+/g) || [])
+    .map((n) => parseInt(n, 10))
+    .filter((n) => Number.isFinite(n) && n > 0 && n < 9000);
+  return nums.length ? Math.max(...nums) : 0;
 }
 
 interface AmsAnalysis {
