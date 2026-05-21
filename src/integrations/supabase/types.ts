@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      _trek_rewrites_staging: {
+        Row: {
+          content: string
+          trek_id: string
+        }
+        Insert: {
+          content: string
+          trek_id: string
+        }
+        Update: {
+          content?: string
+          trek_id?: string
+        }
+        Relationships: []
+      }
       agency_listings: {
         Row: {
           approved: boolean
