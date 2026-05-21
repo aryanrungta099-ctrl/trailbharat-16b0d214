@@ -489,9 +489,16 @@ const TrekDetail = () => {
         </svg>
       </div>
       <div className="relative z-10">
+      {isFlagship && (
+        <FlagshipHero
+          trek={trek}
+          heroImage={trekImages[0]}
+          tagline={trek.description.split(/(?<=[.!?])\s+/)[0]}
+        />
+      )}
       <div className="container mx-auto px-4">
         {/* Back link */}
-        <Link to="/routes" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link to="/routes" className={`inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors ${isFlagship ? "mt-4" : ""}`}>
           <ArrowLeft className="h-4 w-4" /> Back to routes
         </Link>
 
