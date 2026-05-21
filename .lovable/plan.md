@@ -1,13 +1,16 @@
 ## Goal
-Produce a single file containing the raw source data for the 36 treks that didn't get rewritten, so you can paste it straight into Gemini.
+You uploaded the Gemini AI Studio session (`Standardizing_Trek_Descriptions`) containing the rewritten content for all 36 remaining treks. Extract the trek blocks and import them into `trek_overrides` via the existing `bulk-upsert-trek-override` edge function.
+
+## What's in the upload
+The JSON has 52 chunks. The 6 model chunks that contain trek content are indices 5, 12, 21, 40, 48, 51 — concatenated they contain `## Trek Name` + `**ID**: \`slug\`` blocks for all 36 treks (Agasthyarkoodam → Rumtse to Tsomoriri).
 
 ## Steps
-1. Read `treks-not-rewritten.txt` (the 36 missing trek IDs from last run).
-2. Open `himalayan-trails-full-export.md` and split it into per-trek blocks by `## ` headings.
-3. Match each block by its embedded `**ID**: \`slug\`` line against the 36 missing IDs.
-4. Concatenate the 36 matched blocks into one file `/mnt/documents/treks-remaining-36.md` and present it as a download.
-5. Also write `/mnt/documents/gemini-prompt-remaining.md` with the ready-to-paste prompt + the trek list inline, so you can just upload one file to Gemini.
+1. Parse `/tmp/gemini.json`, concatenate the 6 model text chunks, write `/mnt/documents/treks-rewritten-36.md` for your records.
+2. Split into per-trek blocks on `^## ` and extract the `slug` from each `**ID**: \`slug\`` line. Confirm count = 36 and matches `treks-not-rewritten.txt`.
+3. For each block, call the existing `bulk-upsert-trek-override` edge function with `{ trek_id: slug, content: <full markdown block> }` using `LOVABLE_API_KEY` as `x-bulk-secret`. This sets `long_form_content` and marks `content_source = 'ai_generated'`.
+4. Report any slugs that failed or weren't found.
 
-## What you get
-- `treks-remaining-36.md` — the source data for just the 36 untouched treks
-- `gemini-prompt-remaining.md` — the full prompt with that data inlined (single upload to Gemini)
+## No code/schema changes
+Reuses the existing edge function and table. Nothing in `src/` or `supabase/` is modified.
+
+Switch to build mode to run this.
