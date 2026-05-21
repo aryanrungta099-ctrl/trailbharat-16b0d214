@@ -438,9 +438,9 @@ const TrekDetail = () => {
   const isFlagship = Boolean(trek);
   const hasLongForm = Boolean(trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
   const flagshipParsed = useMemo(() => {
-    if (!isFlagship) return null;
+    if (!hasLongForm) return null;
     return parseFlagshipSections(trekOverride.long_form_content as string);
-  }, [isFlagship, trekOverride?.long_form_content]);
+  }, [hasLongForm, trekOverride?.long_form_content]);
   const flagshipNav = useMemo(() => {
     if (!flagshipParsed) return [];
     return flagshipParsed.nav.slice(0, 8);
