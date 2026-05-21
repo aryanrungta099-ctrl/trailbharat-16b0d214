@@ -435,11 +435,12 @@ const TrekDetail = () => {
 
   const elevationRates = useMemo(() => trek ? getElevationRate(trek.itinerary) : [], [trek]);
 
-  const isFlagship = Boolean(trekOverride?.is_flagship && trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
+  const isFlagship = Boolean(trek);
+  const hasLongForm = Boolean(trekOverride?.long_form_content && trekOverride.long_form_content.length > 1500);
   const flagshipParsed = useMemo(() => {
-    if (!isFlagship) return null;
+    if (!hasLongForm) return null;
     return parseFlagshipSections(trekOverride.long_form_content as string);
-  }, [isFlagship, trekOverride?.long_form_content]);
+  }, [hasLongForm, trekOverride?.long_form_content]);
   const flagshipNav = useMemo(() => {
     if (!flagshipParsed) return [];
     return flagshipParsed.nav.slice(0, 8);
@@ -575,43 +576,57 @@ const TrekDetail = () => {
               </ScrollReveal>
             )}
 
-            {/* Flagship editorial layout */}
-            {isFlagship && flagshipParsed && (
+            {/* Meta strip — always shown under hero */}
+            <div className="mt-2 mb-6 flex flex-wrap items-center gap-2">
+              <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${difficultyColor[trek.difficulty]}`}>{trek.difficulty}</span>
+              <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">{trek.country}</span>
+              {extras && <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${safetyColor[extras.weather.safetyLevel]}`}>{extras.weather.safetyLevel}</span>}
+              <span className="text-xs text-muted-foreground inline-flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {completionCount} completed</span>
+              <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
+            </div>
+
+            {trekOverride?.content_source === "ai_generated" && (
+              <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <p>
+                  <strong>This guide is AI-assisted and pending editorial review.</strong> Verified details are marked with ✓. Spotted an error? <a href="mailto:corrections@himalayantrails.aryanrungta.com" className="underline">Report it</a>.
+                </p>
+              </div>
+            )}
+
+            {/* Flagship editorial markdown — when long-form content exists */}
+            {flagshipParsed && (
               <>
                 <StickyReadingNav sections={flagshipNav} />
                 <FlagshipMarkdown sections={flagshipParsed.sections} images={trekImages} />
-                {/* Trust strip — flagship variant */}
-                <div className="mt-10 mb-8 pt-5 border-t border-border flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <Shield className="h-3 w-3 text-trek-moss" />
-                    {trekOverride?.last_verified_at
-                      ? <>Last verified: <time dateTime={trekOverride.last_verified_at}>{new Date(trekOverride.last_verified_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</time></>
-                      : <>Editorial baseline · {new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</>}
-                  </span>
-                  {trekOverride?.author_name && (
-                    <span>By <span className="font-medium text-foreground">{trekOverride.author_name}</span>{trekOverride.author_credentials ? `, ${trekOverride.author_credentials}` : ""}</span>
-                  )}
-                  <ShareButton title={trek.name} text={`Check out ${trek.name} trek on Himalayan Trails!`} />
-                  <a href={`mailto:corrections@himalayantrails.aryanrungta.com?subject=Outdated info: ${encodeURIComponent(trek.name)}`} className="text-primary hover:underline ml-auto">Report outdated info →</a>
-                </div>
               </>
             )}
 
-            {/* Long-form editorial / AI guide — standard layout fallback */}
-            {!isFlagship && trekOverride?.long_form_content && (
-              <ScrollReveal delay={50}>
-                <article className="mb-8 prose prose-invert prose-sm md:prose-base max-w-none
-                             prose-headings:font-display prose-headings:text-foreground
-                             prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border prose-h2:pb-2
-                             prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
-                             prose-p:text-muted-foreground prose-p:leading-relaxed
-                             prose-strong:text-foreground prose-a:text-primary
-                             prose-table:text-xs prose-th:text-foreground prose-td:text-muted-foreground
-                             prose-li:text-muted-foreground">
-                  <ReactMarkdown>{trekOverride.long_form_content}</ReactMarkdown>
-                </article>
-              </ScrollReveal>
+            {/* Inline gallery for treks without long-form content */}
+            {!flagshipParsed && trekImages.length > 1 && (
+              <div className="mb-8 grid grid-cols-2 md:grid-cols-3 gap-2 rounded-xl overflow-hidden">
+                {trekImages.slice(1, 7).map((img, i) => (
+                  <figure key={i} className="relative aspect-[4/3] bg-muted overflow-hidden rounded-lg">
+                    <img src={img.url} alt={img.caption} className="w-full h-full object-cover" loading="lazy" />
+                    <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-2 py-1.5 text-[10px] text-white/90 italic">{img.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
             )}
+
+            {/* Trust strip — always */}
+            <div className="mt-6 mb-8 pt-5 border-t border-border flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <Shield className="h-3 w-3 text-trek-moss" />
+                {trekOverride?.last_verified_at
+                  ? <>Last verified: <time dateTime={trekOverride.last_verified_at}>{new Date(trekOverride.last_verified_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</time></>
+                  : <>Editorial baseline · {new Date().toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</>}
+              </span>
+              {trekOverride?.author_name && (
+                <span>By <span className="font-medium text-foreground">{trekOverride.author_name}</span>{trekOverride.author_credentials ? `, ${trekOverride.author_credentials}` : ""}</span>
+              )}
+              <a href={`mailto:corrections@himalayantrails.aryanrungta.com?subject=Outdated info: ${encodeURIComponent(trek.name)}`} className="text-primary hover:underline ml-auto">Report outdated info →</a>
+            </div>
 
             {/* Tabs */}
             <ScrollReveal delay={60}>
