@@ -1,0 +1,1 @@
+GRANT INSERT, SELECT, DELETE, UPDATE ON public._trek_rewrites_staging TO sandbox_exec;
