@@ -17,6 +17,9 @@ import { AmsRiskBlock } from "@/components/AmsRiskBlock";
 import ReactMarkdown from "react-markdown";
 import RelatedTreks from "@/components/RelatedTreks";
 import PersonalizeItineraryPanel, { PersonalizedPlan } from "@/components/PersonalizeItineraryPanel";
+import FlagshipHero from "@/components/flagship/FlagshipHero";
+import StickyReadingNav from "@/components/flagship/StickyReadingNav";
+import FlagshipMarkdown, { parseFlagshipSections } from "@/components/flagship/FlagshipMarkdown";
 
 const difficultyColor: Record<string, string> = {
   Easy: "bg-trek-moss/15 text-trek-moss",
