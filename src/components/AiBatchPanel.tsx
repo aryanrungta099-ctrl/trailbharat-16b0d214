@@ -22,6 +22,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
   const [forceMode, setForceMode] = useState(false);
+  const [provider, setProvider] = useState<"lovable" | "groq">("groq");
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
