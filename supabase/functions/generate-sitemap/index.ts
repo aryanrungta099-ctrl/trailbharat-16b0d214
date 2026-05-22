@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     const section = url.searchParams.get("section");
     const today = new Date().toISOString().split("T")[0];
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const base = `${url.origin}${url.pathname}`;
+    const base = "https://otzzgoelrtpdwkhvkntk.supabase.co/functions/v1/generate-sitemap";
 
     // ----- Sitemap Index (default) -----
     if (!section) {
