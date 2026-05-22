@@ -106,24 +106,38 @@ Deno.serve(async (req) => {
 
     for (const trek of treks) {
       try {
-        const aiResp = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: "You write factually careful, deeply researched, SEO-optimised long-form trekking guides for Indian and Nepali Himalayan routes. Hit the requested word count. When unsure of a specific detail, leave it blank rather than fabricate." },
-              { role: "user", content: PROMPT(trek) },
-            ],
-          }),
-        });
+        // Retry on 429 with exponential backoff (Groq free-tier is tokens/minute capped)
+        let aiResp: Response | null = null;
+        let attempt = 0;
+        const maxAttempts = provider === "groq" ? 4 : 2;
+        while (attempt < maxAttempts) {
+          aiResp = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: "system", content: "You write factually careful, deeply researched, SEO-optimised long-form trekking guides for Indian and Nepali Himalayan routes. Hit the requested word count. When unsure of a specific detail, leave it blank rather than fabricate." },
+                { role: "user", content: PROMPT(trek) },
+              ],
+            }),
+          });
+          if (aiResp.status !== 429) break;
+          // Honour Retry-After header when present, else exponential backoff (8s, 16s, 32s…)
+          const retryAfter = parseFloat(aiResp.headers.get("retry-after") || "0");
+          const waitMs = retryAfter > 0 ? Math.ceil(retryAfter * 1000) + 500 : Math.min(8000 * Math.pow(2, attempt), 45000);
+          await new Promise(r => setTimeout(r, waitMs));
+          attempt++;
+        }
 
+        if (!aiResp) { results.push({ id: trek.id, error: "no_response" }); continue; }
         if (aiResp.status === 429) { results.push({ id: trek.id, error: "rate_limited" }); continue; }
         if (aiResp.status === 402) return json({ error: "PAYMENT_REQUIRED", processed: results }, 402);
         if (!aiResp.ok) { results.push({ id: trek.id, error: `ai_${aiResp.status}` }); continue; }
+
 
         const aiData = await aiResp.json();
         const content = aiData.choices?.[0]?.message?.content;
