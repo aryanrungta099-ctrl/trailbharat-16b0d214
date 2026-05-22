@@ -87,19 +87,29 @@ Deno.serve(async (req) => {
       .from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin");
     if (!roles?.length) return json({ error: "admin only" }, 403);
 
-    const { treks, force, model: requestedModel } = await req.json();
+    const { treks, force, model: requestedModel, provider: requestedProvider } = await req.json();
     if (!Array.isArray(treks) || !treks.length) return json({ error: "no treks" }, 400);
-    const model = requestedModel || "google/gemini-2.5-pro";
+    const provider = requestedProvider === "groq" ? "groq" : "lovable";
+    const model = requestedModel || (provider === "groq" ? "llama-3.1-8b-instant" : "google/gemini-2.5-pro");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+    const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
+    if (provider === "groq" && !GROQ_API_KEY) return json({ error: "GROQ_API_KEY not configured" }, 500);
+
+    const endpoint = provider === "groq"
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://ai.gateway.lovable.dev/v1/chat/completions";
+    const apiKey = provider === "groq" ? GROQ_API_KEY! : LOVABLE_API_KEY;
+    const perTrekDelay = provider === "groq" ? 300 : 1200;
+
     const results: any[] = [];
 
     for (const trek of treks) {
       try {
-        const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const aiResp = await fetch(endpoint, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -144,7 +154,7 @@ Deno.serve(async (req) => {
         if (insErr) { results.push({ id: trek.id, error: insErr.message }); continue; }
 
         results.push({ id: trek.id, ok: true, length: content.length, words: wordCount });
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, perTrekDelay));
       } catch (e) {
         results.push({ id: trek.id, error: String(e) });
       }

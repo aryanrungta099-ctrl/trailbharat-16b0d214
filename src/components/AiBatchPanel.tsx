@@ -22,6 +22,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
   const [forceMode, setForceMode] = useState(false);
+  const [provider, setProvider] = useState<"lovable" | "groq">("groq");
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
@@ -40,8 +41,8 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
     const batch = pending.slice(0, batchSize);
     setProgress({ done: 0, total: batch.length, ok: 0, failed: 0 });
 
-    // Smaller chunks because the deeper prompt + Pro model takes longer per trek.
-    const CHUNK = 3;
+    // Groq 8B is fast — bigger chunks. Lovable AI Pro is slower & rate-limited.
+    const CHUNK = provider === "groq" ? 8 : 3;
     let ok = 0, failed = 0;
 
     for (let i = 0; i < batch.length; i += CHUNK) {
@@ -54,7 +55,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
 
       try {
         const { data, error } = await supabase.functions.invoke("generate-trek-content", {
-          body: { treks: slice, force: forceMode },
+          body: { treks: slice, force: forceMode, provider },
         });
 
         if (error) {
@@ -107,6 +108,28 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
           <Stat label="Editorial" value={totalEditorial} color="text-primary" />
           <Stat label="AI generated" value={totalAiGenerated} color="text-accent" />
           <Stat label="Eligible" value={pending.length} color="text-muted-foreground" />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
+        <span className="text-muted-foreground">Provider:</span>
+        <div className="inline-flex rounded-lg border border-foreground/10 overflow-hidden">
+          <button
+            type="button"
+            disabled={running}
+            onClick={() => setProvider("groq")}
+            className={`px-3 py-1.5 transition ${provider === "groq" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-foreground/5"}`}
+          >
+            Groq · Llama 8B (fast, free)
+          </button>
+          <button
+            type="button"
+            disabled={running}
+            onClick={() => setProvider("lovable")}
+            className={`px-3 py-1.5 transition ${provider === "lovable" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-foreground/5"}`}
+          >
+            Lovable AI · Gemini 2.5 Pro (slower, higher quality)
+          </button>
         </div>
       </div>
 
