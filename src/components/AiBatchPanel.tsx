@@ -55,7 +55,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
 
       try {
         const { data, error } = await supabase.functions.invoke("generate-trek-content", {
-          body: { treks: slice, force: forceMode },
+          body: { treks: slice, force: forceMode, provider },
         });
 
         if (error) {
