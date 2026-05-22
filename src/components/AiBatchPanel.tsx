@@ -22,15 +22,19 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
   const [forceMode, setForceMode] = useState(false);
+  const [protectFlagships, setProtectFlagships] = useState(true);
   const [provider, setProvider] = useState<"lovable" | "groq">("groq");
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
   );
 
-  // In force mode, all treks are eligible. Otherwise skip flagships + already-written.
+  // Eligibility:
+  // - Force OFF: skip flagships + already-written
+  // - Force ON + protectFlagships: regenerate everything EXCEPT flagships
+  // - Force ON + !protectFlagships: regenerate EVERYTHING (incl. flagships)
   const pending = forceMode
-    ? treks
+    ? (protectFlagships ? treks.filter(t => !FLAGSHIP_IDS.has(t.id)) : treks)
     : treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
   const totalAiGenerated = overrides.filter(o => o.content_source === "ai_generated").length;
   const totalEditorial = overrides.filter(o => o.content_source === "editorial" && o.long_form_content).length;
