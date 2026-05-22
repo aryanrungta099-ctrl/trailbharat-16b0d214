@@ -41,8 +41,8 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
     const batch = pending.slice(0, batchSize);
     setProgress({ done: 0, total: batch.length, ok: 0, failed: 0 });
 
-    // Smaller chunks because the deeper prompt + Pro model takes longer per trek.
-    const CHUNK = 3;
+    // Groq 8B is fast — bigger chunks. Lovable AI Pro is slower & rate-limited.
+    const CHUNK = provider === "groq" ? 8 : 3;
     let ok = 0, failed = 0;
 
     for (let i = 0; i < batch.length; i += CHUNK) {
