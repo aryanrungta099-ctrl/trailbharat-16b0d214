@@ -154,7 +154,7 @@ Deno.serve(async (req) => {
         if (insErr) { results.push({ id: trek.id, error: insErr.message }); continue; }
 
         results.push({ id: trek.id, ok: true, length: content.length, words: wordCount });
-        await new Promise(r => setTimeout(r, 1200));
+        await new Promise(r => setTimeout(r, perTrekDelay));
       } catch (e) {
         results.push({ id: trek.id, error: String(e) });
       }
