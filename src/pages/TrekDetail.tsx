@@ -355,21 +355,30 @@ function getTrekImages(trek: Trek): { url: string; caption: string; source: stri
     }));
   }
   const hash = trek.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  return [
-    { url: TREK_PHOTOS[hash % TREK_PHOTOS.length], caption: `${trek.region} landscape`, source: "Unsplash" },
-    { url: TREK_PHOTOS[(hash + 1) % TREK_PHOTOS.length], caption: `${trek.name} trail`, source: "Unsplash" },
-    { url: TREK_PHOTOS[(hash + 2) % TREK_PHOTOS.length], caption: `${trek.state} mountains`, source: "Unsplash" },
-  ];
+  // Pull 5 spaced-out photos so the gallery has real variety
+  const captions = [`${trek.region} landscape`, `${trek.name} trail`, `${trek.state} mountains`, `${trek.region} valley`, `${trek.name} ridge`];
+  return captions.map((caption, i) => ({
+    url: TREK_PHOTOS[(hash + i * 5) % TREK_PHOTOS.length],
+    caption,
+    source: "Unsplash",
+  }));
 }
 
-// Get an itinerary day photo based on trek and day
+// Get an itinerary day photo based on trek and day.
+// Important: skip the hero image (index 0) so the day-1 card doesn't repeat the hero.
 function getDayPhoto(trekId: string, day: number, overridePhotos?: string[]): string {
   if (overridePhotos && overridePhotos.length > 0) {
-    return overridePhotos[(day - 1) % overridePhotos.length];
+    if (overridePhotos.length > 1) {
+      return overridePhotos[1 + ((day - 1) % (overridePhotos.length - 1))];
+    }
+    return overridePhotos[0];
   }
   const real = realTrekPhotos[trekId];
   if (real && real.length > 0) {
-    return real[(day - 1) % real.length].url;
+    if (real.length > 1) {
+      return real[1 + ((day - 1) % (real.length - 1))].url;
+    }
+    return real[0].url;
   }
   const hash = trekId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   return TREK_PHOTOS[(hash + day * 3) % TREK_PHOTOS.length];
