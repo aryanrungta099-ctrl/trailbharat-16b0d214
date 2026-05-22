@@ -1,22 +1,59 @@
-## Switch filler script to Groq
+# Why your pages aren't indexing
 
-You created a Groq API key, not a Google one. Groq's free tier gives ~14,400 requests/day on `llama-3.3-70b-versatile` — far more than the 53 remaining treks need, and it's very fast (~2 min total).
+I traced the root cause and it's a real bug, not a Google patience issue.
 
-### Steps
+## The bug
 
-1. **Add `GROQ_API_KEY` as a secret** in the project so the script can read it.
-2. **Create a Groq variant of the filler script** (`scripts/fill-treks-groq.ts`) that:
-   - Reads `GROQ_API_KEY` from env
-   - Calls `https://api.groq.com/openai/v1/chat/completions` (OpenAI-compatible)
-   - Uses model `llama-3.3-70b-versatile`
-   - Keeps the same prompt, JSON schema, and Supabase update logic as the existing Gemini filler
-   - Queries Supabase for treks still missing content and processes them sequentially with a small delay
-3. **Run it once** via `code--exec` to finish the remaining ~53 treks.
-4. **Verify** by re-querying the DB for any treks still missing fields and spot-checking one trek page in the preview.
+Your `robots.txt` points Google at `https://himalayantrails.aryanrungta.com/sitemap.xml`. That file is a **sitemap index** that delegates to 6 sub-sitemaps (static, routes, blog, sherpas, agencies, guesthouses) — that's where all your trek URLs actually live.
 
-### Notes
-- No app/UI code changes — this is a one-off backfill script.
-- Existing Google keys stay configured; we just stop relying on them for this batch.
-- If Groq rate-limits (unlikely at this volume), the script will back off and retry.
+Currently those sub-sitemap URLs are emitted as:
 
-Ready to proceed? I'll request the `GROQ_API_KEY` secret first.
+```
+http://otzzgoelrtpdwkhvkntk.supabase.co/generate-sitemap?section=routes
+```
+
+Two problems on every one of them:
+1. `http://` instead of `https://`
+2. Missing `/functions/v1/` path prefix
+
+Result: **every sub-sitemap URL returns 404**. I just verified it:
+
+```
+curl -I "http://otzzgoelrtpdwkhvkntk.supabase.co/generate-sitemap?section=routes"
+HTTP/1.1 404 Not Found
+```
+
+So Google fetches your sitemap index, follows the links, gets 404 on all 6, and never discovers a single trek, blog post, sherpa, agency, or guesthouse URL. Only the homepage gets crawled (which is why only the homepage is indexed).
+
+## The cause in code
+
+`supabase/functions/generate-sitemap/index.ts` line 92:
+
+```ts
+const base = `${url.origin}${url.pathname}`;
+```
+
+When Supabase's edge runtime invokes this function internally, `url.origin` resolves to the internal hostname (http, no `/functions/v1/`), not the public one. That bad value is then baked into the sitemap index.
+
+## Fix
+
+Replace the dynamic `base` with a hard-coded public URL of the edge function:
+
+```ts
+const base = "https://otzzgoelrtpdwkhvkntk.supabase.co/functions/v1/generate-sitemap";
+```
+
+One-line change. Edge function redeploys automatically. After that, every sub-sitemap URL in the index resolves with HTTP 200 and Google can discover all 180+ trek pages, blog posts, sherpas, agencies, and guesthouses.
+
+## After the fix
+
+1. Open Google Search Console → **Sitemaps** → re-submit `https://himalayantrails.aryanrungta.com/sitemap.xml`. It should report "Success" with discovered URLs instead of 0.
+2. Use **URL Inspection** on a couple of trek pages (e.g. `/routes/everest-base-camp`) and click "Request indexing" to speed up the first crawl.
+3. Indexing of all pages typically takes 1–4 weeks after this; GSC's Pages report will show the progress.
+
+## Secondary notes (not blocking, just FYI)
+
+- Your site is a client-rendered SPA. Googlebot does execute JS so this is fine, but social crawlers (LinkedIn, Slack, FB) only ever see the static `index.html` head — every shared trek link will preview as the homepage. Fixing that needs SSR/prerender and is a much bigger project; flag if you want me to plan it separately.
+- `robots.txt` and on-page SEO (titles, descriptions, canonical, JSON-LD) all look correct. The only thing blocking indexing is the broken sitemap.
+
+Want me to apply the fix?
