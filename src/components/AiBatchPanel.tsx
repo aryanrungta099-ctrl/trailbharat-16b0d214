@@ -111,6 +111,28 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 mb-3 text-xs">
+        <span className="text-muted-foreground">Provider:</span>
+        <div className="inline-flex rounded-lg border border-foreground/10 overflow-hidden">
+          <button
+            type="button"
+            disabled={running}
+            onClick={() => setProvider("groq")}
+            className={`px-3 py-1.5 transition ${provider === "groq" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-foreground/5"}`}
+          >
+            Groq · Llama 8B (fast, free)
+          </button>
+          <button
+            type="button"
+            disabled={running}
+            onClick={() => setProvider("lovable")}
+            className={`px-3 py-1.5 transition ${provider === "lovable" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:bg-foreground/5"}`}
+          >
+            Lovable AI · Gemini 2.5 Pro (slower, higher quality)
+          </button>
+        </div>
+      </div>
+
       <label className="flex items-center gap-2 mb-3 text-xs cursor-pointer select-none">
         <input
           type="checkbox"
