@@ -22,15 +22,19 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
   const [progress, setProgress] = useState({ done: 0, total: 0, ok: 0, failed: 0 });
   const [log, setLog] = useState<string[]>([]);
   const [forceMode, setForceMode] = useState(false);
+  const [protectFlagships, setProtectFlagships] = useState(true);
   const [provider, setProvider] = useState<"lovable" | "groq">("groq");
 
   const overrideIds = new Set(
     overrides.filter(o => o.long_form_content).map(o => o.trek_id)
   );
 
-  // In force mode, all treks are eligible. Otherwise skip flagships + already-written.
+  // Eligibility:
+  // - Force OFF: skip flagships + already-written
+  // - Force ON + protectFlagships: regenerate everything EXCEPT flagships
+  // - Force ON + !protectFlagships: regenerate EVERYTHING (incl. flagships)
   const pending = forceMode
-    ? treks
+    ? (protectFlagships ? treks.filter(t => !FLAGSHIP_IDS.has(t.id)) : treks)
     : treks.filter(t => !FLAGSHIP_IDS.has(t.id) && !overrideIds.has(t.id));
   const totalAiGenerated = overrides.filter(o => o.content_source === "ai_generated").length;
   const totalEditorial = overrides.filter(o => o.content_source === "editorial" && o.long_form_content).length;
@@ -133,7 +137,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
         </div>
       </div>
 
-      <label className="flex items-center gap-2 mb-3 text-xs cursor-pointer select-none">
+      <label className="flex items-center gap-2 mb-2 text-xs cursor-pointer select-none">
         <input
           type="checkbox"
           checked={forceMode}
@@ -142,9 +146,27 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
           className="h-3.5 w-3.5 rounded accent-primary"
         />
         <span className={forceMode ? "text-destructive font-medium" : "text-muted-foreground"}>
-          Force regenerate ALL treks (overwrites flagships & editorial)
+          Force regenerate existing AI content
         </span>
       </label>
+
+      {forceMode && (
+        <label className="flex items-center gap-2 mb-3 pl-6 text-xs cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={protectFlagships}
+            onChange={(e) => setProtectFlagships(e.target.checked)}
+            disabled={running}
+            className="h-3.5 w-3.5 rounded accent-primary"
+          />
+          <span className={protectFlagships ? "text-primary" : "text-destructive font-medium"}>
+            {protectFlagships
+              ? "Protect 20 hand-written flagships (recommended)"
+              : "⚠ Also overwrite flagships & editorial"}
+          </span>
+        </label>
+      )}
+
 
       <div className="flex flex-wrap gap-2">
         <button
