@@ -137,7 +137,7 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
         </div>
       </div>
 
-      <label className="flex items-center gap-2 mb-3 text-xs cursor-pointer select-none">
+      <label className="flex items-center gap-2 mb-2 text-xs cursor-pointer select-none">
         <input
           type="checkbox"
           checked={forceMode}
@@ -146,9 +146,27 @@ const AiBatchPanel = ({ treks, overrides, onDone }: Props) => {
           className="h-3.5 w-3.5 rounded accent-primary"
         />
         <span className={forceMode ? "text-destructive font-medium" : "text-muted-foreground"}>
-          Force regenerate ALL treks (overwrites flagships & editorial)
+          Force regenerate existing AI content
         </span>
       </label>
+
+      {forceMode && (
+        <label className="flex items-center gap-2 mb-3 pl-6 text-xs cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={protectFlagships}
+            onChange={(e) => setProtectFlagships(e.target.checked)}
+            disabled={running}
+            className="h-3.5 w-3.5 rounded accent-primary"
+          />
+          <span className={protectFlagships ? "text-primary" : "text-destructive font-medium"}>
+            {protectFlagships
+              ? "Protect 20 hand-written flagships (recommended)"
+              : "⚠ Also overwrite flagships & editorial"}
+          </span>
+        </label>
+      )}
+
 
       <div className="flex flex-wrap gap-2">
         <button
